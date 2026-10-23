@@ -55,11 +55,12 @@
                 <p class="subtitle">Let's Login to Your Account</p>
 
                 <!-- Form Login -->
-                <form>
+                <!-- Form Login (Udah dibenerin ID-nya) -->
+                <form id="form-login">
                     <label for="email">Email</label>
                     <input
                         type="email"
-                        id="email"
+                        id="input-email"
                         placeholder="Masukkan email"
                         required
                     >
@@ -67,7 +68,7 @@
                     <label for="password">Password</label>
                     <input
                         type="password"
-                        id="password"
+                        id="input-password"
                         placeholder="Masukkan password"
                         required
                     >
@@ -79,8 +80,8 @@
 
                 <p class="divider-text">or continue with</p>
 
-                <!-- Tombol Google -->
-                <button type="button" class="google-button">
+               <!-- Tombol Google (Ditambahkan ID agar mudah dikenali JavaScript) -->
+                <button type="button" id="google-login-btn" class="google-button">
                     <img
                         src="assets/logo-google.png"
                         alt="Logo Google"
@@ -97,6 +98,10 @@
         </main>
 
     </div>
+<!-- 1. Memuat pustaka Supabase Client melalui CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.js"></script>
 
+  <!-- 2. Menghubungkan file JavaScript untuk logika form login -->
+  <script src="script.js"></script>
 </body>
 </html>
