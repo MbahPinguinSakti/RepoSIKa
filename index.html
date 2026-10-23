@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | RepoSIKa</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Panel utama -->
+    <div class="page-panel">
+
+    <!-- Logo dan navigasi -->
+    <div class="top-header">
+
+        <!-- Logo di luar navbar -->
+        <div class="navbar-logos">
+            <img src="assets/logo-unsika.png"
+                 alt="Logo UNSIKA"
+                 class="university-logo">
+
+            <img src="assets/logo-fasilkom.png"
+                 alt="Logo Fasilkom"
+                 class="faculty-logo">
+        </div>
+
+        <!-- Navbar hanya berisi menu -->
+        <nav class="navbar">
+            <div class="navbar-links">
+                <a href="#">Home</a>
+                <a href="#">Services</a>
+                <a href="#">About Us</a>
+                <a href="#">Contact Us</a>
+            </div>
+        </nav>
+
+    </div>
+
+
+        <!-- Halaman Login -->
+        <main class="login-container">
+            <section class="login-card">
+
+                <!-- Logo RepoSIKa -->
+                <div class="logo">
+                    <img
+                        src="assets/logo-reposika.png"
+                        alt="Logo RepoSIKa"
+                    >
+                </div>
+
+                <h1>RepoSIKa</h1>
+                <h2>Welcome!</h2>
+                <p class="subtitle">Let's Login to Your Account</p>
+
+                <!-- Form Login -->
+                <form>
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Masukkan email"
+                        required
+                    >
+
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Masukkan password"
+                        required
+                    >
+
+                    <button type="submit" class="signin-button">
+                        Sign In
+                    </button>
+                </form>
+
+                <p class="divider-text">or continue with</p>
+
+                <!-- Tombol Google -->
+                <button type="button" class="google-button">
+                    <img
+                        src="assets/logo-google.png"
+                        alt="Logo Google"
+                    >
+                    Login with Google
+                </button>
+
+                <!-- Privacy Policy -->
+                <footer class="login-footer">
+                    <a href="#">Privacy Policy</a>
+                </footer>
+
+            </section>
+        </main>
+
+    </div>
+
+</body>
+</html>
