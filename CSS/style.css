@@ -12,7 +12,7 @@ body {
     min-height: 100vh;
 
     background-color: #f1f2df;
-    background-image: url("./assets/perpustakaan.png.jpeg");
+    background-image: url("../assets/perpustakaan.png.jpeg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
