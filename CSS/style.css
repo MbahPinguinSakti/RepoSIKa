@@ -192,6 +192,16 @@ body {
     outline: 2px solid #dacb2d;
 }
 
+/* ===== LUPA PASSWORD ===== */
+
+.forgot-password {
+    color: #464704;
+    text-decoration: underline;
+    font-size: 14px;
+    margin-bottom: 20px;
+    align-self: flex-end;
+}
+
 /* ===== TOMBOL SIGN IN ===== */
 
 .signin-button {
