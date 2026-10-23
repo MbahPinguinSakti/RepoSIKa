@@ -367,3 +367,38 @@ body {
     margin-bottom: -175px;
     padding-bottom: 0;
 }
+
+
+/* ===== ALERT / NOTIFIKASI ===== */
+
+#alert-container {
+    width: 100%;
+    margin: 12px 0;
+}
+
+.alert {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.alert-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #f87171;
+}
+
+.alert-success {
+    background-color: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+.alert-info {
+    background-color: #e0f2fe;
+    color: #075985;
+    border: 1px solid #7dd3fc;
+}

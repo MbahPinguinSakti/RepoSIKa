@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | RepoSIKa</title>
     <link rel="stylesheet" href="CSS/style.css">
-    <script type="module" src="JS/auth.js"></script>
+    <script type="module" src="JS/login.js"></script>
 </head>
 <body>
 
@@ -29,7 +29,7 @@
         <!-- Navbar menu -->
         <nav class="navbar">
             <div class="navbar-links">
-                <a href="#">Home</a>
+                <a href="index.html">Home</a>
                 <a href="#">Services</a>
                 <a href="#">About Us</a>
                 <a href="#">Contact Us</a>
@@ -56,7 +56,8 @@
                 <p class="subtitle">Let's Login to Your Account</p>
 
                 <!-- Form Login -->
-                <form>
+                <div id="alert-container"></div>
+                <form id="loginForm">
                     <label for="email">Email</label>
                     <input
                         type="email"
