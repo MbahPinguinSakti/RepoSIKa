@@ -1,7 +1,7 @@
 import { supabase, CONFIG } from './utils.js';
 
-// PRD Bagian 5: Nama tabel profil publik sesuai spesifikasi
-const PROFILE_TABLE = 'profiles';
+// Mendukung nama tabel 'users' (skema aktual tim) dengan fallback ke 'profiles' (PRD)
+const PROFILE_TABLE = 'users';
 
 export function normalizeEmail(email) {
   return String(email ?? '').trim().toLowerCase();
@@ -18,6 +18,14 @@ export function isCampusEmail(email) {
 
 export function isStudentEmail(email) {
   return getEmailDomain(email) === CONFIG.STUDENT_DOMAIN;
+}
+
+// Helper universal status akun (mendukung kolom 'aktif' di database tim & 'is_active' di PRD)
+export function isUserActive(profile) {
+  if (!profile) return true;
+  if (profile.aktif !== undefined) return profile.aktif !== false;
+  if (profile.is_active !== undefined) return profile.is_active !== false;
+  return true;
 }
 
 // Validasi Form Login
@@ -93,7 +101,7 @@ export function getReadableErrorMessage(error) {
 // AKSI UTAMA AUTENTIKASI
 // ==========================================
 
-// 1. Pendaftaran Akun (Sign Up) - Poin 1: Metadata profil lengkap (nama, full_name, npm)
+// 1. Pendaftaran Akun (Sign Up) - Mengirim 'nama' (skema tim) & 'full_name' (PRD)
 export async function signUp({ email, password, nama, npm }) {
   const validationError = validateRegistration({ email, password, nama, npm });
   if (validationError) return { ok: false, message: validationError, data: null };
@@ -129,7 +137,7 @@ export async function signUp({ email, password, nama, npm }) {
   };
 }
 
-// 2. Masuk Akun (Sign In) - Poin 2: Cek Email Confirmed, Poin 3: Cek is_active, & PRD FR-08: Update last_login
+// 2. Masuk Akun (Sign In) - Poin 2: Cek Email Confirmed, Poin 3: Cek status aktif, & FR-08: Update timestamp login
 export async function signIn({ email, password }) {
   const validationError = validateLogin({ email, password });
   if (validationError) return { ok: false, message: validationError, data: null };
@@ -151,9 +159,9 @@ export async function signIn({ email, password }) {
     };
   }
 
-  // Poin 3: Penanganan Akun Tidak Aktif (is_active === false)
+  // Poin 3: Penanganan Akun Tidak Aktif (mendukung kolom 'aktif' & 'is_active')
   const profile = await getProfile(data.user.id);
-  if (profile && profile.is_active === false) {
+  if (profile && !isUserActive(profile)) {
     await supabase.auth.signOut();
     return {
       ok: false,
@@ -162,16 +170,15 @@ export async function signIn({ email, password }) {
     };
   }
 
-  // PRD FR-08: Pencatatan Timestamp last_login pasca-login berhasil
+  // PRD FR-08: Pencatatan Timestamp login (mendukung 'terakhir_login' & 'last_login')
   const nowIso = new Date().toISOString();
   supabase
     .from(PROFILE_TABLE)
-    .update({ last_login: nowIso })
+    .update({ terakhir_login: nowIso })
     .eq('id', data.user.id)
     .then(({ error: updateErr }) => {
-      // Fallback jika tabel di database masih bernama 'users'
-      if (updateErr && (updateErr.code === 'PGRST205' || String(updateErr.message).includes('profiles'))) {
-        supabase.from('users').update({ last_login: nowIso }).eq('id', data.user.id);
+      if (updateErr) {
+        supabase.from('profiles').update({ last_login: nowIso }).eq('id', data.user.id);
       }
     })
     .catch(() => {});
@@ -254,7 +261,7 @@ export async function getSession() {
   return data?.session ?? null;
 }
 
-// Pengambilan Data Profil (PRD Bagian 5: Menggunakan 'profiles' dengan Fallback Cerdas ke 'users')
+// Pengambilan Data Profil (Mendukung 'users' skema tim & 'profiles' PRD)
 export async function getProfile(userId) {
   let id = userId;
   if (!id) {
@@ -263,17 +270,17 @@ export async function getProfile(userId) {
   }
   if (!id) return null;
 
-  // Coba query ke PROFILE_TABLE ('profiles' sesuai PRD)
+  // Prioritaskan query ke tabel 'users' (skema tim aktual di Supabase)
   let { data, error } = await supabase
     .from(PROFILE_TABLE)
     .select('*')
     .eq('id', id)
     .maybeSingle();
 
-  // Fallback cerdas: Jika tabel 'profiles' belum dibuat di Supabase (masih bernama 'users')
-  if (error && (error.code === 'PGRST205' || String(error.message).includes('profiles'))) {
+  // Fallback ke 'profiles' jika database dimigrasi ke nama PRD
+  if (error && (error.code === 'PGRST205' || String(error.message).includes('users'))) {
     const fallbackRes = await supabase
-      .from('users')
+      .from('profiles')
       .select('*')
       .eq('id', id)
       .maybeSingle();
@@ -345,8 +352,8 @@ export async function requireAuth({ redirectTo = CONFIG.PAGES.LOGIN } = {}) {
 
   const profile = await getProfile(session.user.id);
 
-  // Poin 3: Jika akun dinonaktifkan saat sesi masih aktif
-  if (profile && profile.is_active === false) {
+  // Poin 3: Jika akun dinonaktifkan saat sesi masih aktif (mendukung 'aktif' & 'is_active')
+  if (profile && !isUserActive(profile)) {
     await signOut();
     redirect(`${redirectTo}?error=deactivated`);
     return null;
@@ -373,7 +380,7 @@ export async function redirectIfLoggedIn({ redirectTo = null } = {}) {
     const profile = await getProfile(session.user.id);
 
     // Item B: Jika akun dinonaktifkan, jangan dilempar ke Home, tapi logout & redirect dengan status error
-    if (profile && profile.is_active === false) {
+    if (profile && !isUserActive(profile)) {
       await signOut();
       window.location.replace(`${CONFIG.PAGES.LOGIN}?error=deactivated`);
       return;
