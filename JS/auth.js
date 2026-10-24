@@ -29,7 +29,7 @@ export function validateLogin({ email, password }) {
   return null; // null = valid
 }
 
-// Validasi Form Registrasi
+// Validasi Form Registrasi (Poin 1: Validasi Regex NPM)
 export function validateRegistration({ email, password, nama, npm }) {
   const loginError = validateLogin({ email, password });
   if (loginError) return loginError;
@@ -40,7 +40,9 @@ export function validateRegistration({ email, password, nama, npm }) {
   if (isStudentEmail(email)) {
     const cleanNpm = String(npm ?? '').trim();
     if (!cleanNpm) return 'NPM wajib diisi untuk akun mahasiswa.';
-    if (!/^\d+$/.test(cleanNpm)) return 'NPM hanya boleh berisi angka.';
+    if (!/^\d{10,15}$/.test(cleanNpm)) {
+      return 'NPM harus berupa 10-15 digit angka yang valid.';
+    }
   }
   return null;
 }
@@ -84,13 +86,13 @@ export function getReadableErrorMessage(error) {
 // AKSI UTAMA AUTENTIKASI
 // ==========================================
 
-// 1. Pendaftaran Akun (Sign Up)
+// 1. Pendaftaran Akun (Sign Up) - Poin 1: Metadata profil lengkap (nama, full_name, npm)
 export async function signUp({ email, password, nama, npm }) {
   const validationError = validateRegistration({ email, password, nama, npm });
   if (validationError) return { ok: false, message: validationError, data: null };
 
   const cleanNama = String(nama ?? '').trim();
-  const cleanNpm = String(npm ?? '').trim() || null;
+  const cleanNpm = isStudentEmail(email) ? String(npm ?? '').trim() : null;
 
   const { data, error } = await supabase.auth.signUp({
     email: normalizeEmail(email),
@@ -98,7 +100,7 @@ export async function signUp({ email, password, nama, npm }) {
     options: {
       data: {
         nama: cleanNama,
-        nama_lengkap: cleanNama,
+        full_name: cleanNama,
         npm: cleanNpm,
       },
     },
@@ -120,7 +122,7 @@ export async function signUp({ email, password, nama, npm }) {
   };
 }
 
-// 2. Masuk Akun (Sign In)
+// 2. Masuk Akun (Sign In) - Poin 2: Cek Email Confirmed & Poin 3: Cek is_active
 export async function signIn({ email, password }) {
   const validationError = validateLogin({ email, password });
   if (validationError) return { ok: false, message: validationError, data: null };
@@ -131,18 +133,43 @@ export async function signIn({ email, password }) {
   });
 
   if (error) return { ok: false, message: getReadableErrorMessage(error), data: null };
-  return { ok: true, message: 'Login berhasil.', data };
+
+  // Poin 2: Verifikasi Email (wajibkan email_confirmed_at ada)
+  if (data.user && !data.user.email_confirmed_at && !data.user.confirmed_at) {
+    await supabase.auth.signOut();
+    return {
+      ok: false,
+      message: 'Email kampus kamu belum diverifikasi. Cek inbox email kampus untuk klik tautan konfirmasi akun.',
+      data: null,
+    };
+  }
+
+  // Poin 3: Penanganan Akun Tidak Aktif (is_active === false)
+  const profile = await getProfile(data.user.id);
+  if (profile && profile.is_active === false) {
+    await supabase.auth.signOut();
+    return {
+      ok: false,
+      message: 'Akun Anda dinonaktifkan oleh pihak kampus. Silakan hubungi Administrator Perpustakaan.',
+      data: null,
+    };
+  }
+
+  return { ok: true, message: 'Login berhasil.', data: { ...data, profile } };
 }
 
-// 3. Login dengan Google OAuth
-export async function signInWithGoogle() {
+// 3. Login dengan Google OAuth (Poin 4: Mendukung Return URL)
+export async function signInWithGoogle({ returnUrl = null } = {}) {
+  const targetReturn = returnUrl || getReturnUrl() || CONFIG.PAGES.HOME;
+  const cleanTarget = targetReturn.replace(/^\//, '');
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
       queryParams: {
         hd: CONFIG.STUDENT_DOMAIN,
       },
-      redirectTo: `${window.location.origin}/${CONFIG.PAGES.HOME}`,
+      redirectTo: `${window.location.origin}/${cleanTarget}`,
     },
   });
 
@@ -169,7 +196,7 @@ export async function resetPasswordForEmail(email) {
   };
 }
 
-// 5. Perbarui Kata Sandi Baru (setelah buka tautan reset)
+// 5. Perbarui Kata Sandi Baru
 export async function updatePassword(newPassword, confirmPassword) {
   const validationError = validateResetPassword(newPassword, confirmPassword);
   if (validationError) return { ok: false, message: validationError };
@@ -229,19 +256,57 @@ function redirect(page) {
 }
 
 // ==========================================
-// ROUTE GUARDS
+// ROUTE GUARDS & POST-LOGIN NAVIGATION (Poin 3 & 4)
 // ==========================================
 
+// Poin 4: Membaca parameter returnUrl dari URL secara aman
+export function getReturnUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const returnUrl = params.get('returnUrl');
+  if (!returnUrl) return null;
+  try {
+    const decoded = decodeURIComponent(returnUrl).trim();
+    // Validasi keamanan: hanya izinkan path relatif agar tidak terjadi open redirect
+    if (decoded.startsWith('/') && !decoded.startsWith('//') && !decoded.includes('://')) {
+      return decoded;
+    }
+  } catch (_) {}
+  return null;
+}
+
+// Poin 4: Menentukan tujuan redirect pasca-login (Admin vs Mahasiswa vs Return URL)
+export function resolvePostLoginRedirect(profile) {
+  if (profile?.role === 'admin') {
+    return CONFIG.PAGES.ADMIN;
+  }
+  const returnUrl = getReturnUrl();
+  if (returnUrl) return returnUrl;
+  return CONFIG.PAGES.HOME;
+}
+
+// Guard untuk halaman member (Poin 3 & 4)
 export async function requireAuth({ redirectTo = CONFIG.PAGES.LOGIN } = {}) {
   const session = await getSession();
   if (!session) {
-    redirect(redirectTo);
+    // Poin 4: Simpan URL saat ini ke returnUrl agar user tidak kehilangan halaman asalnya
+    const currentPath = encodeURIComponent(window.location.pathname + window.location.search);
+    redirect(`${redirectTo}?returnUrl=${currentPath}`);
     return null;
   }
+
   const profile = await getProfile(session.user.id);
+
+  // Poin 3: Jika akun dinonaktifkan saat sesi masih aktif
+  if (profile && profile.is_active === false) {
+    await signOut();
+    redirect(`${redirectTo}?error=deactivated`);
+    return null;
+  }
+
   return { session, profile };
 }
 
+// Guard untuk halaman Admin
 export async function requireAdmin({ redirectTo = CONFIG.PAGES.HOME } = {}) {
   const auth = await requireAuth();
   if (!auth) return null;
@@ -252,7 +317,12 @@ export async function requireAdmin({ redirectTo = CONFIG.PAGES.HOME } = {}) {
   return auth;
 }
 
-export async function redirectIfLoggedIn({ redirectTo = CONFIG.PAGES.HOME } = {}) {
+// Guard untuk halaman login/register: jika sudah login, lempar sesuai role atau returnUrl
+export async function redirectIfLoggedIn({ redirectTo = null } = {}) {
   const session = await getSession();
-  if (session) redirect(redirectTo);
+  if (session) {
+    const profile = await getProfile(session.user.id);
+    const target = redirectTo || resolvePostLoginRedirect(profile);
+    redirect(target);
+  }
 }

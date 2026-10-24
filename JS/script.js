@@ -6,6 +6,8 @@ import {
   updatePassword,
   redirectIfLoggedIn,
   signOut,
+  getReturnUrl,
+  resolvePostLoginRedirect,
 } from './auth.js';
 import { supabase, showAlert, clearAlert, CONFIG } from './utils.js';
 
@@ -27,8 +29,14 @@ function initLoginForm() {
   const formLogin = document.getElementById('form-login');
   if (!formLogin) return;
 
-  // Jika sudah login, langsung alihkan ke halaman utama
-  redirectIfLoggedIn({ redirectTo: CONFIG.PAGES.HOME });
+  // Jika sudah login, langsung alihkan sesuai role / returnUrl
+  redirectIfLoggedIn();
+
+  // Poin 3: Tampilkan pesan jika user ditendang karena akun dinonaktifkan
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('error') === 'deactivated') {
+    showAlert('Akun Anda telah dinonaktifkan oleh pihak kampus. Hubungi Administrator Perpustakaan.', 'error');
+  }
 
   const emailInput = document.getElementById('input-email');
   const passwordInput = document.getElementById('input-password');
@@ -53,9 +61,11 @@ function initLoginForm() {
       if (!result.ok) {
         showAlert(result.message, 'error');
       } else {
+        // Poin 4: Navigasi Pasca-Login (Admin -> admin.html, User -> returnUrl / index.html)
+        const targetPage = resolvePostLoginRedirect(result.data?.profile);
         showAlert('Login berhasil! Mengalihkan...', 'success');
         setTimeout(() => {
-          window.location.replace(CONFIG.PAGES.HOME);
+          window.location.replace(targetPage);
         }, 800);
       }
     } catch (err) {
@@ -74,7 +84,7 @@ function initLoginForm() {
       clearAlert();
       googleBtn.disabled = true;
       try {
-        const result = await signInWithGoogle();
+        const result = await signInWithGoogle({ returnUrl: getReturnUrl() });
         if (!result.ok) {
           showAlert(result.message, 'error');
           googleBtn.disabled = false;
@@ -95,13 +105,27 @@ function initSignupForm() {
   const formSignup = document.getElementById('form-signup');
   if (!formSignup) return;
 
-  redirectIfLoggedIn({ redirectTo: CONFIG.PAGES.HOME });
+  redirectIfLoggedIn();
 
   const namaInput = document.getElementById('input-nama');
   const emailInput = document.getElementById('input-email-signup');
   const npmInput = document.getElementById('input-npm');
   const passwordInput = document.getElementById('input-password-signup');
   const submitBtn = formSignup.querySelector('button[type="submit"]');
+
+  // Poin 1: Auto-ekstrak NPM saat mahasiswa mengetikkan email student
+  if (emailInput && npmInput) {
+    emailInput.addEventListener('input', () => {
+      const emailVal = emailInput.value.trim().toLowerCase();
+      if (emailVal.includes(`@${CONFIG.STUDENT_DOMAIN}`)) {
+        const potentialNpm = emailVal.split('@')[0];
+        // Jika prefix sebelum @ adalah angka dan field NPM masih kosong atau sama
+        if (/^\d+$/.test(potentialNpm) && (!npmInput.value || /^\d+$/.test(npmInput.value))) {
+          npmInput.value = potentialNpm;
+        }
+      }
+    });
+  }
 
   formSignup.addEventListener('submit', async (event) => {
     event.preventDefault();
