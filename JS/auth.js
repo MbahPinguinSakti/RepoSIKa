@@ -34,16 +34,20 @@ export function validateRegistration({ email, password, nama, npm }) {
   const loginError = validateLogin({ email, password });
   if (loginError) return loginError;
 
-  if (password.length < 8) return 'Kata sandi minimal 8 karakter.';
-  if (!String(nama ?? '').trim()) return 'Nama lengkap wajib diisi.';
+  const passwordValue = String(password ?? '');
+  if (passwordValue.length < 8) return 'Kata sandi minimal 8 karakter.';
+
+  const cleanNama = String(nama ?? '').trim();
+  if (!cleanNama) return 'Nama lengkap wajib diisi.';
 
   if (isStudentEmail(email)) {
     const cleanNpm = String(npm ?? '').trim();
     if (!cleanNpm) return 'NPM wajib diisi untuk akun mahasiswa.';
-    if (!/^\d{10,15}$/.test(cleanNpm)) {
+    if (!/^[0-9]{10,15}$/.test(cleanNpm)) {
       return 'NPM harus berupa 10-15 digit angka yang valid.';
     }
   }
+
   return null;
 }
 
@@ -167,7 +171,7 @@ export async function signInWithGoogle({ returnUrl = null } = {}) {
     provider: 'google',
     options: {
       queryParams: {
-        hd: CONFIG.STUDENT_DOMAIN,
+        hd: 'student.unsika.ac.id', // Hosted Domain restriction dari Google
       },
       redirectTo: `${window.location.origin}/${cleanTarget}`,
     },
