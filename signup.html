@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Daftar Akun - RepoSIKa</title>
+
+  <!-- FONT POPPINS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- FONT AWESOME -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  >
+
+  <!-- CSS SIGN UP -->
+  <link rel="stylesheet" href="signup.css">
+</head>
+
+<body>
+
+  <main class="signup-container">
+
+    <!-- BAGIAN KIRI -->
+    <section class="signup-brand">
+
+      <div class="brand-header">
+        <img
+          src="assets/logo-reposika.png"
+          alt="Logo RepoSIKa"
+        >
+        <h2>RepoSIKa</h2>
+      </div>
+
+      <div class="brand-content">
+
+        <div class="brand-icon">
+          <i class="fa-solid fa-book-open-reader"></i>
+        </div>
+
+        <h1>
+          Selamat Datang<br>
+          di RepoSIKa!
+        </h1>
+
+        <p>
+          Akses materi perkuliahan dengan mudah,
+          kapan saja dan di mana saja.
+        </p>
+
+      </div>
+
+      <div class="brand-footer">
+        Repositori Akademik Kampus
+      </div>
+
+    </section>
+
+
+    <!-- BAGIAN KANAN -->
+    <section class="signup-form-section">
+
+      <div class="signup-card">
+
+        <div class="form-heading">
+
+          <h1>Buat Akun</h1>
+
+          <p>
+            Daftarkan akun mahasiswa untuk mulai
+            mengakses materi perkuliahan.
+          </p>
+
+        </div>
+
+
+        <!-- FORM PENDAFTARAN -->
+        <form action="#" method="post">
+
+          <!-- NAMA LENGKAP -->
+          <div class="form-group">
+
+            <label for="nama">
+              Nama Lengkap
+            </label>
+
+            <div class="input-wrapper">
+
+              <i class="fa-regular fa-user"></i>
+
+              <input
+                type="text"
+                id="nama"
+                name="nama"
+                placeholder="Masukkan nama lengkap"
+                autocomplete="name"
+                required
+              >
+
+            </div>
+
+          </div>
+
+
+          <!-- EMAIL KAMPUS -->
+          <div class="form-group">
+
+            <label for="email">
+              Email Kampus
+            </label>
+
+            <div class="input-wrapper">
+
+              <i class="fa-regular fa-envelope"></i>
+
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Masukkan email kampus"
+                autocomplete="email"
+                required
+              >
+
+            </div>
+
+          </div>
+
+
+          <!-- NPM -->
+          <div class="form-group">
+
+            <label for="npm">
+              NPM
+            </label>
+
+            <div class="input-wrapper">
+
+              <i class="fa-regular fa-id-card"></i>
+
+              <input
+                type="text"
+                id="npm"
+                name="npm"
+                placeholder="Masukkan NPM"
+                inputmode="numeric"
+                required
+              >
+
+            </div>
+
+          </div>
+
+
+          <!-- PASSWORD -->
+          <div class="form-group">
+
+            <label for="password">
+              Password
+            </label>
+
+            <div class="input-wrapper">
+
+              <i class="fa-solid fa-lock"></i>
+
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Buat password"
+                autocomplete="new-password"
+                minlength="8"
+                required
+              >
+
+            </div>
+
+          </div>
+
+
+          <!-- TOMBOL DAFTAR -->
+          <button type="button" class="signup-button">
+            Daftar
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+
+        </form>
+
+
+        <!-- KE HALAMAN LOGIN -->
+        <p class="login-text">
+          Sudah punya akun?
+          <a href="login.html">Masuk di sini</a>
+        </p>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</body>
+
+</html>
