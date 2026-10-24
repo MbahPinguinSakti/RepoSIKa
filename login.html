@@ -1,43 +1,45 @@
-c<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | RepoSIKa</title>
-    <link rel="stylesheet" href="CSS/style.css">
-    <script type="module" src="JS/login.js"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <!-- Panel utama -->
     <div class="page-panel">
 
-    <!-- Logo dan navigasi -->
-    <div class="top-header">
+        <!-- Logo dan navigasi -->
+        <div class="top-header">
 
-        <!-- Logo di luar navbar -->
-        <div class="navbar-logos">
-            <img src="assets/logo-unsika.png"
-                 alt="Logo UNSIKA"
-                 class="university-logo">
+            <!-- Logo di luar navbar -->
+            <div class="navbar-logos">
+                <img
+                    src="assets/logo-unsika.png"
+                    alt="Logo UNSIKA"
+                    class="university-logo"
+                >
 
-            <img src="assets/logo-fasilkom.png"
-                 alt="Logo Fasilkom"
-                 class="faculty-logo">
-        </div>
-
-        <!-- Navbar menu -->
-        <nav class="navbar">
-            <div class="navbar-links">
-                <a href="index.html">Home</a>
-                <a href="#">Services</a>
-                <a href="#">About Us</a>
-                <a href="#">Contact Us</a>
+                <img
+                    src="assets/logo-fasilkom.png"
+                    alt="Logo Fasilkom"
+                    class="faculty-logo"
+                >
             </div>
-        </nav>
 
-    </div>
+            <!-- Navbar menu -->
+            <nav class="navbar">
+                <div class="navbar-links">
+                    <a href="index.html">Home</a>
+                    <a href="#">Services</a>
+                    <a href="#">About Us</a>
+                    <a href="#">Contact Us</a>
+                </div>
+            </nav>
 
+        </div>
 
         <!-- Halaman Login -->
         <main class="login-container">
@@ -55,58 +57,82 @@ c<!DOCTYPE html>
                 <h2>Welcome!</h2>
                 <p class="subtitle">Let's Login to Your Account</p>
 
-                <!-- Form Login -->
+                <!-- Notifikasi login -->
                 <div id="alert-container"></div>
-                <form id="loginForm">
-                    <label for="email">Email</label>
+
+                <!-- Form Login -->
+                <form id="form-login">
+
+                    <label for="input-email">Email</label>
                     <input
                         type="email"
-                        id="email"
+                        id="input-email"
+                        name="email"
                         placeholder="Masukkan email"
+                        autocomplete="email"
                         required
                     >
 
-                    <label for="password">Password</label>
+                    <label for="input-password">Password</label>
                     <input
                         type="password"
-                        id="password"
+                        id="input-password"
+                        name="password"
                         placeholder="Masukkan password"
+                        autocomplete="current-password"
                         required
                     >
 
-                    <a href="#" class="forgot-password">Forgot Password?</a>
-
+                    <!-- Lupa Password -->
+                    <a
+                        href="forgot-password.html"
+                        class="forgot-password"
+                    >
+                        Forgot Password?
+                    </a>
 
                     <button type="submit" class="signin-button">
-                        Sign In
+                     Masuk
                     </button>
+
                 </form>
 
                 <p class="divider-text">or continue with</p>
 
-               <!-- Tombol Google -->
-<button type="button" class="google-button">
-    <img
-        src="assets/logo-google.png"
-        alt="Logo Google"
-    >
-    Login with Google
-</button>
+                <!-- Tombol Google -->
+                <button
+                    type="button"
+                    class="google-button"
+                    id="google-login-btn"
+                >
+                    <img
+                        src="assets/logo-google.png"
+                        alt="Logo Google"
+                    >
+                    Login with Google
+                </button>
 
-<!-- LINK KE HALAMAN PENDAFTARAN -->
-<p class="signup-link">
-    Belum punya akun?
-    <a href="signup.html">Daftar di sini</a>
-</p>
+                <!-- Link ke halaman pendaftaran -->
+                <p class="signup-link">
+                    Belum punya akun?
+                    <a href="signup.html">Daftar di sini</a>
+                </p>
 
-<!-- Privacy Policy -->
-<footer class="login-footer">
-    <a href="#">Privacy Policy</a>
-</footer>
+                <!-- Privacy Policy -->
+                <footer class="login-footer">
+                    <a href="#">Privacy Policy</a>
+                </footer>
+
             </section>
         </main>
 
     </div>
+
+    <!-- Supabase JavaScript Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Logic autentikasi -->
+    <script src="script.js"></script>
 
 </body>
 </html>

@@ -501,3 +501,34 @@ body {
 .signup-link a:hover {
     color: #859446;
 }
+
+/* LINK KEMBALI KE LOGIN */
+.back-to-login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    margin-top: 12px;
+    padding: 9px 0;
+
+    color: #f44949;
+    font-size: 13px;
+    font-weight: 600;
+
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.back-to-login:hover {
+    color: #439dfd;
+}
+
+.back-to-login i {
+    font-size: 12px;
+    transition: transform 0.2s ease;
+}
+
+.back-to-login:hover i {
+    transform: translateX(-3px);
+}

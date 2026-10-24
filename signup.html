@@ -38,6 +38,7 @@
           src="assets/logo-reposika.png"
           alt="Logo RepoSIKa"
         >
+
         <h2>RepoSIKa</h2>
       </div>
 
@@ -72,24 +73,22 @@
       <div class="signup-card">
 
         <div class="form-heading">
-
           <h1>Buat Akun</h1>
 
           <p>
             Daftarkan akun mahasiswa untuk mulai
             mengakses materi perkuliahan.
           </p>
-
         </div>
 
 
         <!-- FORM PENDAFTARAN -->
-        <form action="#" method="post">
+        <form id="form-signup">
 
           <!-- NAMA LENGKAP -->
           <div class="form-group">
 
-            <label for="nama">
+            <label for="input-nama">
               Nama Lengkap
             </label>
 
@@ -99,7 +98,7 @@
 
               <input
                 type="text"
-                id="nama"
+                id="input-nama"
                 name="nama"
                 placeholder="Masukkan nama lengkap"
                 autocomplete="name"
@@ -107,14 +106,13 @@
               >
 
             </div>
-
           </div>
 
 
           <!-- EMAIL KAMPUS -->
           <div class="form-group">
 
-            <label for="email">
+            <label for="input-email-signup">
               Email Kampus
             </label>
 
@@ -124,7 +122,7 @@
 
               <input
                 type="email"
-                id="email"
+                id="input-email-signup"
                 name="email"
                 placeholder="Masukkan email kampus"
                 autocomplete="email"
@@ -132,14 +130,13 @@
               >
 
             </div>
-
           </div>
 
 
           <!-- NPM -->
           <div class="form-group">
 
-            <label for="npm">
+            <label for="input-npm">
               NPM
             </label>
 
@@ -149,7 +146,7 @@
 
               <input
                 type="text"
-                id="npm"
+                id="input-npm"
                 name="npm"
                 placeholder="Masukkan NPM"
                 inputmode="numeric"
@@ -157,14 +154,13 @@
               >
 
             </div>
-
           </div>
 
 
           <!-- PASSWORD -->
           <div class="form-group">
 
-            <label for="password">
+            <label for="input-password-signup">
               Password
             </label>
 
@@ -174,7 +170,7 @@
 
               <input
                 type="password"
-                id="password"
+                id="input-password-signup"
                 name="password"
                 placeholder="Buat password"
                 autocomplete="new-password"
@@ -183,12 +179,11 @@
               >
 
             </div>
-
           </div>
 
 
           <!-- TOMBOL DAFTAR -->
-          <button type="button" class="signup-button">
+          <button type="submit" class="signup-button">
             Daftar
             <i class="fa-solid fa-arrow-right"></i>
           </button>
@@ -208,6 +203,12 @@
 
   </main>
 
-</body>
 
+  <!-- SUPABASE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- JAVASCRIPT UTAMA -->
+  <script src="script.js"></script>
+
+</body>
 </html>
