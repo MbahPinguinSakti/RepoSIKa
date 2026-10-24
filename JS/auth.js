@@ -1,6 +1,7 @@
 import { supabase, CONFIG } from './utils.js';
 
-const PROFILE_TABLE = 'users';
+// PRD Bagian 5: Nama tabel profil publik sesuai spesifikasi
+const PROFILE_TABLE = 'profiles';
 
 export function normalizeEmail(email) {
   return String(email ?? '').trim().toLowerCase();
@@ -42,9 +43,11 @@ export function validateRegistration({ email, password, nama, npm }) {
 
   if (isStudentEmail(email)) {
     const cleanNpm = String(npm ?? '').trim();
-    if (!cleanNpm) return 'NPM wajib diisi untuk akun mahasiswa.';
-    if (!/^[0-9]{10,15}$/.test(cleanNpm)) {
-      return 'NPM harus berupa 10-15 digit angka yang valid.';
+    if (!cleanNpm) {
+      return 'NPM wajib diisi untuk akun mahasiswa.';
+    }
+    if (!/^\d+$/.test(cleanNpm)) {
+      return 'NPM hanya boleh berisi angka.';
     }
   }
 
@@ -126,7 +129,7 @@ export async function signUp({ email, password, nama, npm }) {
   };
 }
 
-// 2. Masuk Akun (Sign In) - Poin 2: Cek Email Confirmed & Poin 3: Cek is_active
+// 2. Masuk Akun (Sign In) - Poin 2: Cek Email Confirmed, Poin 3: Cek is_active, & PRD FR-08: Update last_login
 export async function signIn({ email, password }) {
   const validationError = validateLogin({ email, password });
   if (validationError) return { ok: false, message: validationError, data: null };
@@ -159,10 +162,24 @@ export async function signIn({ email, password }) {
     };
   }
 
+  // PRD FR-08: Pencatatan Timestamp last_login pasca-login berhasil
+  const nowIso = new Date().toISOString();
+  supabase
+    .from(PROFILE_TABLE)
+    .update({ last_login: nowIso })
+    .eq('id', data.user.id)
+    .then(({ error: updateErr }) => {
+      // Fallback jika tabel di database masih bernama 'users'
+      if (updateErr && (updateErr.code === 'PGRST205' || String(updateErr.message).includes('profiles'))) {
+        supabase.from('users').update({ last_login: nowIso }).eq('id', data.user.id);
+      }
+    })
+    .catch(() => {});
+
   return { ok: true, message: 'Login berhasil.', data: { ...data, profile } };
 }
 
-// 3. Login dengan Google OAuth (Poin 4: Mendukung Return URL)
+// 3. Login dengan Google OAuth (PRD FR-01: Mendukung Dosen @unsika.ac.id & Mahasiswa @student.unsika.ac.id)
 export async function signInWithGoogle({ returnUrl = null } = {}) {
   const targetReturn = returnUrl || getReturnUrl() || CONFIG.PAGES.HOME;
   const cleanTarget = targetReturn.replace(/^\//, '');
@@ -171,7 +188,8 @@ export async function signInWithGoogle({ returnUrl = null } = {}) {
     provider: 'google',
     options: {
       queryParams: {
-        hd: 'student.unsika.ac.id', // Hosted Domain restriction dari Google
+        // Tampilkan pemilih akun Google agar dosen & mahasiswa bisa memilih akun kampus mereka
+        prompt: 'select_account',
       },
       redirectTo: `${window.location.origin}/${cleanTarget}`,
     },
@@ -229,6 +247,7 @@ export async function getSession() {
   return data?.session ?? null;
 }
 
+// Pengambilan Data Profil (PRD Bagian 5: Menggunakan 'profiles' dengan Fallback Cerdas ke 'users')
 export async function getProfile(userId) {
   let id = userId;
   if (!id) {
@@ -237,11 +256,26 @@ export async function getProfile(userId) {
   }
   if (!id) return null;
 
-  const { data, error } = await supabase
+  // Coba query ke PROFILE_TABLE ('profiles' sesuai PRD)
+  let { data, error } = await supabase
     .from(PROFILE_TABLE)
     .select('*')
     .eq('id', id)
     .maybeSingle();
+
+  // Fallback cerdas: Jika tabel 'profiles' belum dibuat di Supabase (masih bernama 'users')
+  if (error && (error.code === 'PGRST205' || String(error.message).includes('profiles'))) {
+    const fallbackRes = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (!fallbackRes.error) {
+      data = fallbackRes.data;
+      error = null;
+    }
+  }
 
   if (error) {
     console.error('[getProfile]', error);
