@@ -113,18 +113,31 @@ function initSignupForm() {
   const passwordInput = document.getElementById('input-password-signup');
   const submitBtn = formSignup.querySelector('button[type="submit"]');
 
-  // Poin 1: Auto-ekstrak NPM saat mahasiswa mengetikkan email student
+  // Item E & Poin 1: Penyesuaian Dinamis Mahasiswa vs Dosen
   if (emailInput && npmInput) {
-    emailInput.addEventListener('input', () => {
+    const handleEmailInput = () => {
       const emailVal = emailInput.value.trim().toLowerCase();
-      if (emailVal.includes(`@${CONFIG.STUDENT_DOMAIN}`)) {
+      const isStudent = emailVal.includes(`@${CONFIG.STUDENT_DOMAIN}`);
+
+      // Dosen tidak wajib isi NPM, Mahasiswa wajib isi NPM
+      npmInput.required = isStudent;
+
+      const npmLabel = npmInput.closest('.form-group')?.querySelector('label');
+      if (npmLabel) {
+        npmLabel.textContent = isStudent ? 'NPM (Wajib untuk Mahasiswa)' : 'NPM (Khusus Mahasiswa)';
+      }
+
+      // Auto-ekstrak jika student
+      if (isStudent) {
         const potentialNpm = emailVal.split('@')[0];
-        // Jika prefix sebelum @ adalah angka dan field NPM masih kosong atau sama
         if (/^\d+$/.test(potentialNpm) && (!npmInput.value || /^\d+$/.test(npmInput.value))) {
           npmInput.value = potentialNpm;
         }
       }
-    });
+    };
+
+    emailInput.addEventListener('input', handleEmailInput);
+    emailInput.addEventListener('change', handleEmailInput);
   }
 
   formSignup.addEventListener('submit', async (event) => {
@@ -178,7 +191,16 @@ function initForgotPassword() {
   const passBaruInput = document.getElementById('input-pass-baru');
   const passKonfirmasiInput = document.getElementById('input-pass-konfirmasi');
 
-  // Deteksi hash token recovery di URL (cth: #access_token=...&type=recovery)
+  // Item C: Dukungan Supabase Auth PKCE event listener (Aliran standar Supabase v2)
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      if (formMintaEmail) formMintaEmail.style.display = 'none';
+      if (formPasswordBaru) formPasswordBaru.style.display = 'block';
+      showAlert('Tautan pemulihan diverifikasi. Silakan masukkan kata sandi baru Anda.', 'info');
+    }
+  });
+
+  // Deteksi hash token recovery di URL (fallback flow)
   const hash = new URLSearchParams(window.location.hash.substring(1));
   const accessToken = hash.get('access_token');
   const refreshToken = hash.get('refresh_token');

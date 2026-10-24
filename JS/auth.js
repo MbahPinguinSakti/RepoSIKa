@@ -179,10 +179,13 @@ export async function signIn({ email, password }) {
   return { ok: true, message: 'Login berhasil.', data: { ...data, profile } };
 }
 
-// 3. Login dengan Google OAuth (PRD FR-01: Mendukung Dosen @unsika.ac.id & Mahasiswa @student.unsika.ac.id)
+// 3. Login dengan Google OAuth (PRD FR-01 & Item A: Jaga path subfolder/localhost)
 export async function signInWithGoogle({ returnUrl = null } = {}) {
   const targetReturn = returnUrl || getReturnUrl() || CONFIG.PAGES.HOME;
   const cleanTarget = targetReturn.replace(/^\//, '');
+
+  // Item A: Gunakan new URL() agar path subfolder (Live Server / GitHub Pages) tidak hilang
+  const redirectUrl = new URL(cleanTarget, window.location.href).href;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
@@ -191,7 +194,7 @@ export async function signInWithGoogle({ returnUrl = null } = {}) {
         // Tampilkan pemilih akun Google agar dosen & mahasiswa bisa memilih akun kampus mereka
         prompt: 'select_account',
       },
-      redirectTo: `${window.location.origin}/${cleanTarget}`,
+      redirectTo: redirectUrl,
     },
   });
 
@@ -207,8 +210,11 @@ export async function resetPasswordForEmail(email) {
     return { ok: false, message: 'Gunakan email kampus yang terdaftar (@unsika.ac.id / @student.unsika.ac.id).' };
   }
 
+  // Item A: Jaga path subfolder untuk link reset password
+  const redirectUrl = new URL(CONFIG.PAGES.FORGOT_PASSWORD, window.location.href).href;
+
   const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-    redirectTo: `${window.location.origin}/${CONFIG.PAGES.FORGOT_PASSWORD}`,
+    redirectTo: redirectUrl,
   });
 
   if (error) return { ok: false, message: getReadableErrorMessage(error) };
@@ -297,15 +303,19 @@ function redirect(page) {
 // ROUTE GUARDS & POST-LOGIN NAVIGATION (Poin 3 & 4)
 // ==========================================
 
-// Poin 4: Membaca parameter returnUrl dari URL secara aman
+// Poin 4 & Item D: Membaca parameter returnUrl dari URL secara aman & fleksibel
 export function getReturnUrl() {
   const params = new URLSearchParams(window.location.search);
   const returnUrl = params.get('returnUrl');
   if (!returnUrl) return null;
   try {
     const decoded = decodeURIComponent(returnUrl).trim();
-    // Validasi keamanan: hanya izinkan path relatif agar tidak terjadi open redirect
-    if (decoded.startsWith('/') && !decoded.startsWith('//') && !decoded.includes('://')) {
+    // Validasi keamanan: tidak boleh ada protokol atau protocol-relative (mencegah open redirect)
+    if (decoded.includes('://') || decoded.startsWith('//')) {
+      return null;
+    }
+    // Izinkan format relatif /path atau path.html?param=...
+    if (decoded.startsWith('/') || /^[a-zA-Z0-9_\-\.\/]+(\?.*)?$/.test(decoded)) {
       return decoded;
     }
   } catch (_) {}
@@ -355,11 +365,21 @@ export async function requireAdmin({ redirectTo = CONFIG.PAGES.HOME } = {}) {
   return auth;
 }
 
-// Guard untuk halaman login/register: jika sudah login, lempar sesuai role atau returnUrl
+// Guard untuk halaman login/register: jika sudah login, lempar sesuai role atau returnUrl (Item B: tangani akun non-aktif)
 export async function redirectIfLoggedIn({ redirectTo = null } = {}) {
   const session = await getSession();
   if (session) {
     const profile = await getProfile(session.user.id);
+
+    // Item B: Jika akun dinonaktifkan, jangan dilempar ke Home, tapi logout & tampilkan status error
+    if (profile && profile.is_active === false) {
+      await signOut();
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set('error', 'deactivated');
+      window.history.replaceState(null, document.title, currentUrl.toString());
+      return;
+    }
+
     const target = redirectTo || resolvePostLoginRedirect(profile);
     redirect(target);
   }
