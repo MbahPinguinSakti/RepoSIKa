@@ -182,10 +182,11 @@ export async function signIn({ email, password }) {
 // 3. Login dengan Google OAuth (PRD FR-01 & Item A: Jaga path subfolder/localhost)
 export async function signInWithGoogle({ returnUrl = null } = {}) {
   const targetReturn = returnUrl || getReturnUrl() || CONFIG.PAGES.HOME;
-  const cleanTarget = targetReturn.replace(/^\//, '');
 
-  // Item A: Gunakan new URL() agar path subfolder (Live Server / GitHub Pages) tidak hilang
-  const redirectUrl = new URL(cleanTarget, window.location.href).href;
+  // Jaga path subfolder & hindari duplikasi folder jika targetReturn dimulai dengan '/'
+  const redirectUrl = targetReturn.startsWith('/')
+    ? new URL(targetReturn, window.location.origin).href
+    : new URL(targetReturn, window.location.href).href;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
@@ -371,12 +372,10 @@ export async function redirectIfLoggedIn({ redirectTo = null } = {}) {
   if (session) {
     const profile = await getProfile(session.user.id);
 
-    // Item B: Jika akun dinonaktifkan, jangan dilempar ke Home, tapi logout & tampilkan status error
+    // Item B: Jika akun dinonaktifkan, jangan dilempar ke Home, tapi logout & redirect dengan status error
     if (profile && profile.is_active === false) {
       await signOut();
-      const currentUrl = new URL(window.location.href);
-      currentUrl.searchParams.set('error', 'deactivated');
-      window.history.replaceState(null, document.title, currentUrl.toString());
+      window.location.replace(`${CONFIG.PAGES.LOGIN}?error=deactivated`);
       return;
     }
 
