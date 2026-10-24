@@ -1,16 +1,19 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm';
 
 export const CONFIG = {
-  SUPABASE_URL: 'GANTI_DENGAN_PROJECT_URL',
-  SUPABASE_ANON_KEY: 'GANTI_DENGAN_ANON_KEY',
+  // Kredensial Supabase Project RepoSIKa
+  SUPABASE_URL: 'https://gnolcaozgtfbswusdfey.supabase.co',
+  SUPABASE_ANON_KEY: 'sb_publishable_yz2s8eb99UnlrNibA8kFWw_nocOfML2',
 
   // Whitelist domain kampus (FR-01)
   ALLOWED_DOMAINS: ['unsika.ac.id', 'student.unsika.ac.id'],
   STUDENT_DOMAIN: 'student.unsika.ac.id',
 
-  // Nama file halaman. Sesuaikan dengan struktur repo.
+  // Mapping nama file halaman
   PAGES: {
     LOGIN: 'login.html',
+    SIGNUP: 'signup.html',
+    FORGOT_PASSWORD: 'forgot-password.html',
     HOME: 'index.html',
     ADMIN: 'admin.html',
   },
@@ -30,11 +33,12 @@ export function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-// alerting for user 
+// Menampilkan pesan notifikasi ke pengguna
 export function showAlert(message, type = 'info', containerId = 'alert-container') {
   const container = document.getElementById(containerId);
   if (!container) {
-    console.warn(`[showAlert] #${containerId} tidak ditemukan. Pesan:`, message);
+    // Fallback jika halaman belum memiliki container alert
+    alert(message);
     return;
   }
   const el = document.createElement('div');
@@ -43,8 +47,14 @@ export function showAlert(message, type = 'info', containerId = 'alert-container
   el.textContent = message;
 
   container.replaceChildren(el); // satu alert pada satu waktu
-  if (type !== 'error') {
-    setTimeout(() => el.remove(), 5000);
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  if (type === 'success') {
+    setTimeout(() => {
+      if (el.parentNode === container) {
+        el.remove();
+      }
+    }, 6000);
   }
 }
 
@@ -53,7 +63,6 @@ export function clearAlert(containerId = 'alert-container') {
 }
 
 // Tema gelap/terang (FR-06). Pakai atribut data-theme di <html>.
-// Frontend tinggal bikin CSS: [data-theme="dark"] { ... }
 export function initTheme() {
   let saved = null;
   try { saved = localStorage.getItem(CONFIG.THEME_KEY); } catch (_) { /* abaikan */ }
