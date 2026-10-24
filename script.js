@@ -1,9 +1,8 @@
+
 // Konfigurasi kredensial koneksi Supabase
-const supabaseUrl = 'https://xxxxxx.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsIn...';
+const supabaseUrl = 'wkwkwk';
+const supabaseKey = 'wkwkwkk';
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-
 // ==========================================
 // KODE KHUSUS HALAMAN LOGIN (index.html)
 // ==========================================
@@ -58,93 +57,174 @@ if (googleButton) {
 
 
 // ==========================================
-// KODE KHUSUS HALAMAN LUPA PASSWORD (forgot-password.html)
+// KODE PENDAFTARAN AKUN BARU (SIGN UP)
 // ==========================================
-const btnCari = document.getElementById('btn-cari');
-const inputEmailReset = document.getElementById('input-email-reset');
+const formSignupElement = document.getElementById('form-signup');
+const inputNamaLengkap = document.getElementById('input-nama');
+const inputNpmSignup = document.getElementById('input-npm');
+const inputEmailSignup = document.getElementById('input-email-signup');
+const inputPasswordSignup = document.getElementById('input-password-signup');
 
-// Pengamanan: Cek apakah tombol Cari ADA di halaman yang sedang dibuka
-if (btnCari) {
-    btnCari.addEventListener('click', async function () {
-        const emailUser = inputEmailReset.value.trim();
+if (formSignupElement) {
+    formSignupElement.addEventListener('submit', async function (event) {
+        event.preventDefault(); // Tahan biar nggak refresh
 
-        if (emailUser === "") {
-            alert("Mohon maaf, alamat email tidak boleh kosong. Silakan isi terlebih dahulu.");
+        const nama = inputNamaLengkap.value;
+        const npm = inputNpmSignup.value;
+        const email = inputEmailSignup.value;
+        const password = inputPasswordSignup.value;
+
+        // Validasi receh biar password nggak kekecilan
+        if (password.length < 6) {
+            alert("Kata sandi terlalu pendek! Minimal 6 karakter.");
             return;
         }
 
-        if (!emailUser.includes('@')) {
-            alert("Format email tidak valid. Pastikan Anda menggunakan karakter '@' pada alamat email.");
-            return;
-        }
+        alert("Sedang mendaftarkan akun lu ke server, tunggu bentar...");
 
-        alert("Mohon tunggu sebentar, sistem sedang memproses permintaan Anda...");
-
-        const { data, error } = await supabaseClient.auth.resetPasswordForEmail(emailUser);
+        // Kirim data ke Supabase (Tiket Utama + Koper Metadata)
+        const { data, error } = await supabaseClient.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: {
+                    nama_lengkap: nama,
+                    npm: npm
+                }
+            }
+        });
 
         if (error) {
-            alert("Terjadi kendala pada sistem peladen: " + error.message);
+            alert("Gagal daftar nih: " + error.message);
         } else {
-            alert("Instruksi pemulihan kata sandi telah berhasil dikirim. Silakan periksa kotak masuk pada surel " + emailUser);
-            inputEmailReset.value = "";
+            alert("Pendaftaran sukses! Cek email kampus lu buat klik link konfirmasi (jika ada).");
+            formSignupElement.reset(); // Bersihin kotak input form daftar
+            linkKeLogin.click(); // Pindah otomatis ke form login
         }
     });
 }
 
+
 // ==========================================
-// KODE PENGECEKAN TOKEN & GANTI PASSWORD BARU
+// KODE KHUSUS HALAMAN LUPA PASSWORD
 // ==========================================
 const formMintaEmail = document.getElementById('form-minta-email');
+const inputEmailReset = document.getElementById('input-email-reset');
+
+if (formMintaEmail && inputEmailReset) {
+    formMintaEmail.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const emailUser = inputEmailReset.value.trim();
+
+        if (emailUser === '') {
+            alert('Alamat email wajib diisi.');
+            return;
+        }
+
+        try {
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(
+                emailUser,
+                {
+                    redirectTo: window.location.origin + window.location.pathname
+                }
+            );
+
+            if (error) {
+                alert('Gagal mengirim tautan pemulihan: ' + error.message);
+                return;
+            }
+
+            alert('Jika email terdaftar, instruksi pemulihan akan dikirim ke ' + emailUser);
+            inputEmailReset.value = '';
+        } catch (error) {
+            alert('Terjadi kesalahan: ' + error.message);
+        }
+    });
+}
+
+
+// ==========================================
+// KODE GANTI PASSWORD BARU
+// ==========================================
 const formPasswordBaru = document.getElementById('form-password-baru');
-const btnSimpanPassword = document.getElementById('btn-simpan-password');
 const inputPassBaru = document.getElementById('input-pass-baru');
 const inputPassKonfirmasi = document.getElementById('input-pass-konfirmasi');
 
-// Cek apakah URL mengandung hash/token recovery dari Supabase
-if (window.location.hash && window.location.hash.includes('type=recovery')) {
-    // Kalau ada tokennya, sembunyikan form email, tampilkan form password baru
+let sesiRecoverySiap = false;
+
+async function siapkanPemulihanPassword() {
+    const hash = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hash.get('access_token');
+    const refreshToken = hash.get('refresh_token');
+    const jenisToken = hash.get('type');
+
+    if (jenisToken !== 'recovery' || !accessToken || !refreshToken) {
+        return;
+    }
+
+    const { error } = await supabaseClient.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken
+    });
+
+    if (error) {
+        alert('Tautan pemulihan tidak valid atau sudah kedaluwarsa.');
+        return;
+    }
+
+    sesiRecoverySiap = true;
+
     if (formMintaEmail && formPasswordBaru) {
         formMintaEmail.style.display = 'none';
         formPasswordBaru.style.display = 'block';
     }
+
+    // Hapus token dari URL setelah sesi berhasil dibuat.
+    window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
 }
 
-// Logika saat tombol "Simpan Kata Sandi Baru" diklik
-if (btnSimpanPassword) {
-    btnSimpanPassword.addEventListener('click', async function () {
+if (formPasswordBaru && inputPassBaru && inputPassKonfirmasi) {
+    formPasswordBaru.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        if (!sesiRecoverySiap) {
+            alert('Silakan buka tautan pemulihan dari email terlebih dahulu.');
+            return;
+        }
+
         const passwordBaru = inputPassBaru.value;
         const passwordKonfirmasi = inputPassKonfirmasi.value;
 
-        // Validasi input kosong atau kurang dari 6 karakter
-        if (passwordBaru === "" || passwordKonfirmasi === "") {
-            alert("Mohon maaf, kolom kata sandi tidak boleh kosong.");
-            return;
-        }
-
         if (passwordBaru.length < 6) {
-            alert("Kata sandi terlalu pendek! Minimal harus 6 karakter.");
+            alert('Kata sandi minimal harus 6 karakter.');
             return;
         }
 
-        // Cek apakah password baru dan konfirmasinya sama
         if (passwordBaru !== passwordKonfirmasi) {
-            alert("Konfirmasi kata sandi tidak cocok! Silakan periksa kembali.");
+            alert('Konfirmasi kata sandi tidak cocok.');
             return;
         }
 
-        alert("Menyimpan kata sandi baru ke server...");
+        try {
+            const { error } = await supabaseClient.auth.updateUser({
+                password: passwordBaru
+            });
 
-        // Kirim permintaan pembaruan password ke Supabase
-        const { data, error } = await supabaseClient.auth.updateUser({
-            password: passwordBaru
-        });
+            if (error) {
+                alert('Gagal memperbarui kata sandi: ' + error.message);
+                return;
+            }
 
-        if (error) {
-            alert("Gagal memperbarui kata sandi: " + error.message);
-        } else {
-            alert("Kata sandi berhasil diperbarui! Silakan login kembali dengan kata sandi baru.");
-            // Lempar user kembali ke halaman login (index.html)
-            window.location.href = 'index.html';
+            alert('Kata sandi berhasil diperbarui. Silakan login kembali.');
+            window.location.replace('index.html');
+        } catch (error) {
+            alert('Terjadi kesalahan: ' + error.message);
         }
     });
 }
+
+// Jalankan pengecekan token pemulihan
+siapkanPemulihanPassword().catch(function (error) {
+    console.error('Kesalahan pemulihan password:', error);
+});

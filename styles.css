@@ -1,4 +1,4 @@
-/* ===== PENGATURAN DASAR ===== */
+﻿/* ===== PENGATURAN DASAR ===== */
 
 * {
     margin: 0;
@@ -12,7 +12,7 @@ body {
     min-height: 100vh;
 
     background-color: #f1f2df;
-    background-image: url("../assets/perpustakaan.png.jpeg");
+    background-image: url("assets/perpustakaan.png.jpeg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -459,4 +459,18 @@ body {
     background-color: #e0f2fe;
     color: #075985;
     border: 1px solid #7dd3fc;
+}
+
+/* Teks keterangan di bawah tombol form */
+.teks-bawah-form {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+/* Link tebal buat pindah Login/Signup */
+.link-pindah-form {
+    color: #464704;
+    font-weight: bold;
+    text-decoration: underline;
 }
