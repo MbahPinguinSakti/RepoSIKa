@@ -161,7 +161,7 @@ async function loadUserManagementTable() {
   const userTableBody = document.querySelector('#manajemen-user tbody');
   if (!userTableBody) return;
 
-  userTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">Memuat data pengguna...</td></tr>';
+  userTableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">Memuat data pengguna...</td></tr>';
 
   try {
     // Sesuai PRD FR-09: ORDER BY aktif ASC (akun tidak aktif tampil paling atas)
@@ -177,7 +177,7 @@ async function loadUserManagementTable() {
     renderUserRows(adminState.allUsers);
   } catch (err) {
     console.error('[Admin Users]', err);
-    userTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: red;">Gagal memuat pengguna: ${err.message}</td></tr>`;
+    userTableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Gagal memuat pengguna: ${err.message}</td></tr>`;
   }
 }
 
@@ -186,7 +186,7 @@ function renderUserRows(users) {
   if (!userTableBody) return;
 
   if (users.length === 0) {
-    userTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px;">Belum ada data pengguna terdaftar.</td></tr>';
+    userTableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">Belum ada data pengguna terdaftar.</td></tr>';
     return;
   }
 
@@ -216,6 +216,13 @@ function renderUserRows(users) {
           <td><strong>${escapeHtml(u.nama)}</strong></td>
           <td>${escapeHtml(u.email || '-')}</td>
           <td>${escapeHtml(u.npm || '-')}</td>
+          <td>
+            <select class="role-select" data-user-id="${u.id}" style="padding: 3px 6px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 12px; font-weight: 500; cursor: pointer; background: white;">
+              <option value="mahasiswa" ${u.role === 'mahasiswa' ? 'selected' : ''}>Mahasiswa</option>
+              <option value="dosen" ${u.role === 'dosen' ? 'selected' : ''}>Dosen</option>
+              <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+            </select>
+          </td>
           <td>${statusBadge}</td>
           <td><small>${lastLogin}</small></td>
           <td>
@@ -230,6 +237,30 @@ function renderUserRows(users) {
       `;
     })
     .join('');
+
+  
+  // Event handler untuk ubah role pengguna (FR-08: set_user_role)
+  userTableBody.querySelectorAll('.role-select').forEach((select) => {
+    select.addEventListener('change', async () => {
+      const userId = select.getAttribute('data-user-id');
+      const newRole = select.value;
+      const user = adminState.allUsers.find((u) => u.id === userId);
+      if (!user) return;
+
+      if (confirm(`Ubah hak akses pengguna "${user.nama}" menjadi role "${newRole}"?`)) {
+        try {
+          await usersService.setRole(userId, newRole);
+          user.role = newRole;
+          alert(`Role "${user.nama}" berhasil diubah menjadi "${newRole}".`);
+        } catch (err) {
+          alert('Gagal mengubah role: ' + err.message);
+          select.value = user.role || 'mahasiswa';
+        }
+      } else {
+        select.value = user.role || 'mahasiswa';
+      }
+    });
+  });
 
   // Event handler untuk tombol Suspend/Aktifkan
   userTableBody.querySelectorAll('.btn-toggle-suspend').forEach((btn) => {

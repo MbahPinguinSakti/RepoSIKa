@@ -53,7 +53,23 @@ export const usersService = {
     return this.update(id, { terakhir_login: new Date().toISOString() });
   },
 
+  async setRole(id, role) {
+    try {
+      const { data, error } = await supabase.rpc('set_user_role', { p_user_id: id, p_new_role: role });
+      if (!error) return true;
+    } catch (e) {
+      console.warn("RPC set_user_role error, falling back:", e);
+    }
+    return this.update(id, { role });
+  },
+
   async remove(id) {
+    try {
+      const { data, error } = await supabase.rpc('delete_user_by_admin', { p_user_id: id });
+      if (!error) return true;
+    } catch (e) {
+      console.warn("RPC delete_user_by_admin error, falling back:", e);
+    }
     unwrap(await supabase.from("users").delete().eq("id", id));
     return true;
   },
@@ -173,6 +189,14 @@ export const materiService = {
   },
 
   async tambahDilihat(id) {
+    try {
+      const { data, error } = await supabase.rpc('increment_material_views', { p_materi_id: id });
+      if (!error && data !== null) {
+        return { id, jumlah_dilihat: data };
+      }
+    } catch (e) {
+      console.warn("RPC increment_material_views error, falling back:", e);
+    }
     const { jumlah_dilihat } = await this.getById(id);
     return unwrap(
       await supabase
@@ -211,6 +235,16 @@ export const materiService = {
 
   getFileUrl(file_path) {
     return supabase.storage.from("materi").getPublicUrl(file_path).data.publicUrl;
+  },
+
+  async getSignedUrl(file_path, expiresIn = 3600) {
+    try {
+      const { data, error } = await supabase.storage.from("materi").createSignedUrl(file_path, expiresIn);
+      if (!error && data?.signedUrl) return data.signedUrl;
+    } catch (e) {
+      console.warn("createSignedUrl error, fallback to public url:", e);
+    }
+    return this.getFileUrl(file_path);
   },
 };
 

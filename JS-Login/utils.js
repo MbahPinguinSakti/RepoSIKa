@@ -15,7 +15,7 @@ export const CONFIG = {
     SIGNUP: 'signup.html',
     FORGOT_PASSWORD: 'forgot-password.html',
     HOME: 'index.html',
-    ADMIN: 'admin.html',
+    ADMIN: 'admin-dashboard.html',
   },
 
   THEME_KEY: 'repo_theme',

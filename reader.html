@@ -12,6 +12,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="base.css">
 
+  <!-- PDF.js library for secure canvas rendering (FR-04) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -19,6 +22,12 @@
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
+    }
+
+    @media print {
+      body {
+        display: none !important;
+      }
     }
 
     body {
@@ -140,12 +149,12 @@
       justify-content: center;
       align-items: center;
       transform: rotate(-25deg);
-      color: rgba(255, 255, 255, 0.14);
+      color: rgba(255, 255, 255, 0.15);
       font-size: 15px;
       font-weight: 700;
       letter-spacing: 1px;
       white-space: nowrap;
-      text-shadow: 0 0 1px rgba(0,0,0,0.2);
+      text-shadow: 0 0 1px rgba(0,0,0,0.25);
     }
 
     /* SIMULATED PROTECTED DOCUMENT */
@@ -160,6 +169,15 @@
       padding: 60px 50px;
       position: relative;
       transition: transform 0.2s ease;
+      transform-origin: top center;
+    }
+
+    .pdf-page-canvas {
+      max-width: 100%;
+      height: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-radius: 4px;
+      background: white;
     }
 
     .doc-page h1 {
@@ -232,35 +250,49 @@
 
     <!-- HALAMAN DOKUMEN -->
     <article class="doc-page" id="doc-container">
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-        <img src="assets/logo-reposika.png" alt="Logo" style="width: 50px; height: 50px;">
-        <span style="font-size: 12px; color: #64748b; font-weight: 600;">REPOSIKA ARSIP PERKULIAHAN KAMPUS</span>
+      <!-- Loading state saat fetch file storage -->
+      <div id="pdf-loading-indicator" style="display: none; text-align: center; padding: 40px; color: #475569;">
+        <i class="fa-solid fa-spinner fa-spin" style="font-size: 32px; color: #788744; margin-bottom: 12px;"></i>
+        <p>Memuat lembar dokumen dari secure private storage...</p>
       </div>
 
-      <h1 id="doc-heading">Konsep Sistem Informasi</h1>
-      <p style="font-size: 13px; color: #64748b; margin-top: -6px;">Pertemuan 1 • Semester Ganjil • Universitas Singaperbangsa Karawang</p>
+      <!-- Container Canvas PDF.js (FR-04) -->
+      <div id="pdf-canvas-container" style="display: none; flex-direction: column; align-items: center; gap: 24px; width: 100%;"></div>
 
-      <div class="doc-callout">
-        <strong>Pemberitahuan Hak Cipta & Keamanan Digital:</strong>
-        <p style="margin: 6px 0 0; font-size: 13px;">Dokumen ini dilindungi undang-undang hak cipta akademik. Dilarang mengunduh, mencetak, atau menyebarluaskan materi ini tanpa izin dosen pengampu.</p>
-      </div>
+      <!-- Fallback / Static Preview -->
+      <div id="doc-text-fallback">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+          <img src="assets/logo-reposika.png" alt="Logo" style="width: 50px; height: 50px;">
+          <span style="font-size: 12px; color: #64748b; font-weight: 600;">REPOSIKA ARSIP PERKULIAHAN KAMPUS</span>
+        </div>
 
-      <h3>1. Pendahuluan</h3>
-      <p>Sistem Informasi adalah kombinasi terorganisir dari manusia, perangkat keras, perangkat lunak, jaringan komunikasi, sumber data, dan kebijakan serta prosedur yang menyimpan, mengambil, mengubah, dan menyebarkan informasi dalam suatu organisasi.</p>
+        <h1 id="doc-heading">Konsep Sistem Informasi</h1>
+        <p id="doc-subheading" style="font-size: 13px; color: #64748b; margin-top: -6px;">Pertemuan 1 • Semester Ganjil • Universitas Singaperbangsa Karawang</p>
 
-      <h3>2. Komponen Dasar Sistem Informasi</h3>
-      <p>Dalam penerapannya, sebuah sistem informasi terdiri dari 5 komponen utama:</p>
-      <ul>
-        <li><strong>Hardware:</strong> Perangkat fisik komputer dan periferal jaringan.</li>
-        <li><strong>Software:</strong> Program aplikasi dan sistem operasi yang memproses data.</li>
-        <li><strong>Data:</strong> Bahan baku fakta mentah yang diolah menjadi informasi bernilai.</li>
-        <li><strong>People:</strong> Pengguna, analis sistem, programmer, dan administrator sistem.</li>
-        <li><strong>Procedures:</strong> Kebijakan, instruksi, dan aturan alur kerja organisasi.</li>
-      </ul>
+        <div class="doc-callout">
+          <strong>Pemberitahuan Hak Cipta & Keamanan Digital:</strong>
+          <p style="margin: 6px 0 0; font-size: 13px;">Dokumen ini dilindungi undang-undang hak cipta akademik. Dilarang mengunduh, mencetak, atau menyebarluaskan materi ini tanpa izin dosen pengampu.</p>
+        </div>
 
-      <div class="doc-footer">
-        <span>Repositori Akademik Kampus (RepoSIKa)</span>
-        <span>Halaman 1 dari 1</span>
+        <div id="doc-body-content">
+          <h3>1. Pendahuluan</h3>
+          <p>Sistem Informasi adalah kombinasi terorganisir dari manusia, perangkat keras, perangkat lunak, jaringan komunikasi, sumber data, dan kebijakan serta prosedur yang menyimpan, mengambil, mengubah, dan menyebarkan informasi dalam suatu organisasi.</p>
+
+          <h3>2. Komponen Dasar Sistem Informasi</h3>
+          <p>Dalam penerapannya, sebuah sistem informasi terdiri dari 5 komponen utama:</p>
+          <ul>
+            <li><strong>Hardware:</strong> Perangkat fisik komputer dan periferal jaringan.</li>
+            <li><strong>Software:</strong> Program aplikasi dan sistem operasi yang memproses data.</li>
+            <li><strong>Data:</strong> Bahan baku fakta mentah yang diolah menjadi informasi bernilai.</li>
+            <li><strong>People:</strong> Pengguna, analis sistem, programmer, dan administrator sistem.</li>
+            <li><strong>Procedures:</strong> Kebijakan, instruksi, dan aturan alur kerja organisasi.</li>
+          </ul>
+        </div>
+
+        <div class="doc-footer">
+          <span>Repositori Akademik Kampus (RepoSIKa)</span>
+          <span id="doc-page-count">Halaman 1 dari 1</span>
+        </div>
       </div>
     </article>
 
@@ -285,14 +317,7 @@
       document.getElementById('material-title').textContent = title;
       document.getElementById('doc-heading').textContent = title;
 
-      // 3. Catat riwayat baca & buat Signed URL (FR-04, FR-05)
-      try {
-        await alurBaca.bukaMateri(materiId);
-      } catch (e) {
-        console.warn('[Reader] Signed URL log:', e.message);
-      }
-
-      // 4. Pasang Watermark Dinamis (FR-04: Nama - NPM - Timestamp)
+      // 3. Pasang Watermark Dinamis (FR-04: Nama - NPM - Timestamp)
       const nama = profile?.nama || user.user_metadata?.nama || 'Sivitas Akademika';
       const npm = profile?.npm || user.user_metadata?.npm || 'UNSIKA';
       const timeStr = new Date().toLocaleString('id-ID', {
@@ -305,6 +330,70 @@
       container.innerHTML = Array.from({ length: 12 })
         .map(() => `<div class="watermark-item">${watermarkText}</div>`)
         .join('');
+
+      // 4. Catat riwayat baca & Render PDF via Signed URL (FR-04, FR-05)
+      const loadingEl = document.getElementById('pdf-loading-indicator');
+      const canvasContainer = document.getElementById('pdf-canvas-container');
+      const fallbackEl = document.getElementById('doc-text-fallback');
+
+      try {
+        loadingEl.style.display = 'block';
+        fallbackEl.style.display = 'none';
+
+        const res = await alurBaca.bukaMateri(materiId);
+        if (res && res.judul) {
+          document.getElementById('material-title').textContent = res.judul;
+          document.getElementById('doc-heading').textContent = res.judul;
+        }
+
+        if (res && res.deskripsi) {
+          const bodyEl = document.getElementById('doc-body-content');
+          if (bodyEl) {
+            bodyEl.innerHTML = `<p>${res.deskripsi}</p>`;
+          }
+        }
+
+        if (res && res.url && window.pdfjsLib) {
+          try {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            const loadingTask = pdfjsLib.getDocument({ url: res.url, withCredentials: false });
+            const pdfDoc = await loadingTask.promise;
+
+            loadingEl.style.display = 'none';
+            canvasContainer.style.display = 'flex';
+            canvasContainer.innerHTML = '';
+
+            for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+              const page = await pdfDoc.getPage(pageNum);
+              const viewport = page.getViewport({ scale: 1.5 });
+
+              const canvas = document.createElement('canvas');
+              canvas.className = 'pdf-page-canvas';
+              const context = canvas.getContext('2d');
+              canvas.height = viewport.height;
+              canvas.width = viewport.width;
+
+              canvasContainer.appendChild(canvas);
+
+              await page.render({
+                canvasContext: context,
+                viewport: viewport
+              }).promise;
+            }
+          } catch (pdfErr) {
+            console.warn('[PDF.js] Render fallback:', pdfErr.message);
+            loadingEl.style.display = 'none';
+            fallbackEl.style.display = 'block';
+          }
+        } else {
+          loadingEl.style.display = 'none';
+          fallbackEl.style.display = 'block';
+        }
+      } catch (e) {
+        console.warn('[Reader] Signed URL log:', e.message);
+        loadingEl.style.display = 'none';
+        fallbackEl.style.display = 'block';
+      }
 
       // 5. Fitur Zoom In / Out
       let zoom = 100;
@@ -334,6 +423,12 @@
         alert('Peringatan: Dokumen perkuliahan terproteksi. Klik kanan dinonaktifkan.');
       });
 
+      // Blokir Print Event dari browser
+      window.addEventListener('beforeprint', (e) => {
+        e.preventDefault();
+        alert('Peringatan: Pencetakan dokumen akademik dilarang untuk menjaga integritas data.');
+      });
+
       // Blokir Pintasan Keyboard Cetak (Ctrl+P, Ctrl+S, Ctrl+U, PrintScreen)
       document.addEventListener('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S' || e.key === 'u' || e.key === 'U')) {
@@ -346,4 +441,3 @@
 
 </body>
 </html>
-

@@ -866,3 +866,65 @@ body:has(#theme-dark:checked) .theme-label .sun-icon {
   }
 
 }
+
+/* ========================================
+   ACTIVITY SWITCHER 3D FLIP (FR-05)
+======================================== */
+.activity-switcher-container {
+  perspective: 800px;
+  margin: 6px 0;
+  display: block;
+}
+
+.activity-switcher {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 44px;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+}
+
+.activity-switcher.flipped {
+  transform: rotateX(180deg);
+}
+
+.activity-card-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  border-radius: 12px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid var(--line);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.activity-face-back {
+  transform: rotateX(180deg);
+  background: var(--olive);
+  color: #ffffff;
+}
+
+.activity-card-face i {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+body:has(#sidebar-mini:checked) .activity-switcher .nav-text {
+  display: none;
+}
+
+body:has(#sidebar-mini:checked) .activity-card-face {
+  justify-content: center;
+  padding: 0;
+}

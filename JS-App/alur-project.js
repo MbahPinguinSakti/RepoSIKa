@@ -206,22 +206,42 @@ export const alurBaca = {
     );
 
     // URL sementara 1 jam (Signed URL untuk private storage sesuai PRD)
-    const { data: signedData, error: signedError } = await supabase.storage
-      .from(BUCKET)
-      .createSignedUrl(materi.file_path, 3600);
+    let signedUrl = null;
+    if (materi.file_path) {
+      try {
+        const { data: signedData, error: signedError } = await supabase.storage
+          .from(BUCKET)
+          .createSignedUrl(materi.file_path, 3600);
+        if (!signedError && signedData?.signedUrl) {
+          signedUrl = signedData.signedUrl;
+        } else {
+          signedUrl = supabase.storage.from(BUCKET).getPublicUrl(materi.file_path).data.publicUrl;
+        }
+      } catch (e) {
+        signedUrl = supabase.storage.from(BUCKET).getPublicUrl(materi.file_path).data.publicUrl;
+      }
+    }
 
-    if (signedError) throw new Error(signedError.message);
+    try {
+      await supabase.from("riwayat_baca").insert({ user_id, materi_id });
+    } catch (e) {
+      console.warn("Insert riwayat_baca fallback:", e.message);
+    }
 
-    unwrap(await supabase.from("riwayat_baca").insert({ user_id, materi_id }));
+    // Update jumlah dilihat via RPC increment_material_views (FR-05)
+    let jumlah_dilihat = (materi.jumlah_dilihat || 0) + 1;
+    try {
+      const { data, error } = await supabase.rpc('increment_material_views', { p_materi_id: materi_id });
+      if (!error && data !== null) {
+        jumlah_dilihat = data;
+      } else {
+        await supabase.from("materi").update({ jumlah_dilihat }).eq("id", materi_id);
+      }
+    } catch (e) {
+      await supabase.from("materi").update({ jumlah_dilihat }).eq("id", materi_id);
+    }
 
-    // Update jumlah dilihat
-    const jumlah_dilihat = (materi.jumlah_dilihat || 0) + 1;
-    await supabase
-      .from("materi")
-      .update({ jumlah_dilihat })
-      .eq("id", materi_id);
-
-    return { ...materi, jumlah_dilihat, url: signedData.signedUrl };
+    return { ...materi, jumlah_dilihat, url: signedUrl };
   },
 };
 
@@ -328,9 +348,27 @@ export const alurAdmin = {
   async ubahRole(user_id, role) {
     await alurAuth.requireRole("admin");
     if (!["mahasiswa", "dosen", "admin"].includes(role)) throw new Error("Role tidak valid.");
+    try {
+      const { data, error } = await supabase.rpc('set_user_role', { p_user_id: user_id, p_new_role: role });
+      if (!error) return true;
+    } catch (e) {
+      console.warn("RPC set_user_role fallback:", e);
+    }
     return unwrap(
       await supabase.from("users").update({ role }).eq("id", user_id).select().single()
     );
+  },
+
+  async hapusUser(user_id) {
+    await alurAuth.requireRole("admin");
+    try {
+      const { data, error } = await supabase.rpc('delete_user_by_admin', { p_user_id: user_id });
+      if (!error) return true;
+    } catch (e) {
+      console.warn("RPC delete_user_by_admin fallback:", e);
+    }
+    unwrap(await supabase.from("users").delete().eq("id", user_id));
+    return true;
   },
 
   async tambahMatkul({ kode, nama, semester = null, deskripsi = null }) {
