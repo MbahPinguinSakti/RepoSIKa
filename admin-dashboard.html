@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Admin — RepoSIKa</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="admin-base.css"><link rel="stylesheet" href="admin-dashboard.css">
+</head>
+<body>
+<!-- Toggle tema CSS-only: tampilan berubah tanpa JavaScript; belum tersimpan antarhalaman -->
+<input class="theme-check" type="checkbox" id="theme-toggle" aria-label="Aktifkan mode malam">
+
+<!-- ===== LAYOUT DAN SIDEBAR ADMIN ===== -->
+<div class="layout">
+<!-- Sidebar digunakan pada semua halaman Admin -->
+<aside class="sidebar">
+  <a class="brand" href="admin-dashboard.html"><img src="assets/logo-reposika.png" alt="Logo RepoSIKa"><span>RepoSIKa</span></a>
+  
+<!-- Menu navigasi Admin dan mahasiswa -->
+<nav class="side-nav" aria-label="Navigasi admin">
+    <a class="active" href="admin-dashboard.html"><i class="fa-solid fa-table-cells-large"></i>Dashboard</a>
+    <a href="admin-semua-materi.html"><i class="fa-solid fa-book"></i>Semua Materi</a>
+    <a href="admin-dashboard.html#manajemen-user"><i class="fa-solid fa-users"></i>Manajemen User</a>
+    <a class="" href="admin-materi.html"><i class="fa-regular fa-file-lines"></i>Manajemen Materi</a>
+  </nav>
+  <nav class="side-nav side-footer" aria-label="Akun">
+    <a href="#" aria-label="Profil (belum terhubung)"><i class="fa-solid fa-user"></i>Profile</a>
+    <a href="#" aria-label="Logout (belum terhubung)"><i class="fa-solid fa-right-from-bracket"></i>Logout</a>
+  </nav>
+</aside>
+<!-- ===== KONTEN UTAMA HALAMAN ===== -->
+<main class="page">
+
+<!-- Header dan tombol mode malam di kanan atas -->
+<header class="page-header">
+ <div><h1>Welcome Back, Admin!</h1><p>Pantau dan kelola seluruh aktivitas pada sistem RepoSIKa</p></div>
+ <div class="header-right"><label class="header-search"><i class="fa-solid fa-magnifying-glass"></i><input type="search" placeholder="Search" aria-label="Cari di dashboard"></label><label for="theme-toggle" class="theme-switch" title="Ganti mode terang / malam"><i class="fa-regular fa-moon moon"></i><i class="fa-solid fa-sun sun"></i></label><span class="avatar" aria-label="Avatar admin">👩🏻</span></div>
+</header>
+
+<!-- ===== RINGKASAN STATISTIK ===== -->
+<section class="stats" aria-label="Statistik">
+ <article class="card stat"><i class="fa-solid fa-user-graduate"></i><div><h3>Total Pengguna</h3><strong>248</strong><small>↑ 12% dari bulan lalu</small></div></article>
+ <article class="card stat"><i class="fa-solid fa-book-open"></i><div><h3>Total Materi</h3><strong>186</strong><small>↑ 8% dari bulan lalu</small></div></article>
+ <article class="card stat"><i class="fa-solid fa-circle-check"></i><div><h3>Akun Aktif</h3><strong>215</strong><small>86,7% dari total pengguna</small></div></article>
+ <article class="card stat"><i class="fa-solid fa-circle-xmark red"></i><div><h3>Akun Tidak Aktif</h3><strong>33</strong><small>13,3% dari total pengguna</small></div></article>
+</section>
+
+<!-- ===== AKTIVITAS LOGIN DAN MENU CEPAT ===== -->
+<section class="overview">
+ <article class="card"><div class="section-heading"><h2><i class="fa-regular fa-clock"></i> Aktivitas Login Terbaru</h2><a href="#manajemen-user">→ Lihat Semua</a></div>
+  <div class="table-scroll"><table><thead><tr><th>No</th><th>Nama</th><th>Email</th><th>Waktu Login</th><th></th></tr></thead><tbody><tr><td>1</td><td>Kim Mingyu</td><td>mingyu@mahasiswa.kampus.ac.id</td><td>15 Feb 2026, 09:42</td><td><i class="fa-solid fa-circle" style="color:#70d74d;font-size:9px"></i></td></tr>
+<tr><td>2</td><td>Jeon Wonwoo</td><td>wonu@mahasiswa.kampus.ac.id</td><td>15 Feb 2026, 09:42</td><td><i class="fa-solid fa-circle" style="color:#70d74d;font-size:9px"></i></td></tr>
+<tr><td>3</td><td>Kim Jongie</td><td>jongie@mahasiswa.kampus.ac.id</td><td>15 Feb 2026, 09:42</td><td><i class="fa-solid fa-circle" style="color:#70d74d;font-size:9px"></i></td></tr>
+<tr><td>4</td><td>Oh Sehun</td><td>sehun@mahasiswa.kampus.ac.id</td><td>15 Feb 2026, 09:42</td><td><i class="fa-solid fa-circle" style="color:#70d74d;font-size:9px"></i></td></tr></tbody></table></div>
+ </article>
+ <article class="card"><h2><i class="fa-solid fa-bolt"></i> Menu Cepat</h2>
+  <div class="quick-links"><a href="#manajemen-user"><i class="fa-solid fa-users"></i><span><b>Manajemen User</b><small>Lihat, edit, atau suspend akun pengguna</small></span><i class="fa-solid fa-chevron-right"></i></a>
+  <a href="admin-materi.html"><i class="fa-regular fa-file-lines"></i><span><b>Manajemen Materi</b><small>Tambah, edit, atau hapus materi kuliah</small></span><i class="fa-solid fa-chevron-right"></i></a></div>
+  <div class="note"><b><i class="fa-solid fa-circle-info"></i> Prioritas Monitoring</b><br>Materi hanya dapat diakses secara online dan tidak dapat diunduh atau dicetak untuk menjaga keamanan konten.</div>
+ </article>
+</section>
+
+<!-- ===== TABEL MANAJEMEN USER ===== -->
+<section class="card users" id="manajemen-user"><h2><i class="fa-solid fa-users"></i> Manajemen User</h2>
+ <p class="muted">Kelola data pengguna, pantau aktivitas, dan atur status akun.</p>
+ <div class="user-actions"><label class="user-search"><i class="fa-solid fa-magnifying-glass"></i><input type="search" placeholder="Cari nama, email, atau NPM..." aria-label="Cari pengguna"></label><button class="btn" type="button"><i class="fa-solid fa-plus"></i> Tambah Akun</button></div>
+ <div class="table-scroll"><table><thead><tr><th><input type="checkbox" aria-label="Pilih semua pengguna"></th><th>Nama</th><th>Email</th><th>NPM</th><th>Status</th><th>Last Login</th><th>Aksi</th></tr></thead><tbody><tr><td><input type="checkbox" aria-label="Pilih Kim Mingyu"></td><td>Kim Mingyu</td><td>mingyu@mahasiswa.kampus.ac.id</td><td>202410001</td><td><span class="badge active">Aktif</span></td><td>15 Feb 2026, 09:42</td><td><button type="button" class="icon-btn" title="Lihat (demo)"><i class="fa-regular fa-eye"></i></button> <button type="button" class="icon-btn">Suspend</button> <button type="button" class="icon-btn">Hapus</button></td></tr>
+<tr><td><input type="checkbox" aria-label="Pilih Jeon Wonwoo"></td><td>Jeon Wonwoo</td><td>wonu@mahasiswa.kampus.ac.id</td><td>202410002</td><td><span class="badge inactive">Tidak Aktif</span></td><td>15 Feb 2026, 09:42</td><td><button type="button" class="icon-btn" title="Lihat (demo)"><i class="fa-regular fa-eye"></i></button> <button type="button" class="icon-btn">Suspend</button> <button type="button" class="icon-btn">Hapus</button></td></tr>
+<tr><td><input type="checkbox" aria-label="Pilih Kim Jongie"></td><td>Kim Jongie</td><td>jongie@mahasiswa.kampus.ac.id</td><td>202410003</td><td><span class="badge active">Aktif</span></td><td>15 Feb 2026, 09:42</td><td><button type="button" class="icon-btn" title="Lihat (demo)"><i class="fa-regular fa-eye"></i></button> <button type="button" class="icon-btn">Suspend</button> <button type="button" class="icon-btn">Hapus</button></td></tr>
+<tr><td><input type="checkbox" aria-label="Pilih Oh Sehun"></td><td>Oh Sehun</td><td>sehun@mahasiswa.kampus.ac.id</td><td>202410004</td><td><span class="badge inactive">Tidak Aktif</span></td><td>15 Feb 2026, 09:42</td><td><button type="button" class="icon-btn" title="Lihat (demo)"><i class="fa-regular fa-eye"></i></button> <button type="button" class="icon-btn">Suspend</button> <button type="button" class="icon-btn">Hapus</button></td></tr></tbody></table></div>
+ <div class="pagination" aria-label="Contoh pagination"><span>‹</span><strong>1</strong><span>2</span><span>3</span><span>…</span><span>50</span><span>›</span></div>
+</section>
+</main></div></body></html>
