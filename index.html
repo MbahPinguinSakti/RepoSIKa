@@ -1,183 +1,711 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
+  <!-- =========================================
+       1. PENGATURAN DASAR HALAMAN
+  ========================================== -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Beranda | RepoSIKa</title>
-  <link rel="stylesheet" href="CSS-login/login.css">
-  <style>
-    .welcome-container {
-      max-width: 800px;
-      margin: 40px auto;
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 16px;
-      padding: 32px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      border: 2px solid #464704;
-    }
-    .profile-card {
-      background: #f1f2df;
-      border-radius: 12px;
-      padding: 20px;
-      margin: 20px 0;
-      border-left: 6px solid #464704;
-    }
-    .profile-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
-      margin-top: 10px;
-    }
-    .profile-item {
-      font-size: 14px;
-    }
-    .profile-item strong {
-      color: #464704;
-      display: block;
-    }
-    .btn-logout {
-      background-color: #991b1b;
-      color: white;
-      border: none;
-      padding: 10px 24px;
-      border-radius: 30px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn-logout:hover {
-      background-color: #b91c1c;
-    }
-    .matkul-section {
-      margin-top: 28px;
-    }
-    .matkul-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 16px;
-      margin-top: 14px;
-    }
-    .matkul-card {
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 16px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-    .matkul-card h4 {
-      color: #464704;
-      margin-bottom: 6px;
-    }
-    .badge {
-      display: inline-block;
-      padding: 4px 8px;
-      background: #e0f2fe;
-      color: #0369a1;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-  </style>
+
+  <title>Dashboard | RepoSIKa</title>
+
+
+  <!-- =========================================
+       2. IMPORT FONT POPPINS
+  ========================================== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+
+  <!-- =========================================
+       3. IMPORT FONT AWESOME (IKON)
+  ========================================== -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  >
+
+
+  <!-- =========================================
+       4. MENGHUBUNGKAN FILE CSS
+  ========================================== -->
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="dashboard.css">
+
 </head>
+
+
 <body>
 
-  <div class="welcome-container">
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e1e1d7; padding-bottom: 16px;">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <img src="assets/logo-reposika.png" alt="Logo" style="width: 50px; height: 50px; object-fit: contain;">
-        <div>
-          <h2 style="color: #464704; margin: 0;">RepoSIKa</h2>
-          <small style="color: #666;">Repositori Akademik Kampus UNSIKA</small>
-        </div>
-      </div>
-      <button id="btn-logout" class="btn-logout">Keluar (Logout)</button>
+  <!-- =========================================
+       5. INPUT UNTUK INTERAKSI SIDEBAR DAN TEMA
+  ========================================== -->
+  <input
+    class="state-input"
+    type="checkbox"
+    id="sidebar-mini"
+    aria-label="Kecilkan sidebar"
+  >
+
+  <input
+    class="state-input"
+    type="checkbox"
+    id="theme-dark"
+    aria-label="Aktifkan mode gelap"
+  >
+
+
+  <!-- =========================================
+       6. SIDEBAR / MENU SAMPING
+  ========================================== -->
+  <aside class="sidebar" aria-label="Sidebar RepoSIKa">
+
+    <!-- 6.1 Logo dan Nama RepoSIKa -->
+    <a class="brand" href="dashboard.html">
+
+      <span class="brand-logo">
+        <img src="assets/logo-reposika.png" alt="Logo RepoSIKa">
+      </span>
+
+      <span class="brand-name">RepoSIKa</span>
+
+    </a>
+
+
+    <!-- 6.2 Judul Menu dan Tombol Sidebar -->
+    <div class="menu-heading">
+
+      <span class="menu-title">MENU</span>
+
+      <label
+        class="sidebar-toggle"
+        for="sidebar-mini"
+        title="Buka atau kecilkan sidebar"
+      >
+        <i class="fa-solid fa-angles-left close-icon" aria-hidden="true"></i>
+        <i class="fa-solid fa-angles-right open-icon" aria-hidden="true"></i>
+      </label>
+
     </div>
 
-    <div class="profile-card">
-      <h3 style="color: #464704; margin-top: 0;">Sesi Aktif Pengguna</h3>
-      <div class="profile-grid">
-        <div class="profile-item">
-          <strong>Nama:</strong>
-          <span id="user-name">Memuat...</span>
-        </div>
-        <div class="profile-item">
-          <strong>Email:</strong>
-          <span id="user-email">Memuat...</span>
-        </div>
-        <div class="profile-item">
-          <strong>NPM:</strong>
-          <span id="user-npm">-</span>
-        </div>
-        <div class="profile-item">
-          <strong>Role:</strong>
-          <span id="user-role" class="badge">Mahasiswa</span>
-        </div>
-      </div>
+
+    <!-- 6.3 Navigasi Menu Utama -->
+    <nav class="side-nav" aria-label="Menu utama">
+
+      <a
+        class="nav-link active"
+        href="dashboard.html"
+        aria-current="page"
+        title="Dashboard"
+      >
+        <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i>
+        <span class="nav-text">Dashboard</span>
+      </a>
+
+      <a
+        class="nav-link"
+        href="daftar-matkul.html"
+        title="Semua Materi"
+      >
+        <i class="fa-solid fa-book" aria-hidden="true"></i>
+        <span class="nav-text">Semua Materi</span>
+      </a>
+
+      <a
+        class="nav-link"
+        href="riwayat-favorit.html"
+        title="Riwayat &amp; Favorit"
+      >
+        <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+        <span class="nav-text">Riwayat &amp; Favorit</span>
+      </a>
+
+    </nav>
+
+
+    <!-- 6.4 Menu Bagian Bawah Sidebar -->
+    <div class="sidebar-bottom">
+
+      <!-- Menu Profil -->
+      <span
+        class="side-bottom-link disabled-link"
+        title="Halaman profil menyusul"
+      >
+        <i class="fa-solid fa-user"></i>
+        <span class="nav-text">Profile</span>
+      </span>
+
+      <!-- Menu Pengaturan -->
+      <span
+        class="side-bottom-link disabled-link"
+        title="Halaman pengaturan menyusul"
+      >
+        <i class="fa-solid fa-gear"></i>
+        <span class="nav-text">Settings</span>
+      </span>
+
+      <!-- Tombol Logout -->
+      <a class="side-bottom-link" href="login.html">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span class="nav-text">Logout</span>
+      </a>
+
+      <!-- Menu Bantuan -->
+      <span class="side-bottom-link disabled-link help-link">
+        <i class="fa-solid fa-circle-question"></i>
+        <span class="nav-text">Help &amp; Support</span>
+      </span>
+
     </div>
 
-    <div class="matkul-section">
-      <h3 style="color: #464704;">Daftar Mata Kuliah (Database Service)</h3>
-      <p style="font-size: 13px; color: #666;">Data di bawah ini ditarik secara langsung dari tabel <code>matkul</code> di Supabase melalui modul <code>JS-App/db-services.js</code>:</p>
-      <div id="matkul-list" class="matkul-grid">
-        <p style="color: #888;">Memuat data mata kuliah...</p>
+  </aside>
+
+
+  <!-- =========================================
+       7. KONTEN UTAMA DASHBOARD
+  ========================================== -->
+  <main class="main-content">
+
+
+    <!-- =========================================
+         8. HEADER DASHBOARD
+         Berisi sapaan, tema, dan avatar.
+    ========================================== -->
+    <header class="page-header dashboard-header">
+
+      <!-- 8.1 Sapaan Pengguna -->
+      <div class="page-heading">
+        <h1>Welcome Back, Azra!</h1>
+        <p>Explore your courses and keep progressing today</p>
       </div>
-    </div>
-  </div>
 
-  <script type="module">
-    import { requireAuth, signOut, getCurrentUserProfile } from './JS-Login/auth.js';
-    import { matkulService } from './JS-App/db-services.js';
 
-    document.addEventListener('DOMContentLoaded', async () => {
-      // 1. Proteksi halaman (wajib login)
-      const user = await requireAuth();
-      if (!user) return;
+      <!-- 8.2 Tombol Tema dan Avatar -->
+      <div class="user-actions">
 
-      // 2. Ambil profil user
-      const profile = await getCurrentUserProfile();
-      document.getElementById('user-name').textContent = profile?.nama || user.user_metadata?.nama || 'Sivitas Akademika';
-      document.getElementById('user-email').textContent = user.email || '-';
-      document.getElementById('user-npm').textContent = profile?.npm || user.user_metadata?.npm || 'Khusus Mahasiswa';
-      
-      const roleBadge = document.getElementById('user-role');
-      roleBadge.textContent = profile?.role || 'mahasiswa';
-      if (profile?.role === 'admin') {
-        roleBadge.style.background = '#fef3c7';
-        roleBadge.style.color = '#92400e';
-      }
+        <!-- Tombol Light Mode / Dark Mode -->
+        <label
+          class="theme-label"
+          for="theme-dark"
+          title="Ganti light/dark mode"
+        >
+          <i class="fa-regular fa-moon moon-icon" aria-hidden="true"></i>
+          <i class="fa-solid fa-sun sun-icon" aria-hidden="true"></i>
+        </label>
 
-      // 3. Tombol Logout
-      document.getElementById('btn-logout').addEventListener('click', async () => {
-        if (confirm('Apakah Anda yakin ingin keluar?')) {
-          await signOut();
-          window.location.replace('login.html');
-        }
-      });
+        <!-- Avatar Pengguna -->
+        <span class="avatar" aria-label="Avatar pengguna">👩🏻</span>
 
-      // 4. Uji koneksi data matkul buatan Ardhi & Aurelia
-      const matkulContainer = document.getElementById('matkul-list');
-      try {
-        const daftarMatkul = await matkulService.getAll();
-        if (daftarMatkul && daftarMatkul.length > 0) {
-          matkulContainer.innerHTML = daftarMatkul.map(m => `
-            <div class="matkul-card">
-              <span class="badge">${m.kode || 'MK'}</span>
-              <h4 style="margin-top: 8px;">${m.nama}</h4>
-              <p style="font-size: 12px; color: #666;">Semester ${m.semester || '-'}</p>
-              <p style="font-size: 12px; color: #888;">${m.deskripsi || 'Tidak ada deskripsi'}</p>
+      </div>
+
+    </header>
+
+
+    <!-- =========================================
+         9. BAGIAN CONTINUE LEARNING
+         Menampilkan materi yang sedang dipelajari.
+    ========================================== -->
+    <section class="continue-section card">
+
+      <!-- 9.1 Judul Bagian -->
+      <div class="section-title">
+        <h2>Continue Learning</h2>
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+
+
+      <!-- 9.2 Daftar Materi yang Sedang Dipelajari -->
+      <div class="learning-grid">
+
+
+        <!-- 9.3 Kartu Algoritma dan Dasar Pemrograman -->
+        <article class="learning-card">
+
+          <!-- Ilustrasi Materi -->
+          <div class="learning-art code">
+
+            <span class="pill">
+              12 Materi
+              <i class="fa-regular fa-file-lines"></i>
+            </span>
+
+            <i class="fa-solid fa-code main-icon" aria-hidden="true"></i>
+
+            <span class="art-label">&lt;/&gt;</span>
+
+          </div>
+
+
+          <!-- Informasi dan Progress Materi -->
+          <div class="learning-info">
+
+            <strong>
+              <i class="fa-solid fa-book"></i>
+              Materi
+            </strong>
+
+            <p>Algoritma dan Dasar Pemrograman</p>
+
+            <span class="progress-note">Progress: 80%</span>
+
+            <div class="progress-track">
+              <span style="width: 80%"></span>
             </div>
-          `).join('');
-        } else {
-          matkulContainer.innerHTML = '<p style="color: #666; font-style: italic;">Belum ada data mata kuliah di tabel matkul Supabase.</p>';
-        }
-      } catch (err) {
-        console.warn('Matkul fetch note:', err.message);
-        matkulContainer.innerHTML = '<p style="color: #666; font-style: italic;">Tabel matkul siap diisi via Supabase.</p>';
-      }
-    });
-  </script>
 
+            <a class="btn" href="#tahun-ajaran">Continue</a>
+
+          </div>
+
+        </article>
+
+
+        <!-- 9.4 Kartu Matematika Diskrit -->
+        <article class="learning-card">
+
+          <!-- Ilustrasi Materi -->
+          <div class="learning-art math">
+
+            <span class="pill">
+              12 Materi
+              <i class="fa-regular fa-file-lines"></i>
+            </span>
+
+            <i class="fa-solid fa-calculator main-icon" aria-hidden="true"></i>
+
+            <span class="art-label">√x</span>
+
+          </div>
+
+
+          <!-- Informasi dan Progress Materi -->
+          <div class="learning-info">
+
+            <strong>
+              <i class="fa-solid fa-book"></i>
+              Materi
+            </strong>
+
+            <p>Matematika Diskrit</p>
+
+            <span class="progress-note">Progress: 50%</span>
+
+            <div class="progress-track">
+              <span style="width: 50%"></span>
+            </div>
+
+            <a class="btn" href="#tahun-ajaran">Continue</a>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================================
+         10. JUDUL DAN JUMLAH SEMUA MATERI
+    ========================================== -->
+    <div class="dashboard-all-title">
+
+      <h2>All Materi</h2>
+
+      <!-- Jumlah Materi -->
+      <span class="count-pill">27</span>
+
+      <!-- Link Menuju Daftar Semua Mata Kuliah -->
+      <a href="daftar-matkul.html" title="Lihat semua mata kuliah">
+        <i class="fa-solid fa-chevron-down"></i>
+      </a>
+
+    </div>
+
+
+    <!-- =========================================
+         11. FILTER DAN PENGURUTAN MATERI
+         UI slicing: proses filter/sort disambungkan oleh FE2.
+    ========================================== -->
+    <div class="dashboard-filters" aria-label="Filter materi dashboard">
+      <!-- Tiga label status lama dipertahankan sesuai desain Dashboard -->
+      <span class="filter-tag">All status</span>
+      <span class="filter-tag">All status</span>
+      <span class="filter-tag">All status</span>
+
+      <div class="filter-toolbox rf-toolbar">
+        <!-- Search materi: tampilan input siap disambungkan dengan FE2 -->
+        <label class="rf-search" for="dashboard-material-search">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <input
+            id="dashboard-material-search"
+            name="material-search"
+            type="search"
+            placeholder="Cari materi..."
+            autocomplete="off"
+            aria-label="Cari materi berdasarkan judul"
+          >
+        </label>
+
+        <div class="rf-actions">
+          <!-- ADD FILTER: checkbox dipakai untuk membuka/menutup panel -->
+          <div class="rf-filter">
+            <input type="checkbox" id="rf-open" class="rf-hidden-input">
+
+            <label for="rf-open" class="rf-filter-button">
+              <i class="fa-solid fa-filter" aria-hidden="true"></i>
+              <span>Add Filter</span>
+            </label>
+
+            <!-- Mengetuk area luar panel menutup bottom sheet di HP -->
+            <label for="rf-open" class="rf-backdrop" aria-label="Tutup filter"></label>
+
+            <div class="rf-filter-panel">
+              <div class="rf-mobile-header">
+                <h3>Add Filter</h3>
+                <label for="rf-open" class="rf-close" aria-label="Tutup filter">
+                  <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                </label>
+              </div>
+
+              <form class="rf-filter-form" id="dashboard-filter-form">
+                <!-- KATEGORI 1: SEMESTER (multi-select) -->
+                <fieldset class="rf-filter-group">
+                  <legend>Semester</legend>
+                  <div class="rf-options rf-options-semester">
+                    <label><input type="checkbox" name="semester[]" value="1"><span>Semester 1</span></label>
+                    <label><input type="checkbox" name="semester[]" value="2"><span>Semester 2</span></label>
+                    <label><input type="checkbox" name="semester[]" value="3"><span>Semester 3</span></label>
+                    <label><input type="checkbox" name="semester[]" value="4"><span>Semester 4</span></label>
+                    <label><input type="checkbox" name="semester[]" value="5"><span>Semester 5</span></label>
+                    <label><input type="checkbox" name="semester[]" value="6"><span>Semester 6</span></label>
+                    <label><input type="checkbox" name="semester[]" value="7"><span>Semester 7</span></label>
+                  </div>
+                </fieldset>
+
+                <!-- KATEGORI 2: FORMAT MATERI (multi-select) -->
+                <fieldset class="rf-filter-group">
+                  <legend>Format Materi</legend>
+                  <div class="rf-options">
+                    <label>
+                      <input type="checkbox" name="format[]" value="dokumen">
+                      <span>Dokumen (PDF/DOCX)</span>
+                    </label>
+                    <label>
+                      <input type="checkbox" name="format[]" value="slide">
+                      <span>Slide (PPT/PPTX)</span>
+                    </label>
+                    <label>
+                      <input type="checkbox" name="format[]" value="video">
+                      <span>Video</span>
+                    </label>
+                  </div>
+                </fieldset>
+
+                <!-- KATEGORI 3: STATUS BELAJAR (multi-select) -->
+                <fieldset class="rf-filter-group">
+                  <legend>Status Belajar</legend>
+                  <div class="rf-options">
+                    <label>
+                      <input type="checkbox" name="status[]" value="belum_mulai">
+                      <span>Belum Mulai</span>
+                    </label>
+                    <label>
+                      <input type="checkbox" name="status[]" value="sedang_dipelajari">
+                      <span>Sedang Dipelajari</span>
+                    </label>
+                    <label>
+                      <input type="checkbox" name="status[]" value="selesai">
+                      <span>Selesai</span>
+                    </label>
+                  </div>
+                </fieldset>
+
+                <div class="rf-filter-footer">
+                  <!-- Reset menghapus seluruh centang di tiga kategori -->
+                  <button type="reset" class="rf-reset">Reset</button>
+                  <!-- Terapkan menutup panel dalam tahap slicing.
+                       FE2 menghubungkan tombol ini ke aksi filter data. -->
+                  <label for="rf-open" class="rf-apply">Terapkan</label>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- SORT BY: opsi siap diintegrasikan FE2 -->
+          <details class="rf-sort">
+            <summary class="rf-sort-button">
+              <i class="fa-solid fa-arrow-down-wide-short" aria-hidden="true"></i>
+              <span>Sort by</span>
+              <i class="fa-solid fa-chevron-down rf-sort-arrow" aria-hidden="true"></i>
+            </summary>
+
+            <div class="rf-sort-menu">
+              <h3>Urutkan Materi</h3>
+              <label>
+                <input type="radio" name="dashboard-sort" value="terbaru" checked>
+                <span>Terbaru</span>
+              </label>
+              <label>
+                <input type="radio" name="dashboard-sort" value="terlama">
+                <span>Terlama</span>
+              </label>
+              <label>
+                <input type="radio" name="dashboard-sort" value="nama-az">
+                <span>Nama A–Z</span>
+              </label>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================
+         12. DAFTAR KARTU SEMUA MATERI
+    ========================================= -->
+    <section class="overview-grid" aria-label="Ringkasan semua materi">
+
+
+      <!-- 12.1 Materi Konsep Sistem Informasi -->
+      <article class="overview-card card">
+
+        <div class="course-cover">
+
+          <div class="cover-illustration">
+            <i class="fa-solid fa-laptop-code" aria-hidden="true"></i>
+          </div>
+
+          <span class="cover-label">
+            KONSEP<br>
+            SISTEM<br>
+            INFORMASI
+          </span>
+
+        </div>
+
+        <span class="material-type">
+          <i class="fa-solid fa-book"></i>
+          Materi
+        </span>
+
+        <h3>Konsep Sistem Informasi</h3>
+
+        <div class="overview-footer">
+          <span>Not started</span>
+          <a class="btn" href="#tahun-ajaran">Start</a>
+        </div>
+
+      </article>
+
+
+      <!-- 12.2 Materi Algoritma dan Dasar Pemrograman -->
+      <article class="overview-card card">
+
+        <div class="course-cover">
+
+          <div class="cover-illustration">
+            <i class="fa-solid fa-code" aria-hidden="true"></i>
+          </div>
+
+          <span class="cover-label">
+            ALGORITMA<br>
+            DAN DASAR<br>
+            PEMROGRAMAN
+          </span>
+
+        </div>
+
+        <span class="material-type">
+          <i class="fa-solid fa-book"></i>
+          Materi
+        </span>
+
+        <h3>Algoritma dan Dasar Pemrograman</h3>
+
+        <div class="overview-footer">
+          <span>Progress: 80%</span>
+          <a class="btn" href="#tahun-ajaran">Continue</a>
+        </div>
+
+      </article>
+
+
+      <!-- 12.3 Materi Transformasi Digital -->
+      <article class="overview-card card">
+
+        <div class="course-cover">
+
+          <div class="cover-illustration">
+            <i class="fa-solid fa-laptop-code" aria-hidden="true"></i>
+          </div>
+
+          <span class="cover-label">
+            TRANSFORMASI<br>
+            DIGITAL
+          </span>
+
+        </div>
+
+        <span class="material-type">
+          <i class="fa-solid fa-book"></i>
+          Materi
+        </span>
+
+        <h3>Transformasi Digital</h3>
+
+        <div class="overview-footer">
+          <span>Not started</span>
+          <a class="btn" href="#tahun-ajaran">Start</a>
+        </div>
+
+      </article>
+
+
+      <!-- 12.4 Materi Pengantar Teknologi Informasi -->
+      <article class="overview-card card">
+
+        <div class="course-cover">
+
+          <div class="cover-illustration">
+            <i class="fa-solid fa-desktop" aria-hidden="true"></i>
+          </div>
+
+          <span class="cover-label">
+            PENGANTAR<br>
+            TEKNOLOGI<br>
+            INFORMASI
+          </span>
+
+        </div>
+
+        <span class="material-type">
+          <i class="fa-solid fa-book"></i>
+          Materi
+        </span>
+
+        <h3>Pengantar Teknologi Informasi</h3>
+
+        <div class="overview-footer">
+          <span>Not started</span>
+          <a class="btn" href="#tahun-ajaran">Start</a>
+        </div>
+
+      </article>
+
+
+      <!-- 12.5 Materi Matematika Diskrit -->
+      <article class="overview-card card">
+
+        <div class="course-cover cover-green">
+
+          <div class="cover-illustration">
+            <i class="fa-solid fa-calculator" aria-hidden="true"></i>
+          </div>
+
+          <span class="cover-label">
+            MATEMATIKA<br>
+            DISKRIT
+          </span>
+
+        </div>
+
+        <span class="material-type">
+          <i class="fa-solid fa-book"></i>
+          Materi
+        </span>
+
+        <h3>Matematika Diskrit</h3>
+
+        <div class="overview-footer">
+          <span>Progress: 50%</span>
+          <a class="btn" href="#tahun-ajaran">Continue</a>
+        </div>
+
+      </article>
+
+
+      <!-- 12.6 Materi Bahasa Indonesia -->
+      <article class="overview-card card">
+
+        <div class="course-cover cover-orange">
+
+          <div class="cover-illustration">
+            <i class="fa-solid fa-graduation-cap" aria-hidden="true"></i>
+          </div>
+
+          <span class="cover-label">
+            DI KELAS<br>
+            MATA KULIAH DASAR<br>
+            UMUM (MKDU)
+          </span>
+
+        </div>
+
+        <span class="material-type">
+          <i class="fa-solid fa-book"></i>
+          Materi
+        </span>
+
+        <h3>Bahasa Indonesia</h3>
+
+        <div class="overview-footer">
+          <span>Progress: 40%</span>
+          <a class="btn" href="#tahun-ajaran">Continue</a>
+        </div>
+
+      </article>
+
+    </section>
+
+
+    <!-- =========================================
+         13. MODAL PILIH TAHUN AJARAN
+    ========================================== -->
+    <section
+      class="year-overlay"
+      id="tahun-ajaran"
+      aria-label="Pilih Tahun Ajaran"
+    >
+
+      <div class="year-dialog">
+
+        <!-- Tombol Menutup Modal -->
+        <a href="#" class="close-dialog" aria-label="Tutup modal">
+          &times;
+        </a>
+
+
+        <!-- Judul dan Petunjuk Modal -->
+        <h2>Pilih Tahun Ajaran</h2>
+
+        <p>
+          Silakan pilih tahun ajaran untuk melihat materi.
+        </p>
+
+
+        <!-- Pilihan Tahun Ajaran -->
+        <div class="year-choices">
+
+          <a href="detail-matkul.html">2024/2025</a>
+          <a href="detail-matkul.html">2025/2026</a>
+          <a href="detail-matkul.html">2026/2027</a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+  </main>
+
+  <!-- Logic Aplikasi Utama RepoSIKa -->
+  <script type="module" src="JS-App/app.js"></script>
 </body>
-</html>
 
+</html>

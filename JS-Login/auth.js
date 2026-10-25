@@ -256,6 +256,15 @@ export async function signOut() {
 // SESI & PROFIL PENGGUNA
 // ==========================================
 
+export async function getCurrentUser() {
+  const session = await getSession();
+  return session?.user ?? null;
+}
+
+export async function getCurrentUserProfile() {
+  return await getProfile();
+}
+
 export async function getSession() {
   const { data } = await supabase.auth.getSession();
   return data?.session ?? null;
