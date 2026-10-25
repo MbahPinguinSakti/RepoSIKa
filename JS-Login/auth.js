@@ -188,12 +188,14 @@ export async function signIn({ email, password }) {
 
 // 3. Login dengan Google OAuth (PRD FR-01 & Item A: Jaga path subfolder/localhost)
 export async function signInWithGoogle({ returnUrl = null } = {}) {
-  const targetReturn = returnUrl || getReturnUrl() || CONFIG.PAGES.HOME;
-
-  // Jaga path subfolder & hindari duplikasi folder jika targetReturn dimulai dengan '/'
-  const redirectUrl = targetReturn.startsWith('/')
-    ? new URL(targetReturn, window.location.origin).href
-    : new URL(targetReturn, window.location.href).href;
+  // Selalu arahkan callback ke login.html terlebih dahulu agar redirectIfLoggedIn
+  // dapat memeriksa role akun (Admin langsung ke admin-dashboard, Mahasiswa ke index/returnUrl)
+  const returnParam = returnUrl || getReturnUrl();
+  const loginUrl = new URL(CONFIG.PAGES.LOGIN, window.location.href);
+  if (returnParam) {
+    loginUrl.searchParams.set('returnUrl', returnParam);
+  }
+  const redirectUrl = loginUrl.href;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
@@ -309,7 +311,7 @@ export async function getProfile(userId) {
 
 export async function isAdmin() {
   const profile = await getProfile();
-  return profile?.role === 'admin';
+  return profile?.role === 'admin' || profile?.role === 'dosen';
 }
 
 function redirect(page) {
@@ -341,7 +343,7 @@ export function getReturnUrl() {
 
 // Poin 4: Menentukan tujuan redirect pasca-login (Admin vs Mahasiswa vs Return URL)
 export function resolvePostLoginRedirect(profile) {
-  if (profile?.role === 'admin') {
+  if (profile?.role === 'admin' || profile?.role === 'dosen') {
     return CONFIG.PAGES.ADMIN;
   }
   const returnUrl = getReturnUrl();
@@ -375,7 +377,7 @@ export async function requireAuth({ redirectTo = CONFIG.PAGES.LOGIN } = {}) {
 export async function requireAdmin({ redirectTo = CONFIG.PAGES.HOME } = {}) {
   const auth = await requireAuth();
   if (!auth) return null;
-  if (auth.profile?.role !== 'admin') {
+  if (auth.profile?.role !== 'admin' && auth.profile?.role !== 'dosen') {
     redirect(redirectTo);
     return null;
   }

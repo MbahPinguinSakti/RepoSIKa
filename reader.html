@@ -18,10 +18,13 @@
   <style>
     * {
       box-sizing: border-box;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
+    }
+
+    .doc-page, #doc-container, .pdf-paper, .doc-page * {
+      -webkit-user-select: text !important;
+      -moz-user-select: text !important;
+      -ms-user-select: text !important;
+      user-select: text !important;
     }
 
     @media print {
@@ -395,6 +398,24 @@
         fallbackEl.style.display = 'block';
       }
 
+      
+      // Smart Back Link (Admin / Dosen kembali ke halaman Admin, Mahasiswa ke detail matkul)
+      const btnBack = document.querySelector('.btn-back');
+      if (btnBack) {
+        btnBack.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (document.referrer && document.referrer.includes('admin-')) {
+            window.location.href = document.referrer;
+          } else if (profile?.role === 'admin' || profile?.role === 'dosen') {
+            window.location.href = 'admin-semua-materi.html';
+          } else if (document.referrer && document.referrer.includes('detail-matkul')) {
+            window.location.href = document.referrer;
+          } else {
+            window.location.href = 'detail-matkul.html';
+          }
+        });
+      }
+
       // 5. Fitur Zoom In / Out
       let zoom = 100;
       const doc = document.getElementById('doc-container');
@@ -417,21 +438,16 @@
       });
 
       // 6. PROTEKSI ANTI-DOWNLOAD & ANTI-PRINT (FR-04)
-      // Blokir Klik Kanan (Context Menu)
-      document.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-        alert('Peringatan: Dokumen perkuliahan terproteksi. Klik kanan dinonaktifkan.');
-      });
-
+      // Izin seleksi & salin teks aktif untuk kenyamanan belajar mahasiswa.
       // Blokir Print Event dari browser
       window.addEventListener('beforeprint', (e) => {
         e.preventDefault();
         alert('Peringatan: Pencetakan dokumen akademik dilarang untuk menjaga integritas data.');
       });
 
-      // Blokir Pintasan Keyboard Cetak (Ctrl+P, Ctrl+S, Ctrl+U, PrintScreen)
+      // Blokir Pintasan Keyboard Cetak & Unduh (Ctrl+P, Ctrl+S)
       document.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S' || e.key === 'u' || e.key === 'U')) {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S')) {
           e.preventDefault();
           alert('Tindakan diblokir: Dokumen dilindungi dan tidak dapat dicetak atau diunduh bebas.');
         }

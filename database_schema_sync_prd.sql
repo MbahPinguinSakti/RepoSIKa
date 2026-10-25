@@ -106,8 +106,14 @@ CREATE POLICY "Anyone can view materi" ON public.materi
   FOR SELECT TO authenticated, anon USING (true);
 
 DROP POLICY IF EXISTS "Admin can manage materi" ON public.materi;
-CREATE POLICY "Admin can manage materi" ON public.materi
-  FOR ALL TO authenticated USING (public.is_admin());
+DROP POLICY IF EXISTS "Admin and Dosen can manage materi" ON public.materi;
+CREATE POLICY "Admin and Dosen can manage materi" ON public.materi
+  FOR ALL TO authenticated USING (
+    EXISTS (
+      SELECT 1 FROM public.users
+      WHERE id = auth.uid() AND (role = 'admin' OR role = 'dosen') AND aktif = true
+    )
+  );
 
 -- 2.4 Kebijakan RLS Tabel FAVORIT (BOOKMARKS)
 DROP POLICY IF EXISTS "Users manage own favorit" ON public.favorit;

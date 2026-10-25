@@ -62,9 +62,14 @@ BEGIN
     RAISE EXCEPTION 'Akses ditolak: Hanya Administrator yang berhak mengubah role pengguna.';
   END IF;
 
-  -- Validasi role yang diperbolehkan
-  IF p_new_role NOT IN ('mahasiswa', 'dosen', 'admin') THEN
-    RAISE EXCEPTION 'Role tidak valid. Pilihan yang diperbolehkan: mahasiswa, dosen, admin.';
+  -- Cegah admin mengubah role dirinya sendiri secara tidak sengaja
+  IF p_user_id = auth.uid() THEN
+    RAISE EXCEPTION 'Tindakan dibatalkan: Anda tidak dapat mengubah role akun Anda sendiri!';
+  END IF;
+
+  -- Validasi role yang diperbolehkan (hanya mahasiswa dan admin yang dapat ditoggle)
+  IF p_new_role NOT IN ('mahasiswa', 'admin') THEN
+    RAISE EXCEPTION 'Role tidak valid. Role pengguna hanya dapat diubah menjadi mahasiswa atau admin.';
   END IF;
 
   -- Perbarui kolom role di tabel public.users

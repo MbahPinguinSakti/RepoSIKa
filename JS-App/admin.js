@@ -34,10 +34,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   adminState.adminUser = auth.user;
   adminState.adminProfile = auth.profile;
 
-  // Tampilkan Nama Admin di Header
+  // Tampilkan Nama Admin / Dosen di Header
   const headerGreeting = document.querySelector('.page-header h1');
   if (headerGreeting && adminState.adminProfile?.nama) {
-    headerGreeting.textContent = `Welcome Back, ${adminState.adminProfile.nama.split(' ')[0]}!`;
+    const roleLabel = adminState.adminProfile.role === 'dosen' ? ' (Dosen)' : '';
+    headerGreeting.textContent = `Welcome Back, ${adminState.adminProfile.nama.split(' ')[0]}${roleLabel}!`;
   }
 
   // Handler Tombol Logout Admin
@@ -92,6 +93,7 @@ async function initAdminDashboard() {
   await loadRecentLogins();
   await loadUserManagementTable();
   initUserSearch();
+  initTambahAkunModal();
 }
 
 // Memuat Ringkasan Statistik Sistem
@@ -190,13 +192,33 @@ function renderUserRows(users) {
   const userTableBody = document.querySelector('#manajemen-user tbody');
   if (!userTableBody) return;
 
+  // Jika yang login adalah Dosen, tampilkan banner akses terbatas & sembunyikan tombol Tambah Akun
+  const isViewerDosen = adminState.adminProfile?.role === 'dosen';
+  const manajemenUserSec = document.getElementById('manajemen-user');
+  if (isViewerDosen && manajemenUserSec && !document.getElementById('dosen-access-notice')) {
+    const notice = document.createElement('div');
+    notice.id = 'dosen-access-notice';
+    notice.style.cssText = 'background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; display: flex; align-items: center; gap: 10px;';
+    notice.innerHTML = '<i class="fa-solid fa-circle-info" style="font-size: 18px;"></i> <div><strong>Akses Dosen:</strong> Anda memiliki hak penuh untuk mengelola materi perkuliahan. Pengubahan role pengguna dan penghapusan akun merupakan wewenang Administrator Utama.</div>';
+    const actionsDiv = manajemenUserSec.querySelector('.user-actions');
+    if (actionsDiv) {
+      actionsDiv.parentNode.insertBefore(notice, actionsDiv);
+    }
+    const btnTambah = document.getElementById('btn-tambah-akun');
+    if (btnTambah) btnTambah.style.display = 'none';
+  }
+
   if (users.length === 0) {
     userTableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">Belum ada data pengguna terdaftar.</td></tr>';
     return;
   }
 
+  const currentAdminId = adminState.adminUser?.id;
+
   userTableBody.innerHTML = users
     .map((u) => {
+      const isSelf = u.id === currentAdminId;
+      const isUserDosen = u.role === 'dosen';
       const isAktif = Boolean(u.aktif);
       const statusBadge = isAktif
         ? '<span class="badge active">Aktif</span>'
@@ -212,8 +234,42 @@ function renderUserRows(users) {
           })
         : '-';
 
-      const suspendText = isAktif ? 'Suspend' : 'Aktifkan';
-      const suspendClass = isAktif ? 'color: #ea580c;' : 'color: #16a34a; font-weight: bold;';
+      // Kolom Role:
+      let roleHtml = '';
+      if (isSelf) {
+        roleHtml = '<span class="badge" style="background: #fef3c7; color: #92400e; font-weight: bold; padding: 4px 8px; border-radius: 6px;" title="Akun yang sedang aktif"><i class="fa-solid fa-user-shield"></i> Admin (Akun Anda)</span>';
+      } else if (isUserDosen) {
+        roleHtml = '<span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: bold; padding: 4px 8px; border-radius: 6px;" title="Tenaga Pengajar (Role Permanen)"><i class="fa-solid fa-chalkboard-user"></i> Dosen</span>';
+      } else if (isViewerDosen) {
+        roleHtml = `<span class="badge" style="background: #f1f5f9; color: #475569; font-weight: 500; padding: 4px 8px; border-radius: 6px;">${escapeHtml(u.role || 'mahasiswa')}</span>`;
+      } else {
+        // Hanya role 'mahasiswa' dan 'admin' yang dapat ditoggle
+        roleHtml = `
+          <select class="role-select" data-user-id="${u.id}" style="padding: 3px 6px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 12px; font-weight: 500; cursor: pointer; background: white;">
+            <option value="mahasiswa" ${u.role === 'mahasiswa' ? 'selected' : ''}>Mahasiswa</option>
+            <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+          </select>
+        `;
+      }
+
+      // Kolom Aksi:
+      let actionHtml = '';
+      if (isSelf) {
+        actionHtml = '<span style="color: #94a3b8; font-size: 12px; font-style: italic;"><i class="fa-solid fa-lock"></i> Sesi Aktif</span>';
+      } else if (isViewerDosen) {
+        actionHtml = '<span style="color: #94a3b8; font-size: 12px; font-style: italic;">Khusus Admin</span>';
+      } else {
+        const suspendText = isAktif ? 'Suspend' : 'Aktifkan';
+        const suspendClass = isAktif ? 'color: #ea580c;' : 'color: #16a34a; font-weight: bold;';
+        actionHtml = `
+          <button type="button" class="icon-btn btn-toggle-suspend" style="${suspendClass}" title="${suspendText} Akun">
+            ${suspendText}
+          </button>
+          <button type="button" class="icon-btn btn-delete-user" style="color: #dc2626;" title="Hapus Akun">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        `;
+      }
 
       return `
         <tr data-user-id="${u.id}">
@@ -221,23 +277,10 @@ function renderUserRows(users) {
           <td><strong>${escapeHtml(u.nama)}</strong></td>
           <td>${escapeHtml(u.email || '-')}</td>
           <td>${escapeHtml(u.npm || '-')}</td>
-          <td>
-            <select class="role-select" data-user-id="${u.id}" style="padding: 3px 6px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 12px; font-weight: 500; cursor: pointer; background: white;">
-              <option value="mahasiswa" ${u.role === 'mahasiswa' ? 'selected' : ''}>Mahasiswa</option>
-              <option value="dosen" ${u.role === 'dosen' ? 'selected' : ''}>Dosen</option>
-              <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
-            </select>
-          </td>
+          <td>${roleHtml}</td>
           <td>${statusBadge}</td>
           <td><small>${lastLogin}</small></td>
-          <td>
-            <button type="button" class="icon-btn btn-toggle-suspend" style="${suspendClass}" title="${suspendText} Akun">
-              ${suspendText}
-            </button>
-            <button type="button" class="icon-btn btn-delete-user" style="color: #dc2626;" title="Hapus Akun">
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
-          </td>
+          <td>${actionHtml}</td>
         </tr>
       `;
     })
@@ -744,4 +787,151 @@ function initAdminModals() {
       showProfileModal();
     });
   }
+}
+
+
+// =========================================================================
+// 8. MODAL TAMBAH AKUN BARU OLEH ADMIN (FR-01, FR-08)
+// =========================================================================
+function initTambahAkunModal() {
+  const btnTambah = document.getElementById('btn-tambah-akun');
+  if (!btnTambah) return;
+
+  btnTambah.addEventListener('click', () => {
+    let modal = document.getElementById('modal-tambah-akun');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'modal-tambah-akun';
+      modal.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; animation: fadeInScale 0.2s ease;';
+      document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+      <div style="background: white; border-radius: 16px; padding: 28px; width: 90%; max-width: 480px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); font-family: 'Poppins', sans-serif; position: relative;">
+        <button type="button" id="close-modal-tambah" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 22px; cursor: pointer; color: #64748b;">&times;</button>
+        <div style="margin-bottom: 20px;">
+          <h2 style="margin: 0 0 6px 0; font-size: 18px; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-user-plus" style="color: #2563eb;"></i> Tambah Akun Civitas Baru
+          </h2>
+          <p style="margin: 0; font-size: 13px; color: #64748b;">Daftarkan akun mahasiswa atau admin baru dengan domain resmi UNSIKA.</p>
+        </div>
+
+        <form id="form-tambah-akun" style="display: flex; flex-direction: column; gap: 14px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 600; color: #334155; margin-bottom: 4px;">Nama Lengkap</label>
+            <input type="text" id="tambah-nama" required placeholder="Contoh: Budi Santoso" style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 13px; box-sizing: border-box;">
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 600; color: #334155; margin-bottom: 4px;">Email Kampus</label>
+            <input type="email" id="tambah-email" required placeholder="nama@unsika.ac.id atau nama@student.unsika.ac.id" style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 13px; box-sizing: border-box;">
+            <small style="color: #64748b; font-size: 11px;">Wajib berdomain @unsika.ac.id atau @student.unsika.ac.id</small>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 600; color: #334155; margin-bottom: 4px;">NPM / Identitas</label>
+              <input type="text" id="tambah-npm" required placeholder="Contoh: 2110631170001" style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 13px; box-sizing: border-box;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 600; color: #334155; margin-bottom: 4px;">Role Pengguna</label>
+              <select id="tambah-role" style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 13px; box-sizing: border-box; background: white;">
+                <option value="mahasiswa">Mahasiswa</option>
+                <option value="admin">Administrator</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 600; color: #334155; margin-bottom: 4px;">Kata Sandi Awal</label>
+            <input type="password" id="tambah-password" required minlength="6" placeholder="Minimal 6 karakter" style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 13px; box-sizing: border-box;">
+          </div>
+
+          <div id="tambah-error" style="display: none; padding: 10px; background: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; font-size: 12px; border-radius: 4px;"></div>
+
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button type="button" id="btn-batal-tambah" style="flex: 1; padding: 10px; background: #f1f5f9; color: #475569; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px;">Batal</button>
+            <button type="submit" id="btn-submit-tambah" style="flex: 1; padding: 10px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px;">Simpan Akun</button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    modal.style.display = 'flex';
+
+    const closeModal = () => { modal.style.display = 'none'; };
+    modal.querySelector('#close-modal-tambah').addEventListener('click', closeModal);
+    modal.querySelector('#btn-batal-tambah').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+    const form = modal.querySelector('#form-tambah-akun');
+    const errBox = modal.querySelector('#tambah-error');
+    const submitBtn = modal.querySelector('#btn-submit-tambah');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errBox.style.display = 'none';
+
+      const nama = modal.querySelector('#tambah-nama').value.trim();
+      const email = modal.querySelector('#tambah-email').value.trim().toLowerCase();
+      const npm = modal.querySelector('#tambah-npm').value.trim();
+      const role = modal.querySelector('#tambah-role').value;
+      const password = modal.querySelector('#tambah-password').value;
+
+      // Validasi Domain Kampus (FR-01)
+      const campusRegex = /^[a-zA-Z0-9._%+-]+@(student\.)?unsika\.ac\.id$/i;
+      if (!campusRegex.test(email)) {
+        errBox.textContent = 'Email wajib menggunakan domain resmi kampus: @unsika.ac.id atau @student.unsika.ac.id';
+        errBox.style.display = 'block';
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Mendaftarkan...';
+
+      try {
+        // 1. Daftarkan di auth.users Supabase
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              nama,
+              npm,
+              role,
+            },
+          },
+        });
+
+        if (error) throw error;
+
+        // 2. Simpan / Pastikan data masuk ke tabel public.users
+        if (data?.user) {
+          try {
+            await supabase.from('users').upsert({
+              id: data.user.id,
+              email,
+              nama,
+              npm,
+              role,
+              aktif: true,
+              dibuat_pada: new Date().toISOString(),
+            });
+          } catch (dbErr) {
+            console.warn('[Tambah Akun] Sinkronisasi tabel users fallback:', dbErr.message);
+          }
+        }
+
+        alert(`Akun "${nama}" (${email}) dengan role "${role.toUpperCase()}" berhasil ditambahkan!`);
+        closeModal();
+        await loadUserManagementTable();
+      } catch (err) {
+        errBox.textContent = 'Gagal menambahkan akun: ' + err.message;
+        errBox.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Simpan Akun';
+      }
+    });
+  });
 }

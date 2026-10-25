@@ -108,6 +108,17 @@ async function initUserSession() {
 
   if (state.user) {
     state.profile = await getCurrentUserProfile();
+
+    // Jika pengguna adalah Admin / Dosen dan sedang membuka dashboard mahasiswa tanpa flag ?as_student=1,
+    // langsung arahkan ke admin-dashboard.html agar admin tidak tersangkut di tampilan mahasiswa.
+    const urlParams = new URLSearchParams(window.location.search);
+    if ((state.profile?.role === 'admin' || state.profile?.role === 'dosen') && !urlParams.has('as_student')) {
+      const p = window.location.pathname.toLowerCase();
+      if (p.includes('dashboard') || p.endsWith('/') || p.endsWith('index.html')) {
+        window.location.replace(CONFIG.PAGES.ADMIN);
+        return;
+      }
+    }
   }
 
   // Update Nama Pengguna di Header
@@ -125,6 +136,21 @@ async function initUserSession() {
   if (avatarEl && state.profile?.nama) {
     const initial = state.profile.nama.trim().charAt(0).toUpperCase();
     avatarEl.textContent = initial || '🎓';
+  }
+
+  // Mode Pratinjau Mahasiswa untuk Admin / Dosen (?as_student=1)
+  const urlParams = new URLSearchParams(window.location.search);
+  if ((state.profile?.role === 'admin' || state.profile?.role === 'dosen') && urlParams.has('as_student')) {
+    if (!document.getElementById('mode-mahasiswa-banner')) {
+      const banner = document.createElement('div');
+      banner.id = 'mode-mahasiswa-banner';
+      banner.style.cssText = 'background: #2563eb; color: white; padding: 10px 20px; font-size: 13px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 9999; box-shadow: 0 2px 10px rgba(0,0,0,0.15);';
+      banner.innerHTML = `
+        <span><i class="fa-solid fa-graduation-cap"></i> Anda sedang melihat <strong>Mode Pratinjau Mahasiswa</strong> sebagai <strong>${escapeHtml((state.profile.role || '').toUpperCase())}</strong></span>
+        <a href="admin-dashboard.html" style="color: white; font-weight: 700; text-decoration: underline; background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 6px; transition: background 0.2s;">Kembali ke Panel Admin &rarr;</a>
+      `;
+      document.body.prepend(banner);
+    }
   }
 
   // Handler Tombol Logout
@@ -406,6 +432,73 @@ async function loadDashboardData() {
       });
     });
 
+    // Render Continue Learning secara dinamis berdasarkan riwayat_baca pengguna
+    const learningGrid = document.querySelector('.learning-grid');
+    if (learningGrid) {
+      if (state.user) {
+        try {
+          const recentHistory = await riwayatBacaService.getByUser(state.user.id, 2);
+          if (recentHistory && recentHistory.length > 0) {
+            learningGrid.innerHTML = recentHistory.map((item, idx) => {
+              const m = item.materi || {};
+              const judul = m.judul || 'Materi Perkuliahan';
+              const matkulNama = state.allMatkul.find(c => String(c.id) === String(m.matkul_id))?.nama || 'Mata Kuliah';
+              const artClasses = ['code', 'math'];
+              const artIcons = ['fa-laptop-code', 'fa-book-open'];
+              const artLabels = ['</>', '📚'];
+              const artClass = artClasses[idx % 2];
+              const artIcon = artIcons[idx % 2];
+              const artLabel = artLabels[idx % 2];
+
+              const dateStr = item.dibaca_pada 
+                ? new Date(item.dibaca_pada).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+                : 'Baru saja';
+
+              return `
+                <article class="learning-card">
+                  <div class="learning-art ${artClass}">
+                    <span class="pill" title="${escapeHtml(matkulNama)}">
+                      ${escapeHtml(matkulNama.length > 18 ? matkulNama.slice(0, 16) + '...' : matkulNama)}
+                    </span>
+                    <i class="fa-solid ${artIcon} main-icon" aria-hidden="true"></i>
+                    <span class="art-label">${artLabel}</span>
+                  </div>
+                  <div class="learning-info">
+                    <strong><i class="fa-solid fa-book"></i> Materi Terakhir</strong>
+                    <p title="${escapeHtml(judul)}">${escapeHtml(judul)}</p>
+                    <span class="progress-note"><i class="fa-regular fa-clock"></i> Akses: ${dateStr}</span>
+                    <div class="progress-track"><span style="width: 100%"></span></div>
+                    <a class="btn" href="reader.html?materi_id=${encodeURIComponent(m.id || item.materi_id || '')}&title=${encodeURIComponent(judul)}">Lanjutkan Belajar</a>
+                  </div>
+                </article>
+              `;
+            }).join('');
+          } else {
+            learningGrid.innerHTML = `
+              <div style="grid-column: 1 / -1; padding: 28px 20px; text-align: center; background: rgba(37, 99, 235, 0.04); border-radius: 12px; border: 1px dashed #cbd5e1;">
+                <i class="fa-regular fa-folder-open" style="font-size: 28px; color: #64748b; margin-bottom: 8px;"></i>
+                <p style="margin: 0 0 12px 0; color: #64748b; font-size: 14px;">Belum ada materi yang Anda pelajari. Mulai jelajahi materi perkuliahan di bawah ini untuk memulai belajar!</p>
+                <a href="daftar-matkul.html" class="btn" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
+                  <i class="fa-solid fa-compass"></i> Jelajahi Katalog Materi
+                </a>
+              </div>
+            `;
+          }
+        } catch (histErr) {
+          console.warn('Gagal memuat riwayat continue learning:', histErr.message);
+        }
+      } else {
+        learningGrid.innerHTML = `
+          <div style="grid-column: 1 / -1; padding: 28px 20px; text-align: center; background: rgba(37, 99, 235, 0.04); border-radius: 12px; border: 1px dashed #cbd5e1;">
+            <p style="margin: 0 0 12px 0; color: #64748b; font-size: 14px;">Masuk dengan akun kampus Anda untuk menyimpan dan melanjutkan riwayat membaca.</p>
+            <a href="login.html" class="btn" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
+              <i class="fa-solid fa-right-to-bracket"></i> Masuk Sekarang
+            </a>
+          </div>
+        `;
+      }
+    }
+
     // Jika di halaman index.html / dashboard.html (.overview-grid), render dinamis
     const overviewGrid = document.querySelector('.overview-grid');
     if (overviewGrid && state.allMatkul.length > 0) {
@@ -640,13 +733,8 @@ function applyDynamicWatermark() {
 
 // FR-04 & Fase 2: Proteksi Konten Pembaca PDF (Anti-Download & Anti-Print)
 function applyContentProtection() {
-  document.addEventListener('contextmenu', (e) => {
-    if (e.target.closest('.pdf-viewer, .preview-panel, .pdf-paper')) {
-      e.preventDefault();
-      alert('Tindakan dilarang: Hak cipta materi perkuliahan terproteksi.');
-    }
-  });
-
+  // Anti-Print & Anti-Download (Ctrl+P, Ctrl+S) tetap aktif sesuai FR-04.
+  // Seleksi dan salin teks diizinkan untuk kenyamanan belajar mahasiswa.
   document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S')) {
       e.preventDefault();
