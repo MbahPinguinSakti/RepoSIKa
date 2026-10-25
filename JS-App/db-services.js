@@ -54,20 +54,64 @@ export const usersService = {
   },
 
   async setRole(id, role) {
+    // 1. Validasi sesi aktif
+    const { data: { session } } = await supabase.auth.getSession();
+    const currentUserId = session?.user?.id;
+
+    // 2. Blokir mutlak pengubahan role akun sendiri
+    if (id && currentUserId && String(id) === String(currentUserId)) {
+      throw new Error("Tindakan ditolak: Anda tidak dapat mengubah role akun Anda sendiri demi integritas sistem!");
+    }
+
+    // 3. Blokir mutlak pengubahan role dosen
+    if (role === 'dosen') {
+      throw new Error("Tindakan ditolak: Role dosen merupakan jabatan institusional dan tidak dapat diubah.");
+    }
+
+    if (role !== 'mahasiswa' && role !== 'admin') {
+      throw new Error("Role tidak valid: Hanya role 'mahasiswa' dan 'admin' yang dapat ditoggle.");
+    }
+
+    // 4. Panggil RPC di database
     try {
       const { data, error } = await supabase.rpc('set_user_role', { p_user_id: id, p_new_role: role });
       if (!error) return true;
+      if (error) {
+        throw new Error(error.message);
+      }
     } catch (e) {
+      if (e.message && (e.message.includes('Tindakan') || e.message.includes('Akses ditolak') || e.message.includes('Role tidak valid'))) {
+        throw e;
+      }
       console.warn("RPC set_user_role error, falling back:", e);
     }
     return this.update(id, { role });
   },
 
+  async setAktif(id, aktif) {
+    const { data: { session } } = await supabase.auth.getSession();
+    const currentUserId = session?.user?.id;
+    if (id && currentUserId && String(id) === String(currentUserId) && !aktif) {
+      throw new Error("Tindakan ditolak: Anda tidak dapat menonaktifkan (suspend) akun Anda sendiri!");
+    }
+    return this.update(id, { aktif });
+  },
+
   async remove(id) {
+    const { data: { session } } = await supabase.auth.getSession();
+    const currentUserId = session?.user?.id;
+    if (id && currentUserId && String(id) === String(currentUserId)) {
+      throw new Error("Tindakan ditolak: Anda tidak dapat menghapus akun Anda sendiri!");
+    }
+
     try {
       const { data, error } = await supabase.rpc('delete_user_by_admin', { p_user_id: id });
       if (!error) return true;
+      if (error) throw new Error(error.message);
     } catch (e) {
+      if (e.message && (e.message.includes('Tindakan') || e.message.includes('Akses ditolak'))) {
+        throw e;
+      }
       console.warn("RPC delete_user_by_admin error, falling back:", e);
     }
     unwrap(await supabase.from("users").delete().eq("id", id));

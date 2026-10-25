@@ -31,8 +31,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const auth = await requireAdmin({ redirectTo: 'login.html' });
   if (!auth) return;
 
-  adminState.adminUser = auth.user;
+  adminState.adminUser = auth.user || auth.session?.user;
   adminState.adminProfile = auth.profile;
+  if (!adminState.adminUser) {
+    const { getCurrentUser, getCurrentUserProfile } = await import('../JS-Login/auth.js');
+    adminState.adminUser = await getCurrentUser();
+    if (!adminState.adminProfile) adminState.adminProfile = await getCurrentUserProfile();
+  }
 
   // Tampilkan Nama Admin / Dosen di Header
   const headerGreeting = document.querySelector('.page-header h1');
@@ -213,11 +218,17 @@ function renderUserRows(users) {
     return;
   }
 
-  const currentAdminId = adminState.adminUser?.id;
+  const currentAdminId = adminState.adminUser?.id || adminState.adminProfile?.id;
+  const currentAdminEmail = (adminState.adminUser?.email || adminState.adminProfile?.email || '').toLowerCase().trim();
+  const currentAdminNpm = (adminState.adminProfile?.npm || '').trim();
 
   userTableBody.innerHTML = users
     .map((u) => {
-      const isSelf = u.id === currentAdminId;
+      const isSelf = Boolean(
+        (currentAdminId && u.id && String(u.id) === String(currentAdminId)) ||
+        (currentAdminEmail && u.email && u.email.toLowerCase().trim() === currentAdminEmail) ||
+        (currentAdminNpm && u.npm && u.npm.trim() === currentAdminNpm)
+      );
       const isUserDosen = u.role === 'dosen';
       const isAktif = Boolean(u.aktif);
       const statusBadge = isAktif
@@ -237,13 +248,13 @@ function renderUserRows(users) {
       // Kolom Role:
       let roleHtml = '';
       if (isSelf) {
-        roleHtml = '<span class="badge" style="background: #fef3c7; color: #92400e; font-weight: bold; padding: 4px 8px; border-radius: 6px;" title="Akun yang sedang aktif"><i class="fa-solid fa-user-shield"></i> Admin (Akun Anda)</span>';
+        roleHtml = '<span class="badge" style="background: #fef3c7; color: #92400e; font-weight: bold; padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;" title="Akun Anda yang sedang aktif saat ini (Role Terkunci)"><i class="fa-solid fa-user-shield"></i> Admin (Akun Anda)</span>';
       } else if (isUserDosen) {
-        roleHtml = '<span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: bold; padding: 4px 8px; border-radius: 6px;" title="Tenaga Pengajar (Role Permanen)"><i class="fa-solid fa-chalkboard-user"></i> Dosen</span>';
+        roleHtml = '<span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: bold; padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;" title="Tenaga Pengajar (Role Institusional Permanen)"><i class="fa-solid fa-chalkboard-user"></i> Dosen</span>';
       } else if (isViewerDosen) {
-        roleHtml = `<span class="badge" style="background: #f1f5f9; color: #475569; font-weight: 500; padding: 4px 8px; border-radius: 6px;">${escapeHtml(u.role || 'mahasiswa')}</span>`;
+        roleHtml = `<span class="badge" style="background: #f1f5f9; color: #475569; font-weight: 500; padding: 4px 10px; border-radius: 6px;">${escapeHtml(u.role || 'mahasiswa')}</span>`;
       } else {
-        // Hanya role 'mahasiswa' dan 'admin' yang dapat ditoggle
+        // Hanya role 'mahasiswa' dan 'admin' untuk akun lain yang dapat ditoggle oleh Super Admin
         roleHtml = `
           <select class="role-select" data-user-id="${u.id}" style="padding: 3px 6px; border-radius: 4px; border: 1px solid #cbd5e1; font-size: 12px; font-weight: 500; cursor: pointer; background: white;">
             <option value="mahasiswa" ${u.role === 'mahasiswa' ? 'selected' : ''}>Mahasiswa</option>
@@ -255,7 +266,7 @@ function renderUserRows(users) {
       // Kolom Aksi:
       let actionHtml = '';
       if (isSelf) {
-        actionHtml = '<span style="color: #94a3b8; font-size: 12px; font-style: italic;"><i class="fa-solid fa-lock"></i> Sesi Aktif</span>';
+        actionHtml = '<span style="color: #94a3b8; font-size: 12px; font-style: italic; display: inline-flex; align-items: center; gap: 5px;"><i class="fa-solid fa-lock"></i> Sesi Aktif</span>';
       } else if (isViewerDosen) {
         actionHtml = '<span style="color: #94a3b8; font-size: 12px; font-style: italic;">Khusus Admin</span>';
       } else {
@@ -286,7 +297,6 @@ function renderUserRows(users) {
     })
     .join('');
 
-  
   // Event handler untuk ubah role pengguna (FR-08: set_user_role)
   userTableBody.querySelectorAll('.role-select').forEach((select) => {
     select.addEventListener('change', async () => {
@@ -295,11 +305,34 @@ function renderUserRows(users) {
       const user = adminState.allUsers.find((u) => u.id === userId);
       if (!user) return;
 
-      if (confirm(`Ubah hak akses pengguna "${user.nama}" menjadi role "${newRole}"?`)) {
+      const currentAdminId = adminState.adminUser?.id || adminState.adminProfile?.id;
+      const currentAdminEmail = (adminState.adminUser?.email || adminState.adminProfile?.email || '').toLowerCase().trim();
+      const currentAdminNpm = (adminState.adminProfile?.npm || '').trim();
+
+      const isAttemptingSelf = Boolean(
+        (currentAdminId && userId === currentAdminId) ||
+        (currentAdminEmail && user.email && user.email.toLowerCase().trim() === currentAdminEmail) ||
+        (currentAdminNpm && user.npm && user.npm.trim() === currentAdminNpm)
+      );
+
+      if (isAttemptingSelf) {
+        alert('Tindakan ditolak: Anda tidak dapat mengubah role akun Anda sendiri demi keamanan sistem!');
+        select.value = user.role || 'admin';
+        return;
+      }
+
+      if (newRole === 'dosen' || user.role === 'dosen') {
+        alert("Tindakan ditolak: Role 'dosen' bersifat institusional permanen dan tidak dapat diubah!");
+        select.value = user.role || 'mahasiswa';
+        return;
+      }
+
+      if (confirm(`Ubah hak akses pengguna "${user.nama}" menjadi role "${newRole.toUpperCase()}"?`)) {
         try {
           await usersService.setRole(userId, newRole);
           user.role = newRole;
           alert(`Role "${user.nama}" berhasil diubah menjadi "${newRole}".`);
+          await loadUserManagementTable();
         } catch (err) {
           alert('Gagal mengubah role: ' + err.message);
           select.value = user.role || 'mahasiswa';
@@ -317,6 +350,21 @@ function renderUserRows(users) {
       const userId = row.getAttribute('data-user-id');
       const user = adminState.allUsers.find((u) => u.id === userId);
       if (!user) return;
+
+      const currentAdminId = adminState.adminUser?.id || adminState.adminProfile?.id;
+      const currentAdminEmail = (adminState.adminUser?.email || adminState.adminProfile?.email || '').toLowerCase().trim();
+      const currentAdminNpm = (adminState.adminProfile?.npm || '').trim();
+
+      const isSelf = Boolean(
+        (currentAdminId && userId === currentAdminId) ||
+        (currentAdminEmail && user.email && user.email.toLowerCase().trim() === currentAdminEmail) ||
+        (currentAdminNpm && user.npm && user.npm.trim() === currentAdminNpm)
+      );
+
+      if (isSelf) {
+        alert('Tindakan ditolak: Anda tidak dapat menonaktifkan (suspend) akun Anda sendiri!');
+        return;
+      }
 
       const newStatus = !user.aktif;
       const aksiText = newStatus ? 'mengaktifkan kembali' : 'menonaktifkan (suspend)';
@@ -344,6 +392,26 @@ function renderUserRows(users) {
       const userId = row.getAttribute('data-user-id');
       const user = adminState.allUsers.find((u) => u.id === userId);
       if (!user) return;
+
+      const currentAdminId = adminState.adminUser?.id || adminState.adminProfile?.id;
+      const currentAdminEmail = (adminState.adminUser?.email || adminState.adminProfile?.email || '').toLowerCase().trim();
+      const currentAdminNpm = (adminState.adminProfile?.npm || '').trim();
+
+      const isSelf = Boolean(
+        (currentAdminId && userId === currentAdminId) ||
+        (currentAdminEmail && user.email && user.email.toLowerCase().trim() === currentAdminEmail) ||
+        (currentAdminNpm && user.npm && user.npm.trim() === currentAdminNpm)
+      );
+
+      if (isSelf) {
+        alert('Tindakan ditolak: Anda tidak dapat menghapus akun Anda sendiri!');
+        return;
+      }
+
+      if (user.role === 'dosen') {
+        alert('Tindakan ditolak: Akun dosen merupakan staf resmi kampus dan tidak dapat dihapus sembarangan.');
+        return;
+      }
 
       if (confirm(`PERINGATAN: Hapus permanen akun pengguna "${user.nama}" (${user.email})?`)) {
         try {

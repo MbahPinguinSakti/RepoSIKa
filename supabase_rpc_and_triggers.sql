@@ -200,6 +200,16 @@ AS $$
 BEGIN
   -- Jika kolom role mencoba diubah
   IF NEW.role IS DISTINCT FROM OLD.role THEN
+    -- Cegah siapapun mengubah role akun dirinya sendiri
+    IF auth.uid() = OLD.id THEN
+      RAISE EXCEPTION 'Akses ditolak: Anda tidak dapat mengubah role akun Anda sendiri demi integritas sistem!';
+    END IF;
+
+    -- Cegah pengubahan role ke atau dari dosen
+    IF NEW.role = 'dosen' OR OLD.role = 'dosen' THEN
+      RAISE EXCEPTION 'Akses ditolak: Role dosen bersifat institusional permanen dan tidak dapat diubah!';
+    END IF;
+
     -- Jika yang menjalankan kueri adalah user biasa via client API
     IF auth.role() = 'authenticated' AND NOT public.is_admin() THEN
       RAISE EXCEPTION 'Akses ditolak: Anda tidak memiliki izin untuk mengubah role akun!';

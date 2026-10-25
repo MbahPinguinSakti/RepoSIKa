@@ -370,7 +370,7 @@ export async function requireAuth({ redirectTo = CONFIG.PAGES.LOGIN } = {}) {
     return null;
   }
 
-  return { session, profile };
+  return { session, profile, user: session.user };
 }
 
 // Guard untuk halaman Admin
