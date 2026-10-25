@@ -1,0 +1,744 @@
+/* ========================================
+   1. TAB RIWAYAT DAN FAVORIT
+======================================== */
+
+/* Radio untuk mengatur tab.
+   Disembunyikan secara visual. */
+.materi-tab-radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+/* Tempat dua tombol tab */
+.materi-tabs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: -4px 0 18px;
+}
+
+/* Tampilan tombol tab */
+.materi-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  min-height: 40px;
+  padding: 9px 19px;
+
+  border-radius: 10px;
+  border: 1px solid var(--line);
+
+  background: var(--paper);
+  color: var(--ink);
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.materi-tab-btn i {
+  font-size: 14px;
+}
+
+.materi-tab-btn:hover {
+  border-color: var(--olive);
+}
+
+/* Warna tab Riwayat saat dipilih */
+#tab-riwayat:checked ~ .materi-tabs
+.materi-tab-btn[for="tab-riwayat"] {
+  background: var(--olive);
+  border-color: var(--olive);
+  color: #fff;
+}
+
+/* Warna tab Favorit saat dipilih */
+#tab-favorit:checked ~ .materi-tabs
+.materi-tab-btn[for="tab-favorit"] {
+  background: var(--olive);
+  border-color: var(--olive);
+  color: #fff;
+}
+
+/* Warna teks tab aktif pada dark mode */
+body:has(#theme-dark:checked)
+#tab-riwayat:checked ~ .materi-tabs
+.materi-tab-btn[for="tab-riwayat"],
+
+body:has(#theme-dark:checked)
+#tab-favorit:checked ~ .materi-tabs
+.materi-tab-btn[for="tab-favorit"] {
+  color: #17220d;
+}
+
+/* Fokus saat navigasi dengan keyboard */
+#tab-riwayat:focus-visible ~ .materi-tabs
+.materi-tab-btn[for="tab-riwayat"],
+
+#tab-favorit:focus-visible ~ .materi-tabs
+.materi-tab-btn[for="tab-favorit"] {
+  outline: 3px solid #438bea;
+  outline-offset: 3px;
+}
+
+
+/* ========================================
+   2. HANYA SATU PANEL YANG MUNCUL
+======================================== */
+
+/* Kedua panel disembunyikan terlebih dahulu */
+.materi-panel {
+  display: none;
+}
+
+/* Jika Riwayat dipilih, tampilkan Riwayat */
+#tab-riwayat:checked ~ .panel-riwayat {
+  display: block;
+}
+
+/* Jika Favorit dipilih, tampilkan Favorit */
+#tab-favorit:checked ~ .panel-favorit {
+  display: block;
+}
+
+/* Dengan aturan ini, kedua panel
+   tidak akan muncul bersamaan. */
+
+
+/* ========================================
+   3. KOTAK UTAMA DAFTAR MATERI
+======================================== */
+
+.list-panel {
+  padding: 20px 18px 17px;
+  background: var(--paper);
+  border-radius: 19px;
+  color: var(--ink);
+}
+
+/* Header setiap panel */
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 15px;
+  margin-bottom: 17px;
+}
+
+.panel-heading-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.panel-icon {
+  color: var(--olive);
+  font-size: 26px;
+  margin-top: 2px;
+}
+
+.panel-heading h2 {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.panel-heading p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+
+/* ========================================
+   4. TOMBOL HAPUS (TAMPILAN SAJA)
+======================================== */
+
+.clear-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  flex-shrink: 0;
+
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+
+  background: var(--bg);
+  color: var(--ink);
+
+  font-size: 11px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.clear-btn i {
+  font-size: 12px;
+}
+
+.clear-btn:hover {
+  border-color: var(--olive);
+}
+
+
+/* ========================================
+   5. DAFTAR MATERI BERBENTUK BARIS
+======================================== */
+
+/* Container semua baris */
+.material-list {
+  width: 100%;
+}
+
+/* Baris materi Riwayat */
+.material-row {
+  display: grid;
+  grid-template-columns:
+    46px
+    minmax(0, 1.8fr)
+    minmax(90px, 0.65fr)
+    minmax(85px, 0.65fr)
+    123px;
+
+  align-items: center;
+  gap: 12px;
+
+  min-width: 0;
+  padding: 13px 10px;
+
+  border-bottom: 1px solid var(--line);
+
+  transition: background 0.2s ease;
+}
+
+.material-row:first-child {
+  border-top: 1px solid var(--line);
+}
+
+.material-row:hover {
+  background: rgba(141, 162, 82, 0.06);
+}
+
+/* Baris Materi Favorit tidak memiliki progress */
+.material-row.favorite-row {
+  grid-template-columns:
+    46px
+    minmax(0, 1fr)
+    minmax(100px, 0.5fr)
+    123px;
+}
+
+
+/* ========================================
+   6. IKON PDF
+======================================== */
+
+.pdf-icon {
+  display: grid;
+  place-items: center;
+
+  width: 44px;
+  height: 47px;
+
+  border-radius: 11px;
+
+  background: #fde8e8;
+  color: #d54c4c;
+}
+
+.pdf-icon i {
+  font-size: 25px;
+}
+
+/* Warna PDF di dark mode */
+body:has(#theme-dark:checked) .pdf-icon {
+  background: #5a353b;
+  color: #ffaaaa;
+}
+
+
+/* ========================================
+   7. JUDUL DAN INFORMASI MATERI
+======================================== */
+
+.material-details {
+  min-width: 0;
+}
+
+.material-details h3 {
+  margin: 0 0 4px;
+
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+
+  color: var(--ink);
+}
+
+.material-details p {
+  margin: 0;
+
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.material-details p span {
+  white-space: nowrap;
+}
+
+
+/* ========================================
+   8. TANGGAL MATERI
+======================================== */
+
+.row-date {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+  color: var(--ink);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.row-date > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.row-date i {
+  color: var(--olive);
+  font-size: 10px;
+}
+
+.row-date small {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+
+/* ========================================
+   9. PROGRESS MEMBACA
+======================================== */
+
+.row-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* Background progress */
+.progress-bar {
+  width: 100%;
+  height: 7px;
+
+  border-radius: 20px;
+  background: #e0e5d4;
+  overflow: hidden;
+}
+
+/* Progress yang sudah terbaca */
+.progress-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #788744;
+}
+
+.row-progress small {
+  align-self: flex-end;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+
+/* ========================================
+   10. TOMBOL BACA MATERI
+======================================== */
+
+.material-row .row-btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  gap: 7px;
+  justify-self: end;
+
+  min-width: 112px;
+  padding: 8px 12px;
+
+  background: var(--olive);
+  color: #fff;
+
+  border-radius: 22px;
+
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+
+  white-space: nowrap;
+  text-align: center;
+}
+
+.material-row .row-btn i {
+  font-size: 10px;
+}
+
+.material-row .row-btn:hover {
+  filter: brightness(1.1);
+}
+
+body:has(#theme-dark:checked) .material-row .row-btn {
+  color: #18240e;
+}
+
+
+/* ========================================
+   11. TOMBOL LIHAT SEMUA
+======================================== */
+
+.more-materials {
+  margin-top: 13px;
+}
+
+/* Tampilan tombol Lihat Semua */
+.more-materials summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+  width: 100%;
+
+  min-height: 41px;
+  padding: 10px 15px;
+
+  border-radius: 11px;
+  background: var(--bg);
+  color: var(--ink);
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+  list-style: none;
+}
+
+.more-materials summary::-webkit-details-marker {
+  display: none;
+}
+
+.more-materials summary:hover {
+  filter: brightness(0.97);
+}
+
+.more-materials summary i {
+  font-size: 11px;
+  transition: transform 0.2s ease;
+}
+
+/* Putar panah saat dibuka */
+.more-materials[open] summary i {
+  transform: rotate(180deg);
+}
+
+/* Daftar tambahan */
+.extra-list {
+  margin-top: 13px;
+}
+
+
+/* ========================================
+   12. CATATAN DEMO
+======================================== */
+
+.demo-note {
+  margin: 15px 5px 0;
+  color: var(--muted);
+  font-size: 10px;
+  text-align: center;
+}
+
+
+/* ========================================
+   13. RESPONSIVE LAPTOP KECIL / TABLET
+======================================== */
+
+@media (max-width: 1150px) {
+
+  /* Riwayat menjadi 3 kolom */
+  .history-row {
+    grid-template-columns:
+      46px
+      minmax(0, 1fr)
+      115px;
+    gap: 9px 12px;
+  }
+
+  .history-row .pdf-icon {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .history-row .material-details {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .history-row .row-date {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .history-row .row-progress {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .history-row .row-btn {
+    grid-column: 3;
+    grid-row: 2;
+  }
+
+  /* Favorit juga menjadi 3 kolom */
+  .material-row.favorite-row {
+    grid-template-columns:
+      46px
+      minmax(0, 1fr)
+      115px;
+    gap: 9px 12px;
+  }
+
+  .favorite-row .pdf-icon {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .favorite-row .material-details {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .favorite-row .row-date {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .favorite-row .row-btn {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+
+}
+
+
+/* ========================================
+   14. RESPONSIVE HP
+======================================== */
+
+@media (max-width: 660px) {
+
+  /* Tombol tab tetap berdampingan */
+  .materi-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .materi-tab-btn {
+    padding: 10px 8px;
+    font-size: 11px;
+    gap: 6px;
+    text-align: center;
+  }
+
+  .materi-tab-btn i {
+    font-size: 12px;
+  }
+
+  /* Panel */
+  .list-panel {
+    padding: 16px 12px;
+    border-radius: 15px;
+  }
+
+  .panel-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .panel-heading h2 {
+    font-size: 17px;
+  }
+
+  .panel-heading p {
+    font-size: 10px;
+  }
+
+  .panel-icon {
+    font-size: 21px;
+  }
+
+  .clear-btn {
+    margin-left: auto;
+    font-size: 10px;
+  }
+
+  /* Setiap materi ditampilkan dalam 2 kolom */
+  .material-row,
+  .material-row.favorite-row,
+  .history-row {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 9px 12px;
+
+    padding: 13px 5px;
+  }
+
+  /* Ikon PDF di sisi kiri */
+  .material-row .pdf-icon,
+  .history-row .pdf-icon,
+  .favorite-row .pdf-icon {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  /* Judul materi */
+  .material-row .material-details,
+  .history-row .material-details,
+  .favorite-row .material-details {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  /* Tanggal */
+  .material-row .row-date,
+  .history-row .row-date,
+  .favorite-row .row-date {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  /* Progress di bawah tanggal */
+  .history-row .row-progress {
+    grid-column: 2;
+    grid-row: 3;
+    width: 100%;
+    max-width: 180px;
+  }
+
+  /* Tombol di bawah informasi */
+  .material-row .row-btn,
+  .history-row .row-btn,
+  .favorite-row .row-btn {
+    grid-column: 2;
+    grid-row: auto;
+
+    justify-self: start;
+    align-self: start;
+
+    margin-top: 3px;
+    min-width: 110px;
+  }
+
+  .material-details h3 {
+    font-size: 12px;
+  }
+
+  .material-details p {
+    font-size: 10px;
+  }
+
+  .more-materials summary {
+    font-size: 11px;
+  }
+
+}
+
+
+/* ========================================
+   TOMBOL LIHAT SEMUA IKUT TURUN/NAIK
+======================================== */
+
+/* Saat daftar tambahan dibuka */
+.more-materials[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Materi tambahan muncul lebih dulu */
+.more-materials[open] > .extra-list {
+  order: 1;
+  margin-top: 0;
+}
+
+/* Tombol pindah ke bawah materi tambahan */
+.more-materials[open] > summary {
+  order: 2;
+}
+
+/* Panah menghadap atas saat terbuka */
+.more-materials[open] > summary i {
+  transform: rotate(180deg);
+}
+
+/* Animasi halus saat materi muncul */
+.more-materials[open] > .extra-list {
+  animation: munculMateri 0.25s ease;
+}
+
+@keyframes munculMateri {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ========================================
+   MEMPERBAIKI GARIS GANDA RIWAYAT/FAVORIT
+======================================== */
+
+/* Hilangkan garis atas pada materi tambahan */
+.more-materials .extra-list .material-row:first-child {
+  border-top: none;
+}
+
+/* Hilangkan jarak kosong antara daftar utama
+   dan daftar tambahan */
+.more-materials[open] {
+  margin-top: 0;
+  gap: 0;
+}
+
+.more-materials[open] > .extra-list {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/* Tombol Lihat Semua tetap di bagian paling bawah */
+.more-materials[open] > summary {
+  order: 2;
+  margin-top: 12px;
+}
