@@ -1,46 +1,58 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Login | RepoSIKa</title>
+
+    <!-- CSS Login -->
     <link rel="stylesheet" href="CSS/style.css">
+
+    <!-- JavaScript Login dari FE2 -->
     <script type="module" src="JS/login.js"></script>
 </head>
+
 <body>
 
-    <!-- Panel utama -->
+    <!-- =====================================
+         PANEL UTAMA
+    ====================================== -->
     <div class="page-panel">
 
-    <!-- Logo dan navigasi -->
-    <div class="top-header">
+        <!-- =====================================
+             HEADER LOGO KAMPUS
+             Navbar menu sudah dihapus
+        ====================================== -->
+        <div class="top-header">
 
-        <!-- Logo di luar navbar -->
-        <div class="navbar-logos">
-            <img src="assets/logo-unsika.png"
-                 alt="Logo UNSIKA"
-                 class="university-logo">
+            <div class="navbar-logos">
 
-            <img src="assets/logo-fasilkom.png"
-                 alt="Logo Fasilkom"
-                 class="faculty-logo">
+                <!-- Logo UNSIKA -->
+                <img
+                    src="assets/logo-unsika.png"
+                    alt="Logo UNSIKA"
+                    class="university-logo"
+                >
+
+                <!-- Logo Fasilkom -->
+                <img
+                    src="assets/logo-fasilkom.png"
+                    alt="Logo Fasilkom"
+                    class="faculty-logo"
+                >
+
+            </div>
+
         </div>
 
-        <!-- Navbar menu -->
-        <nav class="navbar">
-            <div class="navbar-links">
-                <a href="index.html">Home</a>
-                <a href="#">Services</a>
-                <a href="#">About Us</a>
-                <a href="#">Contact Us</a>
-            </div>
-        </nav>
 
-    </div>
-
-
-        <!-- Halaman Login -->
+        <!-- =====================================
+             HALAMAN LOGIN
+        ====================================== -->
         <main class="login-container">
+
             <section class="login-card">
 
                 <!-- Logo RepoSIKa -->
@@ -52,13 +64,26 @@
                 </div>
 
                 <h1>RepoSIKa</h1>
-                <h2>Welcome!</h2>
-                <p class="subtitle">Let's Login to Your Account</p>
 
-                <!-- Form Login -->
+                <h2>Welcome!</h2>
+
+                <p class="subtitle">
+                    Let's Login to Your Account
+                </p>
+
+
+                <!-- =====================================
+                     FORM LOGIN
+                ====================================== -->
+
+                <!-- Pesan dari proses Login -->
                 <div id="alert-container"></div>
+
                 <form id="loginForm">
+
+                    <!-- Email -->
                     <label for="email">Email</label>
+
                     <input
                         type="email"
                         id="email"
@@ -66,7 +91,10 @@
                         required
                     >
 
+
+                    <!-- Password -->
                     <label for="password">Password</label>
+
                     <input
                         type="password"
                         id="password"
@@ -74,31 +102,59 @@
                         required
                     >
 
-                    <a href="#" class="forgot-password">Forgot Password?</a>
+
+                    <!-- Forgot Password -->
+                    <a href="#" class="forgot-password">
+                        Forgot Password?
+                    </a>
 
 
-                    <button type="submit" class="signin-button">
+                    <!-- Tombol Login -->
+                    <button
+                        type="submit"
+                        class="signin-button"
+                    >
                         Sign In
                     </button>
+
                 </form>
 
-                <p class="divider-text">or continue with</p>
+                <!-- Link Pendaftaran -->
+    <p class="signup-text">
+    Belum punya akun?
+    <a href="signup.html">Daftar sekarang</a>
+    </p>
+                <!-- Pemisah -->
+                <p class="divider-text">
+                    or continue with
+                </p>
+
 
                 <!-- Tombol Google -->
-                <button type="button" class="google-button">
+                <button
+                    type="button"
+                    class="google-button"
+                >
                     <img
                         src="assets/logo-google.png"
                         alt="Logo Google"
                     >
+
                     Login with Google
                 </button>
 
+
                 <!-- Privacy Policy -->
                 <footer class="login-footer">
-                    <a href="#">Privacy Policy</a>
+
+                    <a href="#">
+                        Privacy Policy
+                    </a>
+
                 </footer>
 
             </section>
+
         </main>
 
     </div>
