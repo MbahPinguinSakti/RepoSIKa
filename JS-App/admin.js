@@ -47,16 +47,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Handler Tombol Logout Admin
-  const logoutBtn = document.querySelector('nav.side-footer a:has(.fa-right-from-bracket)');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      if (confirm('Keluar dari Panel Administrator?')) {
-        await signOut();
-        window.location.href = 'login.html';
-      }
-    });
-  }
+  const handleAdminLogout = async (e) => {
+    if (e) e.preventDefault();
+    if (confirm('Keluar dari Panel Administrator?')) {
+      await signOut();
+      window.location.replace('login.html?logout=true');
+    }
+  };
+
+  const logoutBtns = document.querySelectorAll('nav.side-footer a:has(.fa-right-from-bracket), nav.side-footer a[href*="login"], .btn-logout-admin');
+  logoutBtns.forEach(btn => btn.addEventListener('click', handleAdminLogout));
 
   // 3. Inisialisasi Modal Akun & Bantuan Admin
   initAdminModals();
@@ -838,7 +838,7 @@ function initAdminModals() {
     modal.querySelector('#admin-modal-logout').addEventListener('click', async () => {
       if (confirm('Keluar dari sesi Administrator?')) {
         await signOut();
-        window.location.href = 'login.html';
+        window.location.replace('login.html?logout=true');
       }
     });
   };

@@ -247,13 +247,26 @@ export async function updatePassword(newPassword, confirmPassword) {
   return { ok: true, message: 'Kata sandi berhasil diperbarui. Silakan login kembali.', data };
 }
 
-// 6. Keluar Akun (Sign Out)
+// 6. Keluar Akun (Sign Out) - Pembersihan Menyeluruh (Anti-Looping)
 export async function signOut() {
   try {
+    // 1. Bersihkan seluruh cache aplikasi dan auth tokens di localStorage & sessionStorage
     sessionStorage.clear();
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const key = localStorage.key(i);
+      if (key && (key.startsWith('sb-') || key.includes('auth') || key.includes('token') || key.startsWith('reposika_'))) {
+        localStorage.removeItem(key);
+      }
+    }
   } catch (_) {}
-  const { error } = await supabase.auth.signOut();
-  if (error) return { ok: false, message: getReadableErrorMessage(error), data: null };
+
+  try {
+    // 2. Beritahu Supabase client untuk signOut lokal & global
+    await supabase.auth.signOut({ scope: 'local' });
+  } catch (e) {
+    console.warn('[SignOut] Warning:', e);
+  }
+
   return { ok: true, message: 'Berhasil keluar.', data: null };
 }
 

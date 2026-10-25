@@ -153,16 +153,18 @@ async function initUserSession() {
     }
   }
 
-  // Handler Tombol Logout
-  const logoutLinks = document.querySelectorAll('a[href="login.html"], .sidebar-options span:has(.fa-right-from-bracket), .side-bottom-link:has(.fa-right-from-bracket)');
+  // Handler Tombol Logout Pengguna
+  const handleUserLogout = async (e) => {
+    if (e) e.preventDefault();
+    if (confirm('Apakah Anda yakin ingin keluar dari akun?')) {
+      await signOut();
+      window.location.replace('login.html?logout=true');
+    }
+  };
+
+  const logoutLinks = document.querySelectorAll('a[href*="login"], .sidebar-options span:has(.fa-right-from-bracket), .side-bottom-link:has(.fa-right-from-bracket), .btn-logout');
   logoutLinks.forEach((link) => {
-    link.addEventListener('click', async (e) => {
-      e.preventDefault();
-      if (confirm('Apakah Anda yakin ingin keluar dari akun?')) {
-        await signOut();
-        window.location.href = 'login.html';
-      }
-    });
+    link.addEventListener('click', handleUserLogout);
   });
 }
 
@@ -1045,7 +1047,7 @@ function initUserModals() {
     m.querySelector('.btn-logout-modal').onclick = async () => {
       if (confirm('Apakah Anda yakin ingin keluar dari akun?')) {
         await signOut();
-        window.location.href = 'login.html';
+        window.location.replace('login.html?logout=true');
       }
     };
   };

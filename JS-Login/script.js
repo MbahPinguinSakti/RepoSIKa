@@ -36,21 +36,32 @@ function ensureAlertContainer(referenceElement) {
 // ==========================================
 // 1. LOGIC HALAMAN LOGIN
 // ==========================================
-function initLoginForm() {
+async function initLoginForm() {
   // Kompatibilitas ganda: id 'form-login' (standar) atau 'loginForm' (Kayna)
   const formLogin = document.getElementById('form-login') || document.getElementById('loginForm');
   if (!formLogin) return;
 
   ensureAlertContainer(formLogin);
 
-  // Jika sudah login, langsung alihkan sesuai role / returnUrl
-  redirectIfLoggedIn();
-
-  // Tampilkan pesan jika user ditendang karena akun dinonaktifkan
   const urlParams = new URLSearchParams(window.location.search);
+
+  // 1. Tangani jika pengguna baru saja logout (?logout=true atau ?action=logout)
+  if (urlParams.get('logout') === 'true' || urlParams.get('action') === 'logout') {
+    // Paksa signOut bersih & pastikan semua token terbakar habis
+    await signOut();
+    showAlert('Anda telah berhasil keluar dari akun.', 'info');
+    // Hapus parameter logout dari URL agar bersih tanpa reload
+    window.history.replaceState({}, document.title, window.location.pathname);
+    return; // PENTING: BERHENTI DI SINI! JANGAN jalankan redirectIfLoggedIn()!
+  }
+
+  // 2. Tampilkan pesan jika user ditendang karena akun dinonaktifkan
   if (urlParams.get('error') === 'deactivated') {
     showAlert('Akun Anda telah dinonaktifkan oleh pihak kampus. Hubungi Administrator Perpustakaan.', 'error');
   }
+
+  // 3. Jika bukan aksi logout, periksa apakah pengguna memiliki sesi aktif
+  await redirectIfLoggedIn();
 
   // Kompatibilitas elemen input (input-email / email, input-password / password)
   const emailInput =
