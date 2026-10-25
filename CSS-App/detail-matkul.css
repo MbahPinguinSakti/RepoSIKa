@@ -70,7 +70,7 @@ button {
       rgba(223, 230, 207, .60),
       rgba(223, 230, 207, .68)
     ),
-    url("assets/perpustakaan.png.jpeg")
+    url("../assets/perpustakaan.png.jpeg")
     center / cover no-repeat;
 
   filter: blur(5px);
@@ -1293,7 +1293,7 @@ body.dark .sidebar::before {
       rgba(30, 42, 57, 0.85),
       rgba(30, 42, 57, 0.90)
     ),
-    url("assets/perpustakaan.png.jpeg")
+    url("../assets/perpustakaan.png.jpeg")
     center / cover no-repeat;
 }
 

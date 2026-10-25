@@ -103,13 +103,13 @@ body:has(.theme-check:checked), body.dark-theme, body[data-theme="dark"] {
     flex-direction:column;
     gap:32px;
     padding:30px 22px;
-    background:linear-gradient(#e2e6d7c9,#e2e6d7dd),url('assets/perpustakaan.png.jpeg') center/cover;
+    background:linear-gradient(#e2e6d7c9,#e2e6d7dd),url('../assets/perpustakaan.png.jpeg') center/cover;
     overflow-y:auto
 }
 
 
 body:has(.theme-check:checked) .sidebar {
-    background:linear-gradient(#1b2b3de9,#1b2b3df0),url('assets/perpustakaan.png.jpeg') center/cover
+    background:linear-gradient(#1b2b3de9,#1b2b3df0),url('../assets/perpustakaan.png.jpeg') center/cover
 }
 
 

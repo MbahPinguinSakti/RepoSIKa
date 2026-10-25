@@ -69,8 +69,8 @@ RepoSIKa/
 │   ├── db-services.js          # Layanan Database Supabase (Users, Matkul, Materi, Favorit, Riwayat)
 │   └── alur-project.js         # State Management Alur Proyek
 │
-├── supabase_rpc_and_triggers.sql # Skrip Backend PostgreSQL (Triggers, RPC Functions, Policies)
-├── database_schema_sync_prd.sql  # Compatibility Views PRD & Row Level Security
+├── database/supabase_rpc_and_triggers.sql # Skrip Backend PostgreSQL (Triggers, RPC Functions, Policies)
+├── database/database_schema_sync_prd.sql  # Compatibility Views PRD & Row Level Security
 ├── vercel.json                 # Konfigurasi Deployment Vercel (Clean URLs)
 └── .gitignore                  # Perlindungan Environment Variables & Rahasia
 ```

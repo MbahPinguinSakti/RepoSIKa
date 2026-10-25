@@ -106,7 +106,7 @@ input:focus-visible {
       var(--sidebar-overlay),
       var(--sidebar-overlay)
     ),
-    url('assets/perpustakaan.png.jpeg') center/cover no-repeat;
+    url('../assets/perpustakaan.png.jpeg') center/cover no-repeat;
   border-right: 1px solid #78834d30;
   transition: width 0.25s ease, padding 0.25s ease;
 }
