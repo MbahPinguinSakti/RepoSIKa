@@ -151,10 +151,10 @@
       </span>
 
       <!-- Tombol Logout -->
-      <a class="side-bottom-link" href="login.html">
-        <i class="fa-solid fa-right-from-bracket"></i>
-        <span class="nav-text">Logout</span>
-      </a>
+<a class="side-bottom-link" href="login.html" onclick="localStorage.clear();">
+  <i class="fa-solid fa-right-from-bracket"></i>
+  <span class="nav-text">Logout</span>
+</a>
 
       <!-- Menu Bantuan -->
       <span class="side-bottom-link disabled-link help-link">
@@ -181,7 +181,7 @@
 
       <!-- 8.1 Sapaan Pengguna -->
       <div class="page-heading">
-        <h1>Welcome Back, Azra!</h1>
+       <h1>Welcome Back, <span id="welcome-name">Azra</span>!</h1>
         <p>Explore your courses and keep progressing today</p>
       </div>
 
@@ -469,197 +469,7 @@
          12. DAFTAR KARTU SEMUA MATERI
     ========================================= -->
     <section class="overview-grid" aria-label="Ringkasan semua materi">
-
-
-      <!-- 12.1 Materi Konsep Sistem Informasi -->
-      <article class="overview-card card">
-
-        <div class="course-cover">
-
-          <div class="cover-illustration">
-            <i class="fa-solid fa-laptop-code" aria-hidden="true"></i>
-          </div>
-
-          <span class="cover-label">
-            KONSEP<br>
-            SISTEM<br>
-            INFORMASI
-          </span>
-
-        </div>
-
-        <span class="material-type">
-          <i class="fa-solid fa-book"></i>
-          Materi
-        </span>
-
-        <h3>Konsep Sistem Informasi</h3>
-
-        <div class="overview-footer">
-          <span>Not started</span>
-          <a class="btn" href="#tahun-ajaran">Start</a>
-        </div>
-
-      </article>
-
-
-      <!-- 12.2 Materi Algoritma dan Dasar Pemrograman -->
-      <article class="overview-card card">
-
-        <div class="course-cover">
-
-          <div class="cover-illustration">
-            <i class="fa-solid fa-code" aria-hidden="true"></i>
-          </div>
-
-          <span class="cover-label">
-            ALGORITMA<br>
-            DAN DASAR<br>
-            PEMROGRAMAN
-          </span>
-
-        </div>
-
-        <span class="material-type">
-          <i class="fa-solid fa-book"></i>
-          Materi
-        </span>
-
-        <h3>Algoritma dan Dasar Pemrograman</h3>
-
-        <div class="overview-footer">
-          <span>Progress: 80%</span>
-          <a class="btn" href="#tahun-ajaran">Continue</a>
-        </div>
-
-      </article>
-
-
-      <!-- 12.3 Materi Transformasi Digital -->
-      <article class="overview-card card">
-
-        <div class="course-cover">
-
-          <div class="cover-illustration">
-            <i class="fa-solid fa-laptop-code" aria-hidden="true"></i>
-          </div>
-
-          <span class="cover-label">
-            TRANSFORMASI<br>
-            DIGITAL
-          </span>
-
-        </div>
-
-        <span class="material-type">
-          <i class="fa-solid fa-book"></i>
-          Materi
-        </span>
-
-        <h3>Transformasi Digital</h3>
-
-        <div class="overview-footer">
-          <span>Not started</span>
-          <a class="btn" href="#tahun-ajaran">Start</a>
-        </div>
-
-      </article>
-
-
-      <!-- 12.4 Materi Pengantar Teknologi Informasi -->
-      <article class="overview-card card">
-
-        <div class="course-cover">
-
-          <div class="cover-illustration">
-            <i class="fa-solid fa-desktop" aria-hidden="true"></i>
-          </div>
-
-          <span class="cover-label">
-            PENGANTAR<br>
-            TEKNOLOGI<br>
-            INFORMASI
-          </span>
-
-        </div>
-
-        <span class="material-type">
-          <i class="fa-solid fa-book"></i>
-          Materi
-        </span>
-
-        <h3>Pengantar Teknologi Informasi</h3>
-
-        <div class="overview-footer">
-          <span>Not started</span>
-          <a class="btn" href="#tahun-ajaran">Start</a>
-        </div>
-
-      </article>
-
-
-      <!-- 12.5 Materi Matematika Diskrit -->
-      <article class="overview-card card">
-
-        <div class="course-cover cover-green">
-
-          <div class="cover-illustration">
-            <i class="fa-solid fa-calculator" aria-hidden="true"></i>
-          </div>
-
-          <span class="cover-label">
-            MATEMATIKA<br>
-            DISKRIT
-          </span>
-
-        </div>
-
-        <span class="material-type">
-          <i class="fa-solid fa-book"></i>
-          Materi
-        </span>
-
-        <h3>Matematika Diskrit</h3>
-
-        <div class="overview-footer">
-          <span>Progress: 50%</span>
-          <a class="btn" href="#tahun-ajaran">Continue</a>
-        </div>
-
-      </article>
-
-
-      <!-- 12.6 Materi Bahasa Indonesia -->
-      <article class="overview-card card">
-
-        <div class="course-cover cover-orange">
-
-          <div class="cover-illustration">
-            <i class="fa-solid fa-graduation-cap" aria-hidden="true"></i>
-          </div>
-
-          <span class="cover-label">
-            DI KELAS<br>
-            MATA KULIAH DASAR<br>
-            UMUM (MKDU)
-          </span>
-
-        </div>
-
-        <span class="material-type">
-          <i class="fa-solid fa-book"></i>
-          Materi
-        </span>
-
-        <h3>Bahasa Indonesia</h3>
-
-        <div class="overview-footer">
-          <span>Progress: 40%</span>
-          <a class="btn" href="#tahun-ajaran">Continue</a>
-        </div>
-
-      </article>
-
+      
     </section>
 
 
@@ -703,7 +513,8 @@
 
 
   </main>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script type="module" src="JS-Login/dashboard.js"></script>
 </body>
 
 </html>
