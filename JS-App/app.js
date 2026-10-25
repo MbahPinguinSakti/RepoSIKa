@@ -117,6 +117,9 @@ async function initUserSession() {
     userNameEl.textContent = `Welcome Back, ${rawName.split(' ')[0]}!`;
   }
 
+  const welcomeName = document.getElementById('welcome-name');
+  if (welcomeName) welcomeName.textContent = rawName.split(' ')[0];
+
   // Update Avatar Pengguna
   const avatarEl = document.querySelector('.avatar');
   if (avatarEl && state.profile?.nama) {
@@ -180,6 +183,7 @@ function initMotherButtonModal() {
       const tahunText = choice.textContent.trim();
       const matkulId = state.selectedMatkulId || '';
 
+      localStorage.setItem('tahun_ajaran', tahunText);
       const targetUrl = `detail-matkul.html?matkul_id=${encodeURIComponent(matkulId)}&tahun=${encodeURIComponent(tahunText)}`;
 
       // FR-02: Jika Pengunjung (Guest), tahan akses dan arahkan ke login.html
@@ -200,20 +204,35 @@ function initMotherButtonModal() {
   }
 }
 
-// Handler Search & Filter Semester
+// Handler Search, Filter (Semester, Format, Status), & Sort
 function initDashboardSearchAndFilter() {
   const searchInput = document.getElementById('dashboard-material-search') || document.querySelector('input[type="search"]');
   const filterForm = document.getElementById('dashboard-filter-form');
   const semesterRadios = document.querySelectorAll('.semester-radio, input[name="semester"]');
   const emptyNotice = document.querySelector('.filter-empty');
+  const sortRadios = document.querySelectorAll('input[name="dashboard-sort"]');
 
   const filterCards = () => {
     const keyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
 
-    // 1. Cek checkbox dari dashboard.html (semester[])
+    // 1. Cek checkbox dari dashboard.html (semester[], format[], status[])
     const checkedCheckboxes = filterForm
       ? Array.from(filterForm.querySelectorAll('input[name="semester[]"]:checked')).map((cb) => cb.value)
       : [];
+    const checkedFormats = filterForm
+      ? Array.from(filterForm.querySelectorAll('input[name="format[]"]:checked')).map((cb) => cb.value)
+      : [];
+    const checkedStatuses = filterForm
+      ? Array.from(filterForm.querySelectorAll('input[name="status[]"]:checked')).map((cb) => cb.value)
+      : [];
+
+    // Update 3 label hijau (.filter-tag) sesuai desain Mukhlas
+    const filterTags = document.querySelectorAll('.filter-tag');
+    if (filterTags.length >= 3) {
+      filterTags[0].textContent = checkedCheckboxes.length === 0 ? 'All semester' : 'Smstr: ' + checkedCheckboxes.join(', ');
+      filterTags[1].textContent = checkedFormats.length === 0 ? 'All format' : 'Format: ' + checkedFormats.join(', ');
+      filterTags[2].textContent = checkedStatuses.length === 0 ? 'All status' : 'Status: ' + checkedStatuses.join(', ').replace(/_/g, ' ');
+    }
 
     // 2. Cek radio button dari daftar-matkul.html (semester-1 s/d semester-8 atau semester-all)
     let selectedRadioSem = null;
@@ -259,6 +278,12 @@ function initDashboardSearchAndFilter() {
     if (emptyNotice) {
       emptyNotice.style.display = visibleCount === 0 ? 'block' : 'none';
     }
+
+    // Update counter pill
+    const countPill = document.querySelector('.count-pill');
+    if (countPill) {
+      countPill.textContent = visibleCount;
+    }
   };
 
   if (searchInput) searchInput.addEventListener('input', filterCards);
@@ -268,6 +293,64 @@ function initDashboardSearchAndFilter() {
   }
   semesterRadios.forEach((radio) => {
     radio.addEventListener('change', filterCards);
+  });
+
+  // Logika fitur Sort (Urutkan Materi: terbaru, terlama, nama-az)
+  sortRadios.forEach((radio) => {
+    radio.addEventListener('change', (e) => {
+      const sortValue = e.target.value;
+      if (!state.allMatkul || state.allMatkul.length === 0) return;
+
+      let sorted = [...state.allMatkul];
+      if (sortValue === 'nama-az') {
+        sorted.sort((a, b) => (a.nama || '').localeCompare(b.nama || ''));
+      } else if (sortValue === 'terlama') {
+        sorted.sort((a, b) => new Date(a.dibuat_pada || 0) - new Date(b.dibuat_pada || 0));
+      } else if (sortValue === 'terbaru') {
+        sorted.sort((a, b) => new Date(b.dibuat_pada || 0) - new Date(a.dibuat_pada || 0));
+      }
+
+      state.allMatkul = sorted;
+      const overviewGrid = document.querySelector('.overview-grid');
+      if (overviewGrid) {
+        overviewGrid.innerHTML = sorted.map((m, i) => {
+          const colors = ['', 'cover-green', 'cover-orange'];
+          const colorClass = colors[i % 3];
+          return `
+            <article class="overview-card card" data-semester="${m.semester || 1}" data-matkul-id="${m.id}">
+              <div class="course-cover ${colorClass}">
+                <div class="cover-illustration">
+                  <i class="fa-solid fa-laptop-code" aria-hidden="true"></i>
+                </div>
+                <span class="cover-label">
+                  ${escapeHtml(m.nama).toUpperCase().replace(/\s+/g, '<br>')}
+                </span>
+              </div>
+              <span class="material-type">
+                <i class="fa-solid fa-book"></i> Materi
+              </span>
+              <h3>${escapeHtml(m.nama)}</h3>
+              <div class="overview-footer">
+                <span>Semester ${m.semester || 1}</span>
+                <a class="btn btn-open-modal" href="#tahun-ajaran" data-matkul-id="${m.id}">
+                  Start <i class="fa-solid fa-arrow-right"></i>
+                </a>
+              </div>
+            </article>
+          `;
+        }).join('');
+
+        // Re-attach modal listeners
+        document.querySelectorAll('a[href="#tahun-ajaran"], .btn-open-modal').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const explicitId = btn.getAttribute('data-matkul-id') || btn.closest('[data-matkul-id]')?.getAttribute('data-matkul-id');
+            if (explicitId) state.selectedMatkulId = explicitId;
+          });
+        });
+      }
+
+      filterCards();
+    });
   });
 }
 
