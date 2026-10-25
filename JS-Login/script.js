@@ -22,26 +22,61 @@ document.addEventListener('DOMContentLoaded', () => {
   initForgotPassword();
 });
 
+// Helper agar wadah notifikasi selalu ada meskipun HTML diubah
+function ensureAlertContainer(referenceElement) {
+  let container = document.getElementById('alert-container');
+  if (!container && referenceElement && referenceElement.parentNode) {
+    container = document.createElement('div');
+    container.id = 'alert-container';
+    referenceElement.parentNode.insertBefore(container, referenceElement);
+  }
+  return container;
+}
+
 // ==========================================
 // 1. LOGIC HALAMAN LOGIN
 // ==========================================
 function initLoginForm() {
-  const formLogin = document.getElementById('form-login');
+  // Kompatibilitas ganda: id 'form-login' (standar) atau 'loginForm' (Kayna)
+  const formLogin = document.getElementById('form-login') || document.getElementById('loginForm');
   if (!formLogin) return;
+
+  ensureAlertContainer(formLogin);
 
   // Jika sudah login, langsung alihkan sesuai role / returnUrl
   redirectIfLoggedIn();
 
-  // Poin 3: Tampilkan pesan jika user ditendang karena akun dinonaktifkan
+  // Tampilkan pesan jika user ditendang karena akun dinonaktifkan
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('error') === 'deactivated') {
     showAlert('Akun Anda telah dinonaktifkan oleh pihak kampus. Hubungi Administrator Perpustakaan.', 'error');
   }
 
-  const emailInput = document.getElementById('input-email');
-  const passwordInput = document.getElementById('input-password');
-  const submitBtn = formLogin.querySelector('button[type="submit"]');
-  const googleBtn = document.getElementById('google-login-btn');
+  // Kompatibilitas elemen input (input-email / email, input-password / password)
+  const emailInput =
+    document.getElementById('input-email') ||
+    document.getElementById('email') ||
+    formLogin.querySelector('input[type="email"]');
+
+  const passwordInput =
+    document.getElementById('input-password') ||
+    document.getElementById('password') ||
+    formLogin.querySelector('input[type="password"]');
+
+  const submitBtn =
+    formLogin.querySelector('button[type="submit"]') ||
+    document.getElementById('btn-login') ||
+    formLogin.querySelector('.signin-button');
+
+  const googleBtn =
+    document.getElementById('google-login-btn') ||
+    document.querySelector('.google-button');
+
+  // Pastikan link forgot-password tidak mati (href="#")
+  const forgotPassLink = document.querySelector('a.forgot-password');
+  if (forgotPassLink && (!forgotPassLink.getAttribute('href') || forgotPassLink.getAttribute('href') === '#')) {
+    forgotPassLink.setAttribute('href', 'forgot-password.html');
+  }
 
   formLogin.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -61,7 +96,7 @@ function initLoginForm() {
       if (!result.ok) {
         showAlert(result.message, 'error');
       } else {
-        // Poin 4: Navigasi Pasca-Login (Admin -> admin.html, User -> returnUrl / index.html)
+        // Navigasi Pasca-Login (Admin -> admin.html, User -> returnUrl / index.html)
         const targetPage = resolvePostLoginRedirect(result.data?.profile);
         showAlert('Login berhasil! Mengalihkan...', 'success');
         setTimeout(() => {
@@ -102,18 +137,38 @@ function initLoginForm() {
 // 2. LOGIC HALAMAN PENDAFTARAN (SIGN UP)
 // ==========================================
 function initSignupForm() {
-  const formSignup = document.getElementById('form-signup');
+  const formSignup = document.getElementById('form-signup') || document.getElementById('signupForm');
   if (!formSignup) return;
 
+  ensureAlertContainer(formSignup);
   redirectIfLoggedIn();
 
-  const namaInput = document.getElementById('input-nama');
-  const emailInput = document.getElementById('input-email-signup');
-  const npmInput = document.getElementById('input-npm');
-  const passwordInput = document.getElementById('input-password-signup');
-  const submitBtn = formSignup.querySelector('button[type="submit"]');
+  const namaInput =
+    document.getElementById('input-nama') ||
+    document.getElementById('nama') ||
+    document.getElementById('name');
 
-  // Item E & Poin 1: Penyesuaian Dinamis Mahasiswa vs Dosen
+  const emailInput =
+    document.getElementById('input-email-signup') ||
+    document.getElementById('input-email') ||
+    document.getElementById('email') ||
+    formSignup.querySelector('input[type="email"]');
+
+  const npmInput =
+    document.getElementById('input-npm') ||
+    document.getElementById('npm');
+
+  const passwordInput =
+    document.getElementById('input-password-signup') ||
+    document.getElementById('input-password') ||
+    document.getElementById('password') ||
+    formSignup.querySelector('input[type="password"]');
+
+  const submitBtn =
+    formSignup.querySelector('button[type="submit"]') ||
+    formSignup.querySelector('.signup-button');
+
+  // Penyesuaian Dinamis Mahasiswa vs Dosen
   if (emailInput && npmInput) {
     const handleEmailInput = () => {
       const emailVal = emailInput.value.trim().toLowerCase();
@@ -182,16 +237,32 @@ function initSignupForm() {
 // 3. LOGIC LUPA PASSWORD & RECOVERY
 // ==========================================
 function initForgotPassword() {
-  const formMintaEmail = document.getElementById('form-minta-email');
-  const formPasswordBaru = document.getElementById('form-password-baru');
+  const formMintaEmail =
+    document.getElementById('form-minta-email') ||
+    document.getElementById('form-request-reset');
+
+  const formPasswordBaru =
+    document.getElementById('form-password-baru') ||
+    document.getElementById('form-update-password');
 
   if (!formMintaEmail && !formPasswordBaru) return;
 
-  const emailResetInput = document.getElementById('input-email-reset');
-  const passBaruInput = document.getElementById('input-pass-baru');
-  const passKonfirmasiInput = document.getElementById('input-pass-konfirmasi');
+  const emailResetInput =
+    document.getElementById('input-email-reset') ||
+    document.getElementById('email-reset') ||
+    formMintaEmail?.querySelector('input[type="email"]');
 
-  // Item C: Dukungan Supabase Auth PKCE event listener (Aliran standar Supabase v2)
+  const passBaruInput =
+    document.getElementById('input-pass-baru') ||
+    document.getElementById('password-baru') ||
+    formPasswordBaru?.querySelector('input[type="password"]');
+
+  const passKonfirmasiInput =
+    document.getElementById('input-pass-konfirmasi') ||
+    document.getElementById('password-konfirmasi') ||
+    formPasswordBaru?.querySelectorAll('input[type="password"]')?.[1];
+
+  // Dukungan Supabase Auth PKCE event listener (Aliran standar Supabase v2)
   supabase.auth.onAuthStateChange((event) => {
     if (event === 'PASSWORD_RECOVERY') {
       if (formMintaEmail) formMintaEmail.style.display = 'none';
@@ -227,7 +298,10 @@ function initForgotPassword() {
 
   // Submit minta link reset password
   if (formMintaEmail) {
-    const btnMinta = formMintaEmail.querySelector('button[type="submit"]');
+    ensureAlertContainer(formMintaEmail);
+    const btnMinta =
+      formMintaEmail.querySelector('button[type="submit"]') ||
+      document.getElementById('btn-cari');
 
     formMintaEmail.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -262,7 +336,10 @@ function initForgotPassword() {
 
   // Submit simpan password baru
   if (formPasswordBaru) {
-    const btnSimpan = formPasswordBaru.querySelector('button[type="submit"]');
+    ensureAlertContainer(formPasswordBaru);
+    const btnSimpan =
+      formPasswordBaru.querySelector('button[type="submit"]') ||
+      document.getElementById('btn-simpan-password');
 
     formPasswordBaru.addEventListener('submit', async (event) => {
       event.preventDefault();

@@ -11,10 +11,8 @@
     <!-- Panel utama -->
     <div class="page-panel">
 
-        <!-- Logo dan navigasi -->
+        <!-- Header Logo Kampus (Navbar menu dihapus agar layout responsif dan bersih) -->
         <div class="top-header">
-
-            <!-- Logo di luar navbar -->
             <div class="navbar-logos">
                 <img
                     src="assets/logo-unsika.png"
@@ -28,17 +26,6 @@
                     class="faculty-logo"
                 >
             </div>
-
-            <!-- Navbar menu -->
-            <nav class="navbar">
-                <div class="navbar-links">
-                    <a href="index.html">Home</a>
-                    <a href="#">Services</a>
-                    <a href="#">About Us</a>
-                    <a href="#">Contact Us</a>
-                </div>
-            </nav>
-
         </div>
 
         <!-- Halaman Login -->
@@ -91,11 +78,17 @@
                         Forgot Password?
                     </a>
 
-                    <button type="submit" class="signin-button">
-                     Masuk
+                    <button type="submit" class="signin-button" id="btn-login">
+                        Sign In
                     </button>
 
                 </form>
+
+                <!-- Link Pendaftaran (Posisi di bawah tombol Sign In sesuai desain baru) -->
+                <p class="signup-text">
+                    Belum punya akun?
+                    <a href="signup.html">Daftar sekarang</a>
+                </p>
 
                 <p class="divider-text">or continue with</p>
 
@@ -112,12 +105,6 @@
                     Login with Google
                 </button>
 
-                <!-- Link ke halaman pendaftaran -->
-                <p class="signup-link">
-                    Belum punya akun?
-                    <a href="signup.html">Daftar di sini</a>
-                </p>
-
                 <!-- Privacy Policy -->
                 <footer class="login-footer">
                     <a href="#">Privacy Policy</a>
@@ -128,10 +115,7 @@
 
     </div>
 
-
-
-
-    <!-- Logic autentikasi -->
+    <!-- Logic autentikasi modular -->
     <script type="module" src="JS-Login/script.js"></script>
 
 </body>
