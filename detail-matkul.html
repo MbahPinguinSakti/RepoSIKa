@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Detail Mata Kuliah - RepoSIKa</title>
+
+  <!-- Font Poppins -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  >
+
+  <!-- CSS Detail Mata Kuliah -->
+  <link rel="stylesheet" href="detail-matkul.css">
+</head>
+
+<body class="dark-theme">
+
+ <!-- ================================
+     SIDEBAR REPOSIKA
+================================ -->
+
+<aside class="sidebar">
+
+  <!-- LOGO -->
+  <a href="daftar-matkul.html#dashboard" class="brand">
+    <span class="brand-logo">
+      <img src="assets/logo-reposika.png" alt="Logo RepoSIKa">
+    </span>
+    <span>RepoSIKa</span>
+  </a>
+
+  <!-- MENU -->
+  <nav class="sidebar-menu">
+
+    <a href="daftar-matkul.html#dashboard">
+      <i class="fa-solid fa-table-cells-large"></i>
+      Dashboard
+    </a>
+
+    <a href="daftar-matkul.html#materi" class="active">
+      <i class="fa-solid fa-book"></i>
+      Semua Materi
+    </a>
+
+    <a href="daftar-matkul.html#bookmarks">
+      <i class="fa-solid fa-book-open"></i>
+      Materi Saya
+    </a>
+
+  </nav>
+
+  <!-- MENU BAWAH -->
+  <div class="sidebar-bottom">
+
+    <div class="sidebar-options">
+      <span><i class="fa-solid fa-user"></i> Profile</span>
+      <span><i class="fa-solid fa-gear"></i> Settings</span>
+      <span><i class="fa-solid fa-right-from-bracket"></i> Logout</span>
+    </div>
+
+    <span class="support">
+      <i class="fa-solid fa-circle-question"></i>
+      Help &amp; Support
+    </span>
+
+  </div>
+
+</aside>
+
+
+<!-- ================================
+     KONTEN HALAMAN DETAIL
+================================ -->
+
+<main class="main-content">
+
+  <!-- HEADER -->
+  <header class="detail-header">
+
+    <a href="daftar-matkul.html#materi" class="back-link">
+      <i class="fa-solid fa-arrow-left"></i>
+      Kembali ke Daftar Mata Kuliah
+    </a>
+
+    <div class="header-actions">
+      <span class="theme-icon">
+        <i class="fa-regular fa-moon"></i>
+      </span>
+      <span class="avatar">👩🏻</span>
+    </div>
+
+  </header>
+
+
+  <!-- ================================
+       INFORMASI MATA KULIAH
+  ================================= -->
+
+  <section class="course-summary">
+
+    <!-- COVER MATA KULIAH -->
+    <div class="summary-cover">
+      <div class="cover-illustration">
+        <i class="fa-solid fa-laptop-code"></i>
+      </div>
+
+      <span class="cover-title">
+        KONSEP<br>
+        SISTEM<br>
+        INFORMASI
+      </span>
+    </div>
+
+
+    <!-- NAMA DAN INFORMASI -->
+    <div class="course-info">
+
+      <span class="category">
+        <i class="fa-solid fa-book"></i>
+        Materi
+      </span>
+
+      <h1>Konsep Sistem Informasi</h1>
+
+      <p>
+        Fakultas Ilmu Komputer
+        <span class="separator">•</span>
+        Sistem Informasi
+      </p>
+
+      <div class="course-tags">
+        <span>
+          <i class="fa-solid fa-graduation-cap"></i>
+          Semester 1
+        </span>
+
+        <span>
+          <i class="fa-regular fa-calendar-days"></i>
+          Tahun 2026/2027
+        </span>
+      </div>
+
+    </div>
+
+
+    <!-- JUMLAH MATERI -->
+    <div class="total-material">
+
+      <i class="fa-regular fa-file-lines"></i>
+
+      <div>
+        <span>Total Materi</span>
+        <strong>12 Materi</strong>
+      </div>
+
+      <i class="fa-solid fa-chevron-right"></i>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================================
+       SEARCH DAN SORT
+  ================================= -->
+
+  <div class="material-toolbar">
+
+    <!-- SEARCH -->
+    <label class="material-search">
+
+      <span class="search-glass" aria-hidden="true"></span>
+
+      <input
+        type="search"
+        placeholder="Search materi"
+        aria-label="Cari materi"
+      >
+
+    </label>
+
+
+   <!-- URUTKAN -->
+<div class="sort-wrapper">
+
+  <span>Urutkan :</span>
+
+  <div class="sort-select-wrapper">
+
+    <select aria-label="Urutkan materi">
+      <option value="terbaru">Terbaru</option>
+      <option value="terlama">Terlama</option>
+      <option value="az">Nama A-Z</option>
+    </select>
+
+    <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+
+  </div>
+
+</div>
+  </div>
+
+
+  <!-- ================================
+       DAFTAR MATERI + PREVIEW PDF
+  ================================= -->
+
+  <div class="content-layout">
+
+
+    <!-- BAGIAN KIRI: DAFTAR MATERI -->
+    <section class="material-list" aria-label="Daftar materi">
+
+      <!-- MATERI 1 -->
+      <article class="material-row active">
+
+        <span class="pdf-icon">PDF</span>
+
+        <div class="material-info">
+          <h3>Konsep Sistem Informasi</h3>
+          <p>Pertemuan 1 • 12 Jan 2026 • 2.4 MB</p>
+        </div>
+
+        <span class="bookmark-icon">
+          <i class="fa-regular fa-bookmark"></i>
+        </span>
+
+        <button type="button" class="read-button">
+          Baca Materi
+        </button>
+
+        <i class="fa-solid fa-ellipsis-vertical more-icon"></i>
+
+      </article>
+
+
+      <!-- MATERI 2 -->
+      <article class="material-row">
+
+        <span class="pdf-icon">PDF</span>
+
+        <div class="material-info">
+          <h3>Definition And Concept Of Information Systems</h3>
+          <p>Pertemuan 2 • 19 Jan 2026 • 2.4 MB</p>
+        </div>
+
+        <span class="bookmark-icon">
+          <i class="fa-regular fa-bookmark"></i>
+        </span>
+
+        <button type="button" class="read-button">
+          Baca Materi
+        </button>
+
+        <i class="fa-solid fa-ellipsis-vertical more-icon"></i>
+
+      </article>
+
+
+      <!-- MATERI 3 -->
+      <article class="material-row">
+        <span class="pdf-icon">PDF</span>
+
+        <div class="material-info">
+          <h3>Komponen Sistem Informasi</h3>
+          <p>Pertemuan 3 • 26 Jan 2026 • 2.4 MB</p>
+        </div>
+
+        <span class="bookmark-icon">
+          <i class="fa-regular fa-bookmark"></i>
+        </span>
+
+        <button type="button" class="read-button">
+          Baca Materi
+        </button>
+
+        <i class="fa-solid fa-ellipsis-vertical more-icon"></i>
+      </article>
+
+
+      <!-- MATERI 4 -->
+      <article class="material-row">
+        <span class="pdf-icon">PDF</span>
+
+        <div class="material-info">
+          <h3>Peran Sistem Informasi</h3>
+          <p>Pertemuan 4 • 2 Feb 2026 • 2.4 MB</p>
+        </div>
+
+        <span class="bookmark-icon">
+          <i class="fa-regular fa-bookmark"></i>
+        </span>
+
+        <button type="button" class="read-button">
+          Baca Materi
+        </button>
+
+        <i class="fa-solid fa-ellipsis-vertical more-icon"></i>
+      </article>
+
+
+      <!-- MATERI 5 -->
+      <article class="material-row">
+        <span class="pdf-icon">PDF</span>
+
+        <div class="material-info">
+          <h3>Data dan Informasi</h3>
+          <p>Pertemuan 5 • 9 Feb 2026 • 2.4 MB</p>
+        </div>
+
+        <span class="bookmark-icon">
+          <i class="fa-regular fa-bookmark"></i>
+        </span>
+
+        <button type="button" class="read-button">
+          Baca Materi
+        </button>
+
+        <i class="fa-solid fa-ellipsis-vertical more-icon"></i>
+      </article>
+
+
+      <!-- MATERI 6 -->
+      <article class="material-row">
+        <span class="pdf-icon">PDF</span>
+
+        <div class="material-info">
+          <h3>Pengantar Sistem Komputer</h3>
+          <p>Pertemuan 6 • 16 Feb 2026 • 2.4 MB</p>
+        </div>
+
+        <span class="bookmark-icon">
+          <i class="fa-regular fa-bookmark"></i>
+        </span>
+
+        <button type="button" class="read-button">
+          Baca Materi
+        </button>
+
+        <i class="fa-solid fa-ellipsis-vertical more-icon"></i>
+      </article>
+
+
+      <!-- MATERI 7 -->
+      <article class="material-row">
+        <span class="pdf-icon">PDF</span>
+
+        <div class="material-info">
+          <h3>Sistem Informasi dalam Organisasi</h3>
+          <p>Pertemuan 7 • 23 Feb 2026 • 2.4 MB</p>
+        </div>
+
+        <span class="bookmark-icon">
+          <i class="fa-regular fa-bookmark"></i>
+        </span>
+
+        <button type="button" class="read-button">
+          Baca Materi
+        </button>
+
+        <i class="fa-solid fa-ellipsis-vertical more-icon"></i>
+      </article>
+
+
+      <!-- MATERI 8 -->
+      <article class="material-row">
+        <span class="pdf-icon">PDF</span>
+
+        <div class="material-info">
+          <h3>Proses Bisnis</h3>
+          <p>Pertemuan 8 • 2 Mar 2026 • 2.4 MB</p>
+        </div>
+
+        <span class="bookmark-icon">
+          <i class="fa-regular fa-bookmark"></i>
+        </span>
+
+        <button type="button" class="read-button">
+          Baca Materi
+        </button>
+
+        <i class="fa-solid fa-ellipsis-vertical more-icon"></i>
+      </article>
+
+
+      <!-- MATERI 9 -->
+      <article class="material-row">
+        <span class="pdf-icon">PDF</span>
+
+        <div class="material-info">
+          <h3>Manajemen Sistem Informasi</h3>
+          <p>Pertemuan 9 • 9 Mar 2026 • 2.4 MB</p>
+        </div>
+
+        <span class="bookmark-icon">
+          <i class="fa-regular fa-bookmark"></i>
+        </span>
+
+        <button type="button" class="read-button">
+          Baca Materi
+        </button>
+
+        <i class="fa-solid fa-ellipsis-vertical more-icon"></i>
+      </article>
+
+
+      <!-- MATERI 10 -->
+      <article class="material-row">
+        <span class="pdf-icon">PDF</span>
+
+        <div class="material-info">
+          <h3>Keamanan Sistem Informasi</h3>
+          <p>Pertemuan 10 • 16 Mar 2026 • 2.4 MB</p>
+        </div>
+
+        <span class="bookmark-icon">
+          <i class="fa-regular fa-bookmark"></i>
+        </span>
+
+        <button type="button" class="read-button">
+          Baca Materi
+        </button>
+
+        <i class="fa-solid fa-ellipsis-vertical more-icon"></i>
+      </article>
+
+
+      <!-- MATERI 11 -->
+      <article class="material-row">
+        <span class="pdf-icon">PDF</span>
+
+        <div class="material-info">
+          <h3>Pengembangan Sistem Informasi</h3>
+          <p>Pertemuan 11 • 23 Mar 2026 • 2.4 MB</p>
+        </div>
+
+        <span class="bookmark-icon">
+          <i class="fa-regular fa-bookmark"></i>
+        </span>
+
+        <button type="button" class="read-button">
+          Baca Materi
+        </button>
+
+        <i class="fa-solid fa-ellipsis-vertical more-icon"></i>
+      </article>
+
+
+      <!-- MATERI 12 -->
+      <article class="material-row">
+        <span class="pdf-icon">PDF</span>
+
+        <div class="material-info">
+          <h3>Evaluasi Sistem Informasi</h3>
+          <p>Pertemuan 12 • 30 Mar 2026 • 2.4 MB</p>
+        </div>
+
+        <span class="bookmark-icon">
+          <i class="fa-regular fa-bookmark"></i>
+        </span>
+
+        <button type="button" class="read-button">
+          Baca Materi
+        </button>
+
+        <i class="fa-solid fa-ellipsis-vertical more-icon"></i>
+      </article>
+
+    </section>
+
+
+
+    <!-- BAGIAN KANAN: PREVIEW PDF -->
+    <aside class="preview-panel">
+
+      <!-- JUDUL FILE -->
+      <div class="preview-header">
+
+        <div>
+          <h2>Konsep Sistem Informasi</h2>
+          <p>Pertemuan 1 • 12 Jan 2026 • 2.4 MB</p>
+        </div>
+
+        <div class="preview-actions">
+          <i class="fa-regular fa-bookmark"></i>
+          <i class="fa-solid fa-ellipsis-vertical"></i>
+        </div>
+
+      </div>
+
+
+      <!-- SIMULASI PDF VIEWER -->
+      <div class="pdf-viewer">
+
+        <div class="pdf-toolbar">
+          <span>1 / 15</span>
+          <span>− &nbsp; 100% &nbsp; +</span>
+          <span>
+            <i class="fa-solid fa-expand"></i>
+          </span>
+        </div>
+
+
+        <div class="pdf-document">
+
+          <div class="pdf-paper">
+
+            <span class="watermark watermark-one">
+              RepoSIKa - Preview Materi
+            </span>
+
+            <span class="watermark watermark-two">
+              RepoSIKa - Preview Materi
+            </span>
+
+            <div class="paper-content">
+
+              <h2>Algoritma dan<br>Struktur Data</h2>
+
+              <span class="paper-line"></span>
+
+              <h4>Pertemuan 1</h4>
+
+              <p>
+                Pengenalan Algoritma, Flowchart,
+                dan Pseudocode
+              </p>
+
+              <div class="paper-art">
+                <i class="fa-solid fa-laptop-code"></i>
+              </div>
+
+              <div class="paper-footer">
+                <strong>Program Studi Sistem Informasi</strong>
+                <span>Fakultas Ilmu Komputer</span>
+                <span>Universitas Singaperbangsa Karawang</span>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- KETERANGAN KEAMANAN -->
+      <div class="security-notice">
+
+        <i class="fa-solid fa-circle-info"></i>
+
+        <p>
+          Materi hanya dapat diakses secara online
+          dan tidak dapat diunduh atau dicetak untuk
+          menjaga keamanan konten.
+        </p>
+
+      </div>
+
+    </aside>
+
+  </div>
+
+</main>
+
+</body>
+
+</html>
