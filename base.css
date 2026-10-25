@@ -1,0 +1,868 @@
+/* ========================================
+   1. VARIABEL WARNA DAN UKURAN
+======================================== */
+:root {
+  --bg: #e3ec95;
+  --ink: #34401e;
+  --muted: #657249;
+  --paper: #fff;
+  --olive: #788744;
+  --line: #e1e7ce;
+  --sidebar-overlay: rgba(221, 227, 210, 0.76);
+  --sidebar-width: 248px;
+}
+
+/* Warna saat mode gelap aktif */
+body:has(#theme-dark:checked) {
+  --bg: #111827;
+  --ink: #f1f5e9;
+  --muted: #b9c99b;
+  --paper: #253347;
+  --olive: #a6bb57;
+  --line: #415169;
+  --sidebar-overlay: rgba(18, 30, 43, 0.82);
+}
+
+/* Ukuran sidebar saat diperkecil */
+body:has(#sidebar-mini:checked) {
+  --sidebar-width: 82px;
+}
+
+
+/* ========================================
+   2. PENGATURAN DASAR HALAMAN
+======================================== */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: Poppins, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* Mengatur tampilan link dan elemen form */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+summary {
+  font: inherit;
+}
+
+a,
+button,
+summary,
+label {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Efek fokus untuk navigasi keyboard */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+label:focus-visible,
+input:focus-visible {
+  outline: 3px solid #438bea;
+  outline-offset: 3px;
+}
+
+/* Menyembunyikan checkbox secara visual */
+.state-input,
+.star-check,
+.semester-radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+}
+
+
+/* ========================================
+   3. SIDEBAR DAN GAMBAR LATAR
+======================================== */
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 20;
+  width: var(--sidebar-width);
+  height: 100vh;
+  padding: 28px 17px 25px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background:
+    linear-gradient(
+      var(--sidebar-overlay),
+      var(--sidebar-overlay)
+    ),
+    url('assets/perpustakaan.png.jpeg') center/cover no-repeat;
+  border-right: 1px solid #78834d30;
+  transition: width 0.25s ease, padding 0.25s ease;
+}
+
+
+/* ========================================
+   4. LOGO DAN NAMA REPOSIKA
+======================================== */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.brand-logo {
+  width: 58px;
+  height: 58px;
+  min-width: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 17px;
+  background: #f4f5e5;
+  overflow: hidden;
+}
+
+.brand-logo img {
+  width: 94%;
+  height: 94%;
+  object-fit: contain;
+}
+
+.brand-name {
+  overflow: hidden;
+}
+
+
+/* ========================================
+   5. JUDUL MENU DAN TOMBOL SIDEBAR
+======================================== */
+.menu-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 55px 11px 10px;
+}
+
+.menu-heading .menu-title {
+  font-size: 11px;
+  letter-spacing: 1.4px;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+/* Tombol untuk mengecilkan sidebar */
+.sidebar-toggle {
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: #f5f7e1b0;
+}
+
+.sidebar-toggle:hover {
+  background: #d6e65c;
+  color: #34401e;
+}
+
+/* Ikon panah sidebar */
+.sidebar-toggle .open-icon {
+  display: none;
+}
+
+
+/* ========================================
+   6. MENU NAVIGASI SIDEBAR
+======================================== */
+.side-nav {
+  display: grid;
+  gap: 5px;
+}
+
+/* Tampilan link navigasi */
+.nav-link,
+.side-bottom-link {
+  min-height: 41px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 10px 14px;
+  border-radius: 22px;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Ikon pada menu */
+.nav-link i,
+.side-bottom-link i {
+  width: 18px;
+  font-size: 15px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Efek saat menu disentuh atau diarahkan */
+.nav-link:hover,
+.side-bottom-link:hover {
+  background: #c4d96c55;
+}
+
+/* Tampilan menu yang sedang aktif */
+.nav-link.active {
+  background: linear-gradient(90deg, #f8f9e9, #d6e642);
+  color: #34401e;
+  font-weight: 600;
+}
+
+
+/* ========================================
+   7. MENU BAGIAN BAWAH SIDEBAR
+======================================== */
+.sidebar-bottom {
+  margin-top: auto;
+  display: grid;
+  gap: 6px;
+}
+
+.sidebar-bottom .help-link {
+  margin-top: 42px;
+}
+
+.side-bottom-link {
+  font-size: 13px;
+}
+
+/* Tampilan menu yang belum aktif */
+.disabled-link {
+  cursor: default;
+  opacity: 0.8;
+}
+
+
+/* ========================================
+   8. SIDEBAR SAAT DIPERKECIL
+======================================== */
+/* Mengatur padding dan posisi logo */
+body:has(#sidebar-mini:checked) .sidebar {
+  padding-inline: 12px;
+}
+
+body:has(#sidebar-mini:checked) .brand {
+  justify-content: center;
+}
+
+/* Menyembunyikan tulisan menu */
+body:has(#sidebar-mini:checked) .brand-name,
+body:has(#sidebar-mini:checked) .menu-title,
+body:has(#sidebar-mini:checked) .nav-text {
+  display: none;
+}
+
+/* Mengatur posisi tombol sidebar */
+body:has(#sidebar-mini:checked) .menu-heading {
+  justify-content: center;
+  margin-inline: 0;
+}
+
+/* Mengganti ikon panah */
+body:has(#sidebar-mini:checked) .sidebar-toggle .close-icon {
+  display: none;
+}
+
+body:has(#sidebar-mini:checked) .sidebar-toggle .open-icon {
+  display: inline;
+}
+
+/* Memusatkan ikon navigasi */
+body:has(#sidebar-mini:checked) .nav-link,
+body:has(#sidebar-mini:checked) .side-bottom-link {
+  justify-content: center;
+  gap: 0;
+  padding-inline: 0;
+}
+
+body:has(#sidebar-mini:checked) .nav-link i,
+body:has(#sidebar-mini:checked) .side-bottom-link i {
+  width: auto;
+  font-size: 18px;
+}
+
+
+/* ========================================
+   9. KONTAINER KONTEN UTAMA
+======================================== */
+.main-content {
+  min-height: 100vh;
+  margin-left: var(--sidebar-width);
+  padding: 38px 35px 60px;
+  transition: margin-left 0.25s ease;
+}
+
+
+/* ========================================
+   10. HEADER HALAMAN
+======================================== */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+/* Judul dan deskripsi halaman */
+.page-heading h1 {
+  font-size: clamp(23px, 2.5vw, 31px);
+  line-height: 1.2;
+  letter-spacing: -0.7px;
+  margin: 0;
+}
+
+.page-heading p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+
+/* ========================================
+   11. TOMBOL TEMA DAN AVATAR PENGGUNA
+======================================== */
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* Tombol light mode dan dark mode */
+.theme-label {
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  width: 39px;
+  height: 39px;
+  font-size: 24px;
+}
+
+.theme-label .sun-icon {
+  display: none;
+}
+
+/* Mengganti ikon sesuai tema */
+body:has(#theme-dark:checked) .theme-label .moon-icon {
+  display: none;
+}
+
+body:has(#theme-dark:checked) .theme-label .sun-icon {
+  display: inline;
+}
+
+/* Avatar pengguna */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f4c0c4;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  overflow: hidden;
+}
+
+
+/* ========================================
+   12. TOMBOL UMUM
+======================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  border: 0;
+  border-radius: 24px;
+  padding: 8px 17px;
+  background: var(--olive);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.btn:hover {
+  filter: brightness(1.1);
+}
+
+
+/* ========================================
+   13. KARTU UMUM
+======================================== */
+.card {
+  background: var(--paper);
+  border-radius: 21px;
+}
+
+
+/* ========================================
+   14. COVER ILUSTRASI MATA KULIAH
+======================================== */
+/* Cover ilustrasi sementara untuk kartu mata kuliah */
+.course-cover {
+  display: flex;
+  height: 92px;
+  border-radius: 13px;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* Bagian ilustrasi pada cover */
+.cover-illustration {
+  position: relative;
+  flex: 0 0 58%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+/* Bentuk dekoratif pada ilustrasi */
+.cover-illustration::before {
+  content: "";
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  left: 5px;
+  top: -70px;
+  border-radius: 50%;
+  background: #1b59bd;
+}
+
+/* Ikon ilustrasi */
+.cover-illustration i {
+  position: relative;
+  font-size: 49px;
+  color: #204062;
+  text-shadow: 1px 2px white;
+}
+
+/* Tulisan pada cover */
+.cover-label {
+  flex: 1;
+  align-self: center;
+  text-align: center;
+  color: #52616a;
+  font: 700 11px/1.35 Arial, sans-serif;
+}
+
+/* Variasi warna cover */
+.cover-orange {
+  background: #d7aa86;
+}
+
+
+/* ========================================
+   15. POP-UP PILIH TAHUN AJARAN
+   UNTUK DASHBOARD DAN SEMUA MATERI
+======================================== */
+
+/* Latar belakang pop-up */
+.year-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
+
+  background: rgba(12, 20, 32, 0.65);
+  overflow-y: auto;
+}
+
+/* Pop-up muncul setelah tombol View diklik */
+.year-overlay:target {
+  display: flex;
+}
+
+/* Kotak pop-up */
+.year-dialog {
+  position: relative;
+
+  width: 100%;
+  max-width: 420px;
+  padding: 30px;
+
+  background: #ffffff;
+  color: #34401e;
+
+  border-radius: 22px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25);
+}
+
+/* Judul pop-up */
+.year-dialog h2 {
+  margin: 0 0 8px;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+/* Deskripsi pop-up */
+.year-dialog p {
+  margin: 0 0 22px;
+  font-size: 13px;
+  color: #71804b;
+}
+
+/* Tombol silang untuk menutup */
+.close-dialog {
+  position: absolute;
+  top: 12px;
+  right: 19px;
+
+  font-size: 27px;
+  color: #34401e;
+  text-decoration: none;
+  line-height: 1;
+}
+
+/* Susunan pilihan tahun ajaran */
+.year-choices {
+  display: grid;
+  gap: 10px;
+}
+
+/* Tombol setiap tahun ajaran */
+.year-choices a {
+  display: block;
+  padding: 12px;
+
+  background: #e3eea2;
+  color: #34401e;
+
+  border-radius: 11px;
+
+  text-align: center;
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  transition: background 0.2s ease;
+}
+
+.year-choices a:hover {
+  background: #d5e94f;
+}
+
+/* Responsive pop-up untuk HP */
+@media (max-width: 480px) {
+  .year-dialog {
+    padding: 25px 20px;
+  }
+
+  .year-dialog h2 {
+    font-size: 20px;
+  }
+}
+
+
+/* ========================================
+   RESPONSIVE MOBILE UNTUK SEMUA HALAMAN
+   DASHBOARD, MATERI, RIWAYAT & FAVORIT
+======================================== */
+
+@media (max-width: 660px) {
+
+  /* =====================================
+     1. SIDEBAR MENJADI HEADER ATAS
+  ===================================== */
+
+  .sidebar,
+  body:has(#sidebar-mini:checked) .sidebar {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;
+
+    width: 100%;
+    height: 76px;
+    min-height: 76px;
+
+    padding: 9px 15px;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    align-content: flex-start;
+    justify-content: space-between;
+
+    overflow: hidden;
+
+    border-right: none;
+    border-bottom: 1px solid #aab68d;
+
+    z-index: 200;
+  }
+
+
+  /* =====================================
+     2. LOGO TETAP TERLIHAT
+  ===================================== */
+
+  .brand,
+  body:has(#sidebar-mini:checked) .brand {
+    flex: 1;
+    justify-content: flex-start;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    min-width: 0;
+    font-size: 17px;
+  }
+
+  .brand-logo {
+    width: 54px;
+    height: 54px;
+    min-width: 54px;
+
+    border-radius: 14px;
+  }
+
+  .brand-name,
+  body:has(#sidebar-mini:checked) .brand-name {
+    display: inline;
+    font-size: 17px;
+  }
+
+
+  /* =====================================
+     3. TOMBOL MENU DI SEBELAH KANAN
+  ===================================== */
+
+  .menu-heading,
+  body:has(#sidebar-mini:checked) .menu-heading {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    margin: 0;
+    padding: 0;
+  }
+
+  .menu-title {
+    display: none !important;
+  }
+
+  .sidebar-toggle {
+    width: 42px;
+    height: 42px;
+
+    display: grid;
+    place-items: center;
+
+    background: #f5f7e1;
+    border-radius: 11px;
+    color: #34401e;
+  }
+
+  /* Sembunyikan panah desktop */
+  .sidebar-toggle .close-icon,
+  .sidebar-toggle .open-icon {
+    display: none !important;
+  }
+
+  /* Ikon saat menu ditutup */
+  .sidebar-toggle::before {
+    content: "☰";
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    font-weight: 400;
+  }
+
+  /* Ikon saat menu dibuka */
+  body:has(#sidebar-mini:checked)
+  .sidebar-toggle::before {
+    content: "×";
+    font-size: 30px;
+  }
+
+
+  /* =====================================
+     4. MENU DISEMBUNYIKAN SAAT AWAL
+  ===================================== */
+
+  .side-nav,
+  .sidebar-bottom {
+    display: none;
+  }
+
+
+  /* =====================================
+     5. SAAT TOMBOL MENU DIKLIK
+  ===================================== */
+
+  body:has(#sidebar-mini:checked) .sidebar {
+    height: 100vh;
+    height: 100dvh;
+
+    padding-inline: 15px;
+
+    overflow-y: auto;
+  }
+
+  /* Menampilkan menu utama */
+  body:has(#sidebar-mini:checked) .side-nav {
+    display: grid;
+
+    width: 100%;
+    flex-basis: 100%;
+
+    gap: 5px;
+    margin-top: 20px;
+  }
+
+  /* Menampilkan menu bawah */
+  body:has(#sidebar-mini:checked)
+  .sidebar-bottom {
+    display: grid;
+
+    width: 100%;
+    flex-basis: 100%;
+
+    gap: 5px;
+    margin-top: 15px;
+  }
+
+  /* Tulisan menu ditampilkan kembali */
+  body:has(#sidebar-mini:checked) .nav-text {
+    display: inline !important;
+  }
+
+  /* Posisi ikon dan teks tetap sejajar */
+  body:has(#sidebar-mini:checked) .nav-link,
+  body:has(#sidebar-mini:checked)
+  .side-bottom-link {
+    display: flex;
+
+    justify-content: flex-start;
+    align-items: center;
+
+    gap: 13px;
+    padding: 10px 14px;
+  }
+
+  body:has(#sidebar-mini:checked) .nav-link i,
+  body:has(#sidebar-mini:checked)
+  .side-bottom-link i {
+    width: 18px;
+    font-size: 16px;
+  }
+
+  .sidebar-bottom .help-link {
+    margin-top: 8px;
+  }
+
+
+  /* =====================================
+     6. KONTEN UTAMA FULL WIDTH
+  ===================================== */
+
+  .main-content,
+  body:has(#sidebar-mini:checked) .main-content {
+    width: 100%;
+    min-width: 0;
+
+    margin-left: 0;
+
+    padding: 98px 15px 35px;
+  }
+
+
+  /* =====================================
+     7. HEADER HALAMAN MOBILE
+  ===================================== */
+
+  .page-header {
+    align-items: flex-start;
+
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .page-heading {
+    min-width: 0;
+  }
+
+  .page-heading h1 {
+    font-size: 23px;
+    line-height: 1.25;
+  }
+
+  .page-heading p {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .user-actions {
+    gap: 5px;
+  }
+
+  .theme-label {
+    width: 33px;
+    height: 33px;
+    font-size: 21px;
+  }
+
+  .avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 21px;
+  }
+
+}
+
+
+/* ========================================
+   RESPONSIVE HP SANGAT KECIL
+======================================== */
+
+@media (max-width: 360px) {
+
+  .main-content,
+  body:has(#sidebar-mini:checked) .main-content {
+    padding-inline: 12px;
+  }
+
+  .brand-name {
+    font-size: 15px;
+  }
+
+  .page-heading h1 {
+    font-size: 21px;
+  }
+
+}
