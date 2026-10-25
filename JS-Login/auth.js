@@ -249,6 +249,9 @@ export async function updatePassword(newPassword, confirmPassword) {
 
 // 6. Keluar Akun (Sign Out)
 export async function signOut() {
+  try {
+    sessionStorage.clear();
+  } catch (_) {}
   const { error } = await supabase.auth.signOut();
   if (error) return { ok: false, message: getReadableErrorMessage(error), data: null };
   return { ok: true, message: 'Berhasil keluar.', data: null };
@@ -272,14 +275,28 @@ export async function getSession() {
   return data?.session ?? null;
 }
 
-// Pengambilan Data Profil (Mendukung 'users' skema tim & 'profiles' PRD)
-export async function getProfile(userId) {
+// Pengambilan Data Profil dengan Caching Cerdas (Mencegah N+1 Query & Menghemat Jaringan)
+export async function getProfile(userId, { forceRefresh = false } = {}) {
   let id = userId;
   if (!id) {
     const session = await getSession();
     id = session?.user?.id;
   }
   if (!id) return null;
+
+  // Periksa cache sesi lokal jika bukan forceRefresh
+  const cacheKey = `reposika_profile_${id}`;
+  if (!forceRefresh) {
+    try {
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Date.now() - (parsed._cachedAt || 0) < 180000) { // 3 menit
+          return parsed.data;
+        }
+      }
+    } catch (_) {}
+  }
 
   // Prioritaskan query ke tabel 'users' (skema tim aktual di Supabase)
   let { data, error } = await supabase
@@ -305,6 +322,11 @@ export async function getProfile(userId) {
   if (error) {
     console.error('[getProfile]', error);
     return null;
+  }
+  if (data) {
+    try {
+      sessionStorage.setItem(cacheKey, JSON.stringify({ data, _cachedAt: Date.now() }));
+    } catch (_) {}
   }
   return data;
 }

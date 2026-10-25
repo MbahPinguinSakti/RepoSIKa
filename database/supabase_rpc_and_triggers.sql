@@ -226,3 +226,18 @@ BEFORE UPDATE ON public.users
 FOR EACH ROW
 EXECUTE FUNCTION public.protect_user_roles();
 
+
+-- ==============================================================================
+-- 7. DATABASE INTEGRITY: CASCADE CONSTRAINTS (Mencegah Orphaned Records)
+-- ==============================================================================
+ALTER TABLE public.materi
+  DROP CONSTRAINT IF EXISTS fk_materi_matkul,
+  ADD CONSTRAINT fk_materi_matkul FOREIGN KEY (matkul_id) REFERENCES public.matkul(id) ON DELETE CASCADE;
+
+ALTER TABLE public.riwayat_baca
+  DROP CONSTRAINT IF EXISTS fk_riwayat_materi,
+  ADD CONSTRAINT fk_riwayat_materi FOREIGN KEY (materi_id) REFERENCES public.materi(id) ON DELETE CASCADE;
+
+ALTER TABLE public.favorit
+  DROP CONSTRAINT IF EXISTS fk_favorit_materi,
+  ADD CONSTRAINT fk_favorit_materi FOREIGN KEY (materi_id) REFERENCES public.materi(id) ON DELETE CASCADE;
