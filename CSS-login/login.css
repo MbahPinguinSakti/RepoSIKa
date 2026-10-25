@@ -550,3 +550,655 @@ body {
 .signup-text a:hover {
     text-decoration: underline;
 }
+
+
+
+/* ==================================================
+   PERBAIKAN TAMPILAN LOGIN
+   Layout responsif dan posisi elemen
+   ================================================== */
+
+/* ===== PANEL UTAMA ===== */
+
+body:has(#form-login) {
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+}
+
+body:has(#form-login) .page-panel {
+    width: min(92%, 1100px);
+    min-height: calc(100vh - 48px);
+    margin: 24px auto;
+    padding: 20px 32px 48px;
+
+    background-color: rgba(241, 242, 223, 0.82);
+    border-radius: 12px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== HEADER LOGO KAMPUS ===== */
+
+body:has(#form-login) .top-header {
+    width: 100%;
+    min-height: 65px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+body:has(#form-login) .navbar-logos {
+    position: static;
+    transform: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+body:has(#form-login) .university-logo,
+body:has(#form-login) .faculty-logo {
+    width: 64px;
+    height: 64px;
+    margin: 0;
+    object-fit: contain;
+}
+
+/* ===== KONTEN LOGIN ===== */
+
+body:has(#form-login) .login-container {
+    width: 100%;
+    flex: 1;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 24px 16px;
+}
+
+body:has(#form-login) .login-card {
+    width: 100%;
+    max-width: 390px;
+    padding: 0 12px;
+
+    text-align: center;
+    transform: none;
+}
+
+/* ===== LOGO REPOSIKA ===== */
+
+body:has(#form-login) .logo {
+    position: static;
+    margin: 0 auto 12px;
+}
+
+body:has(#form-login) .logo img {
+    display: block;
+    width: 150px;
+    height: 130px;
+    max-width: 100%;
+    margin: 0 auto;
+
+    object-fit: contain;
+}
+
+/* ===== JUDUL LOGIN ===== */
+
+body:has(#form-login) .login-card h1 {
+    font-size: 30px;
+    margin-bottom: 6px;
+}
+
+body:has(#form-login) .login-card h2 {
+    font-size: 25px;
+    margin-bottom: 5px;
+}
+
+body:has(#form-login) .subtitle {
+    font-size: 14px;
+    margin-bottom: 22px;
+}
+
+/* ===== INPUT EMAIL DAN PASSWORD ===== */
+
+body:has(#form-login) .login-card form {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+body:has(#form-login) .login-card label {
+    font-size: 13px;
+    margin-bottom: 7px;
+}
+
+body:has(#form-login) .login-card input {
+    width: 100%;
+    height: 48px;
+    padding: 10px 14px;
+    margin-bottom: 18px;
+
+    border: 2px solid #464704;
+    border-radius: 12px;
+    box-shadow: 0 4px 0 #464704;
+
+    font-size: 14px;
+}
+
+/* ===== LUPA PASSWORD ===== */
+
+body:has(#form-login) .forgot-password {
+    align-self: flex-end;
+    margin-bottom: 18px;
+    font-size: 12px;
+}
+
+/* ===== TOMBOL LOGIN ===== */
+
+body:has(#form-login) .signin-button {
+    width: 60%;
+    min-height: 42px;
+    margin: 0 auto;
+
+    font-size: 16px;
+    border-radius: 24px;
+}
+
+/* ===== LINK PENDAFTARAN ===== */
+
+body:has(#form-login) .signup-text {
+    margin: 16px 0 10px;
+    font-size: 12px;
+}
+
+/* ===== LOGIN GOOGLE ===== */
+
+body:has(#form-login) .divider-text {
+    margin: 12px 0;
+    font-size: 12px;
+}
+
+body:has(#form-login) .google-button {
+    width: 65%;
+    min-height: 42px;
+    height: auto;
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 8px 12px;
+    text-indent: 0;
+    font-size: 12px;
+}
+
+body:has(#form-login) .google-button img {
+    position: static;
+    transform: none;
+
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+}
+
+/* ===== FOOTER ===== */
+
+body:has(#form-login) .login-footer {
+    margin: 18px 0 0;
+    padding: 0;
+}
+
+/* ===== RESPONSIVE TABLET ===== */
+
+@media (max-width: 768px) {
+    body:has(#form-login) .page-panel {
+        width: 94%;
+        min-height: calc(100vh - 32px);
+        margin: 16px auto;
+        padding: 16px 20px 32px;
+    }
+
+    body:has(#form-login) .login-container {
+        padding: 24px 8px;
+    }
+}
+
+/* ===== RESPONSIVE MOBILE ===== */
+
+@media (max-width: 600px) {
+    body:has(#form-login) .page-panel {
+        width: 94%;
+        min-height: calc(100vh - 24px);
+        margin: 12px auto;
+        padding: 16px 14px 28px;
+    }
+
+    body:has(#form-login) .top-header {
+        min-height: 48px;
+    }
+
+    body:has(#form-login) .university-logo,
+    body:has(#form-login) .faculty-logo {
+        width: 42px;
+        height: 42px;
+    }
+
+    body:has(#form-login) .login-container {
+        padding: 20px 0;
+    }
+
+    body:has(#form-login) .login-card {
+        max-width: 350px;
+        padding: 0 8px;
+    }
+
+    body:has(#form-login) .logo img {
+        width: 115px;
+        height: 100px;
+    }
+
+    body:has(#form-login) .login-card h1 {
+        font-size: 26px;
+    }
+
+    body:has(#form-login) .login-card h2 {
+        font-size: 22px;
+    }
+
+    body:has(#form-login) .subtitle {
+        font-size: 12px;
+    }
+
+    body:has(#form-login) .signin-button,
+    body:has(#form-login) .google-button {
+        width: 80%;
+    }
+}
+
+
+/* =========================================
+   PERBAIKAN UKURAN LOGO REPOSIKA
+   ========================================= */
+
+body:has(#form-login) .logo {
+    position: static;
+    width: 100%;
+    margin: 0 auto 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ===== LOGO REPOSIKA ===== */
+
+body:has(#form-login) .logo {
+    position: static;
+    width: 100%;
+    margin: 0 auto 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body:has(#form-login) .logo img {
+    display: block;
+    width: 280px;
+    height: 160px;
+    max-width: 100%;
+    object-fit: contain;
+    margin: 0 auto;
+}
+
+/* ===== RESPONSIVE MOBILE ===== */
+
+@media (max-width: 600px) {
+    body:has(#form-login) .logo img {
+        width: 200px;
+        height: 160px;
+    }
+}
+
+
+/* =========================================
+   RAPIIKAN JARAK VERTIKAL HALAMAN LOGIN
+   ========================================= */
+
+body:has(#form-login) .login-container {
+    padding-top: 0;
+    padding-bottom: 16px;
+}
+
+body:has(#form-login) .login-card h1 {
+    margin-top: 0;
+}
+
+body:has(#form-login) .subtitle {
+    margin-bottom: 14px;
+}
+
+body:has(#form-login) .login-card input {
+    margin-bottom: 14px;
+}
+
+body:has(#form-login) .signup-text {
+    margin: 10px 0 6px;
+}
+
+body:has(#form-login) .divider-text {
+    margin: 8px 0;
+}
+
+body:has(#form-login) .login-footer {
+    margin-top: 12px;
+}
+
+/* ===== TAMPILAN HP ===== */
+
+@media (max-width: 600px) {
+    body:has(#form-login) .logo img {
+        width: 200px;
+        height: 120px;
+    }
+}
+
+
+/* =========================================
+   PENYESUAIAN AKHIR LAYOUT LOGIN
+   ========================================= */
+
+/* Panel mengikuti tinggi konten */
+body:has(#form-login) .page-panel {
+    min-height: calc(100vh - 32px);
+    height: auto;
+    margin: 16px auto;
+    padding: 16px 32px 28px;
+}
+
+/* Hilangkan pemaksaan posisi tengah vertikal */
+body:has(#form-login) .login-container {
+    flex: 0 0 auto;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 12px 12px;
+}
+
+/* Rapikan jarak logo dan form */
+body:has(#form-login) .logo {
+    margin-bottom: 0;
+}
+
+body:has(#form-login) .logo img {
+    width: 260px;
+    height: 145px;
+}
+
+/* Jarak antarbagian */
+body:has(#form-login) .login-card h1 {
+    margin-bottom: 2px;
+}
+
+body:has(#form-login) .login-card h2 {
+    margin-bottom: 2px;
+}
+
+body:has(#form-login) .subtitle {
+    margin-bottom: 12px;
+}
+
+body:has(#form-login) .login-card input {
+    margin-bottom: 12px;
+}
+
+body:has(#form-login) .forgot-password {
+    margin-bottom: 12px;
+}
+
+body:has(#form-login) .signup-text {
+    margin: 8px 0 4px;
+}
+
+body:has(#form-login) .divider-text {
+    margin: 6px 0;
+}
+
+body:has(#form-login) .login-footer {
+    margin: 12px 0 0;
+}
+
+/* Responsif untuk HP */
+@media (max-width: 600px) {
+    body:has(#form-login) .page-panel {
+        width: 94%;
+        padding: 14px 12px 24px;
+    }
+
+    body:has(#form-login) .logo img {
+        width: 200px;
+        height: 115px;
+    }
+
+    body:has(#form-login) .login-container {
+        padding: 8px 0 12px;
+    }
+}
+
+
+/* =========================================
+   PERBESAR LOGO REPOSIKA SAJA
+   ========================================= */
+
+body:has(#form-login) .logo {
+    width: 100%;
+    height: 180px;
+    margin: 0 auto 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: visible;
+}
+
+body:has(#form-login) .logo img {
+    width: 400px;
+    height: 400px;
+    max-width: none;
+    object-fit: contain;
+
+    transform: scale(1.1);
+    transform-origin: center;
+}
+
+/* ===== LOGO DI HP ===== */
+
+@media (max-width: 600px) {
+    body:has(#form-login) .logo {
+        height: 140px;
+    }
+
+    body:has(#form-login) .logo img {
+        width: 260px;
+        height: 260px;
+        transform: scale(1.2);
+    }
+}
+
+
+/* =========================================
+   PERBESAR LOGO UNSIKA DAN FASILKOM
+   ========================================= */
+
+body:has(#form-login) .navbar-logos {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+body:has(#form-login) .university-logo,
+body:has(#form-login) .faculty-logo {
+    width: 105px;
+    height: 105px;
+    margin: 0;
+    object-fit: contain;
+}
+
+/* =========================================
+   PERBESAR LOGO GOOGLE
+   ========================================= */
+
+body:has(#form-login) .google-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-indent: 0;
+}
+
+body:has(#form-login) .google-button img {
+    position: static;
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    object-fit: contain;
+    transform: scale(1.3);
+}
+
+/* =========================================
+   RESPONSIVE MOBILE
+   ========================================= */
+
+@media (max-width: 600px) {
+    body:has(#form-login) .university-logo,
+    body:has(#form-login) .faculty-logo {
+        width: 70px;
+        height: 70px;
+    }
+
+    body:has(#form-login) .google-button img {
+        width: 38px;
+        height: 38px;
+        transform: scale(1.2);
+    }
+}
+
+/* =========================================
+   RAPATKAN LOGO UNSIKA DAN FASILKOM
+   ========================================= */
+
+body:has(#form-login) .navbar-logos {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+body:has(#form-login) .university-logo,
+body:has(#form-login) .faculty-logo {
+    width: 105px;
+    height: 105px;
+    object-fit: contain;
+}
+
+body:has(#form-login) .university-logo {
+    margin-right: -45px;
+}
+
+/* =========================================
+   SEIMBANGKAN TOMBOL GOOGLE
+   ========================================= */
+
+body:has(#form-login) .google-button {
+    width: 65%;
+    min-height: 44px;
+    height: 44px;
+    padding: 6px 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    font-size: 13px;
+    text-indent: 0;
+}
+
+body:has(#form-login) .google-button img {
+    position: static;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    object-fit: contain;
+    transform: none;
+}
+
+/* =========================================
+   RESPONSIVE MOBILE
+   ========================================= */
+
+@media (max-width: 600px) {
+    body:has(#form-login) .university-logo,
+    body:has(#form-login) .faculty-logo {
+        width: 70px;
+        height: 70px;
+    }
+
+    body:has(#form-login) .university-logo {
+        margin-right: -30px;
+    }
+
+    body:has(#form-login) .google-button {
+        width: 80%;
+    }
+
+    body:has(#form-login) .google-button img {
+        width: 26px;
+        height: 26px;
+    }
+}
+
+
+/* =========================================
+   LOGO GOOGLE BESAR, TOMBOL TETAP RAPI
+   ========================================= */
+
+body:has(#form-login) .google-button {
+    position: relative;
+    width: 65%;
+    height: 44px;
+    min-height: 44px;
+    padding: 0 12px 0 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    font-size: 13px;
+    text-indent: 0;
+}
+
+body:has(#form-login) .google-button img {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+
+    width: 75px;
+    height: 75px;
+    max-width: none;
+
+    object-fit: contain;
+    transform: translate(-25%, -50%);
+
+    pointer-events: none;
+}
+
+/* ===== RESPONSIVE HP ===== */
+
+@media (max-width: 600px) {
+    body:has(#form-login) .google-button {
+        width: 80%;
+    }
+}
