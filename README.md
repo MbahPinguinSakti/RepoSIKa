@@ -198,15 +198,33 @@ Jika ingin menghubungkan ke instance Supabase baru:
 
 ---
 
-## 👥 Tim Pengembang (Contributors)
+## 👥 Tim Pengembang & Kontributor
 
-Aplikasi **RepoSIKa** berhasil diwujudkan berkat kolaborasi dan dedikasi tim:
+Aplikasi **RepoSIKa** berhasil diwujudkan berkat kolaborasi, kerja keras, dan dedikasi seluruh anggota tim:
 
-- **Aji Nur Majid** — *Lead Fullstack Developer, Database & Security Architect, Cloud Deployment*
-- **Edward (MbahPinguinSakti)** — *Repository Lead, Version Control & Initial Setup*
-- **Kayna** — *Frontend UI/UX Designer & Form Responsiveness*
-- **Mukhlash Hisyam** — *Filter, Sorting & Dashboard Logic Contributor*
-- **Badrul & Rafi Zahran** — *Quality Assurance (QA) & Account Flow Testing*
+- **Project Manager:** Zahran *(Koordinasi seluruh anggota & manajemen proyek)*
+- **Mentor:** Edward *(Pembimbing & Technical Mentor)*
+- **UI/UX Designer:** Azra *(Perancangan desain antarmuka web)*
+- **Frontend (Slicing):** Kayna *(Slicing / konversi desain Figma ke kode antarmuka)*
+- **Frontend (Implementasi Data):** Mukhlash *(Implementasi data dinamis & filtering)*
+- **Backend (Logic Auth & Security):** Aji *(Logika autentikasi, security hardening, & cloud deployment)*
+- **Backend (Logic Apps):** Ardhi *(Logika aplikasi & integrasi layanan)*
+- **Database:** Aurelia Putri Herlina *(Perancangan skema database & relasi)*
+
+---
+
+### 📋 Tabel Pembagian Peran
+
+| No | Nama | Peran (Role) | Tanggung Jawab Utama |
+|:--:|---|---|---|
+| 1 | **Zahran** | **Project Manager** | Koordinasi tim & pengawalan alur kerja |
+| 2 | **Edward** | **Mentor** | Pembimbing teknis & repositori |
+| 3 | **Azra** | **UI/UX Designer** | Desain antarmuka & pengalaman pengguna (UI/UX) |
+| 4 | **Kayna** | **Frontend Developer** | Slicing / mengubah desain ke kode antarmuka |
+| 5 | **Mukhlash** | **Frontend Developer** | Implementasi data dinamis ke komponen frontend |
+| 6 | **Aji** | **Backend Developer** | Logika autentikasi, keamanan akses, & deployment |
+| 7 | **Ardhi** | **Backend Developer** | Logika pemrosesan aplikasi & fungsionalitas sistem |
+| 8 | **Aurelia Putri Herlina** | **Database Specialist** | Perancangan skema database & struktur tabel |
 
 ---
 
