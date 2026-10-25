@@ -79,7 +79,6 @@ function initLoginForm() {
     }
   });
 
-
   if (googleBtn) {
     googleBtn.addEventListener('click', async () => {
       clearAlert();

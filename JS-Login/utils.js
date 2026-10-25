@@ -14,7 +14,7 @@ export const CONFIG = {
     LOGIN: 'login.html',
     SIGNUP: 'signup.html',
     FORGOT_PASSWORD: 'forgot-password.html',
-    HOME: 'dashboard.html',
+    HOME: 'index.html',
     ADMIN: 'admin.html',
   },
 
