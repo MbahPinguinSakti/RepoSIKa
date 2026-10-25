@@ -1,0 +1,1120 @@
+/* =========================================
+   1. HEADER DASHBOARD
+========================================= */
+
+.dashboard-header {
+  margin-top: -25px;
+  margin-bottom: 27px;
+}
+
+
+/* =========================================
+   3. BAGIAN CONTINUE LEARNING
+========================================= */
+
+.continue-section {
+  padding: 14px 23px 23px;
+}
+
+
+/* 3.1 Judul Bagian */
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-title h2 {
+  margin: 0;
+  font-size: 21px;
+}
+
+
+/* 3.2 Susunan Kartu Materi */
+
+.learning-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 9px;
+}
+
+
+/* 3.3 Tampilan Kartu Materi */
+
+.learning-card {
+  display: grid;
+  grid-template-columns: 46% 1fr;
+  gap: 10px;
+  background: #f0f2de;
+  border-radius: 16px;
+  padding: 8px;
+  min-height: 155px;
+  color: #374122;
+}
+
+
+/* 3.4 Ilustrasi Materi */
+
+.learning-art {
+  border-radius: 13px;
+  background: #d2e7f8;
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Warna ilustrasi Matematika Diskrit */
+
+.learning-art.math {
+  background: #dce5d4;
+}
+
+/* Ikon utama ilustrasi */
+
+.learning-art > .main-icon {
+  font-size: 60px;
+  color: #1953a7;
+}
+
+/* Label jumlah materi */
+
+.learning-art .pill {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: #abb984;
+  border-radius: 15px;
+  padding: 2px 9px;
+  font-size: 9px;
+}
+
+/* Label simbol ilustrasi */
+
+.learning-art .art-label {
+  position: absolute;
+  right: 9px;
+  bottom: 12px;
+  background: #f6accb;
+  border: 2px solid #365880;
+  border-radius: 7px;
+  padding: 2px 6px;
+  font-weight: 700;
+}
+
+
+/* 3.5 Informasi Materi */
+
+.learning-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 7px 2px 3px 0;
+}
+
+.learning-info strong {
+  font-size: 12px;
+}
+
+.learning-info p {
+  font-size: 11px;
+  margin: 2px 0 8px;
+}
+
+
+/* 3.6 Progress Belajar */
+
+.learning-info .progress-note {
+  margin-top: auto;
+  font-size: 9px;
+}
+
+.progress-track {
+  height: 8px;
+  border-radius: 9px;
+  background: #fff;
+  overflow: hidden;
+  margin: 4px 0 9px;
+}
+
+.progress-track > span {
+  display: block;
+  height: 100%;
+  border-radius: 9px;
+  background: #75843f;
+}
+
+
+/* 3.7 Tombol Continue */
+
+.learning-info .btn {
+  align-self: flex-end;
+  font-size: 10px;
+  padding: 5px 15px;
+}
+
+
+/* =========================================
+   4. JUDUL ALL MATERI DAN JUMLAH MATERI
+========================================= */
+
+.dashboard-all-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 12px 12px;
+}
+
+.dashboard-all-title h2 {
+  font-size: 22px;
+  margin: 0;
+}
+
+
+/* 4.1 Label Jumlah Materi */
+
+.count-pill {
+  font-size: 10px;
+  background: #b9c87c;
+  color: #34401e;
+  padding: 2px 7px;
+  border-radius: 5px;
+}
+
+
+/* =========================================
+   5. FILTER DAN PENGURUTAN MATERI
+========================================= */
+
+.dashboard-filters {
+  display: flex;
+  gap: 12px;
+  margin: 0 12px 15px;
+  align-items: center;
+}
+
+
+/* 5.1 Tombol Filter */
+
+.filter-tag {
+  background: #91a451;
+  padding: 9px 20px;
+  border-radius: 10px;
+  color: white;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+
+/* 5.2 Kotak Search, Add Filter, dan Sort By */
+
+.filter-toolbox {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--paper);
+  border-radius: 30px;
+  padding: 10px 14px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* Garis pemisah menu filter */
+
+.filter-toolbox .line {
+  height: 17px;
+  width: 1px;
+  background: #9ead77;
+}
+
+
+/* =========================================
+   6. DAFTAR SEMUA KARTU MATERI
+========================================= */
+
+/* Susunan kartu dalam bentuk grid */
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+
+/* 6.1 Tampilan Kartu Mata Kuliah */
+
+.overview-card {
+  min-width: 0;
+  padding: 10px 12px 13px;
+  display: flex;
+  flex-direction: column;
+  min-height: 197px;
+}
+
+
+/* 6.2 Sampul Materi */
+
+.overview-card .course-cover {
+  height: 85px;
+}
+
+
+/* 6.3 Jenis Materi */
+
+.material-type {
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+
+/* 6.4 Judul Mata Kuliah */
+
+.overview-card h3 {
+  font-size: 14px;
+  line-height: 1.25;
+  margin: 3px 0 0;
+}
+
+
+/* 6.5 Status Belajar dan Tombol */
+
+.overview-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.overview-footer span {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.overview-footer .btn {
+  padding: 5px 14px;
+  font-size: 10px;
+}
+
+
+/* =========================================
+   7. RESPONSIVE: LAYAR DI BAWAH 1200 PX
+========================================= */
+
+@media (max-width: 1200px) {
+
+  /* Memperkecil jarak dalam tombol filter */
+
+  .filter-tag {
+    padding-inline: 13px;
+  }
+
+  .filter-toolbox {
+    gap: 6px;
+  }
+
+}
+
+
+/* =========================================
+   8. RESPONSIVE: LAYAR DI BAWAH 1050 PX
+========================================= */
+
+@media (max-width: 1050px) {
+
+  /* Header dapat berpindah baris */
+
+  .dashboard-header {
+    flex-wrap: wrap;
+  }
+
+  /* Kartu Continue Learning tersusun vertikal */
+
+  .learning-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Kartu materi tersusun menjadi dua kolom */
+
+  .overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Menyembunyikan kotak alat filter */
+
+  .filter-toolbox {
+    display: none;
+  }
+
+}
+
+
+/* =========================================
+   9. RESPONSIVE: LAYAR DI BAWAH 660 PX
+========================================= */
+
+@media (max-width: 660px) {
+
+  /* Mengatur padding bagian Continue Learning */
+
+  .continue-section {
+    padding: 13px;
+  }
+
+  /* Memperkecil judul Continue Learning */
+
+  .section-title h2 {
+    font-size: 18px;
+  }
+
+  /* Menyesuaikan ukuran kolom kartu belajar */
+
+  .learning-card {
+    grid-template-columns: 42% 1fr;
+  }
+
+  /* Memperkecil ikon ilustrasi */
+
+  .learning-art > .main-icon {
+    font-size: 46px;
+  }
+
+  /* Merapikan jarak filter */
+
+  .dashboard-filters {
+    margin-inline: 0;
+    gap: 5px;
+  }
+
+  /* Menyesuaikan ukuran tombol filter */
+
+  .filter-tag {
+    flex: 1;
+    text-align: center;
+    padding: 8px 3px;
+    font-size: 10px;
+  }
+
+  /* Kartu materi tersusun menjadi satu kolom */
+
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+/* ========================================
+   RESPONSIVE DASHBOARD UNTUK HP
+======================================== */
+
+@media (max-width: 660px) {
+
+  /* =====================================
+     1. HEADER DASHBOARD
+  ===================================== */
+
+  .dashboard-header {
+    display: grid;
+
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    grid-template-areas:
+      "judul pengguna";
+
+    align-items: center;
+    gap: 12px;
+
+    /* Membatalkan margin negatif desktop */
+    margin-top: 0 !important;
+    margin-bottom: 20px;
+  }
+
+  /* Judul Welcome Back */
+  .dashboard-header .page-heading {
+    grid-area: judul;
+    min-width: 0;
+  }
+
+  .dashboard-header .page-heading h1 {
+    font-size: 22px;
+    line-height: 1.25;
+  }
+
+  .dashboard-header .page-heading p {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  /* Avatar dan tombol tema */
+  .dashboard-header .user-actions {
+    grid-area: pengguna;
+    justify-self: end;
+  }
+
+
+  /* =====================================
+     2. CONTINUE LEARNING
+  ===================================== */
+
+  .continue-section {
+    padding: 14px;
+  }
+
+  .section-title h2 {
+    font-size: 18px;
+  }
+
+  .learning-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  /* Ilustrasi kiri, informasi kanan */
+  .learning-card {
+    grid-template-columns:
+      minmax(90px, 37%)
+      minmax(0, 1fr);
+
+    gap: 10px;
+
+    min-height: 150px;
+    padding: 8px;
+  }
+
+  .learning-art > .main-icon {
+    font-size: 38px;
+  }
+
+  .learning-info {
+    min-width: 0;
+    padding: 4px 0;
+  }
+
+  .learning-info strong {
+    font-size: 11px;
+  }
+
+  .learning-info p {
+    font-size: 10px;
+    line-height: 1.45;
+  }
+
+  .learning-info .btn {
+    font-size: 10px;
+    padding: 6px 12px;
+  }
+
+
+  /* =====================================
+     3. ALL MATERI
+  ===================================== */
+
+  .dashboard-all-title {
+    margin: 20px 0 12px;
+  }
+
+  .dashboard-all-title h2 {
+    font-size: 21px;
+  }
+
+  /* Filter tetap satu baris, bisa geser */
+  .dashboard-filters {
+    display: flex;
+    flex-wrap: nowrap;
+
+    gap: 8px;
+    margin: 0 0 14px;
+
+    overflow-x: auto;
+  }
+
+  .filter-tag {
+    flex: 0 0 auto;
+
+    padding: 9px 13px;
+    font-size: 10px;
+  }
+
+  /* Tool filter desktop disembunyikan */
+  .filter-toolbox {
+    display: none;
+  }
+
+  /* Kartu materi menjadi satu kolom */
+  .overview-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 13px;
+  }
+
+  .overview-card {
+    min-height: 200px;
+  }
+
+  .overview-card .course-cover {
+    height: 95px;
+  }
+
+}
+
+
+/* ========================================
+   HP SANGAT KECIL
+======================================== */
+
+@media (max-width: 360px) {
+
+  .dashboard-header .page-heading h1 {
+    font-size: 20px;
+  }
+
+  .learning-card {
+    grid-template-columns: 80px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .learning-art > .main-icon {
+    font-size: 30px;
+  }
+
+  .learning-info p {
+    font-size: 9px;
+  }
+
+}
+
+
+/* ========================================
+   MENYAMAKAN POSISI HEADER MOBILE
+   DASHBOARD DENGAN SEMUA MATERI
+======================================== */
+
+@media (max-width: 660px) {
+
+    .dashboard-header {
+        margin-top: -18px !important;
+    }
+
+}
+
+
+/* =========================================
+   10. ADD FILTER + SORT BY BARU
+   Semester, Format Materi, Status Belajar
+   Tampilan slicing desktop & mobile (tanpa JS)
+========================================= */
+
+/* Toolbar di kanan baris All Materi */
+.dashboard-filters {
+  overflow: visible;
+  flex-wrap: wrap;
+}
+
+.filter-toolbox.rf-toolbar {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: fit-content;
+  max-width: 100%;
+  margin-left: auto;
+  padding: 7px 11px;
+  border-radius: 30px;
+  background: var(--paper);
+  color: var(--ink);
+  overflow: visible;
+}
+
+/* Pastikan popup tampil di depan kartu materi */
+.rf-toolbar:has(#rf-open:checked),
+.rf-toolbar:has(.rf-sort[open]) {
+  z-index: 500;
+}
+
+.rf-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 1 185px;
+  min-width: 100px;
+  width: 185px;
+  padding: 5px 7px;
+  border-radius: 18px;
+  font-size: 11px;
+  cursor: text;
+}
+
+.rf-search:focus-within {
+  background: rgba(145, 164, 81, .13);
+}
+
+.rf-search i {
+  flex-shrink: 0;
+}
+
+.rf-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 11px;
+}
+
+.rf-search input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.rf-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.rf-hidden-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rf-filter,
+.rf-sort {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.rf-filter-button,
+.rf-sort-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 32px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 11px;
+}
+
+.rf-filter-button {
+  padding: 8px 12px;
+  border-radius: 22px;
+  background: #e2ec9a;
+  color: #34401e;
+  font-weight: 600;
+}
+
+.rf-filter-button:hover,
+.rf-filter:has(#rf-open:checked) .rf-filter-button {
+  background: #d6e871;
+}
+
+/* Panel desktop tepat di bawah Add Filter */
+.rf-filter-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 315px;
+  max-width: calc(100vw - 24px);
+  max-height: min(640px, calc(100dvh - 40px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, .2);
+  white-space: normal;
+  z-index: 10;
+}
+
+#rf-open:checked ~ .rf-filter-panel {
+  display: block;
+}
+
+.rf-mobile-header,
+.rf-backdrop {
+  display: none;
+}
+
+.rf-filter-form {
+  display: block;
+}
+
+.rf-filter-group {
+  display: block;
+  min-width: 0;
+  margin: 0;
+  padding: 13px 17px 14px;
+  border: none;
+  border-bottom: 1px solid var(--line);
+}
+
+.rf-filter-group legend {
+  display: block;
+  float: left;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.rf-filter-group legend + .rf-options {
+  clear: both;
+}
+
+.rf-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+}
+
+.rf-options-semester {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 12px;
+}
+
+.rf-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 5px 1px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.rf-options label:hover {
+  background: rgba(145, 164, 81, .12);
+}
+
+.rf-options input {
+  appearance: auto;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  margin: 0;
+  accent-color: #788744;
+  cursor: pointer;
+}
+
+.rf-filter-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 17px;
+  background: var(--paper);
+}
+
+.rf-reset,
+.rf-apply {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 9px 19px;
+  border-radius: 25px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rf-reset {
+  border: 1px solid var(--olive);
+  background: transparent;
+  color: var(--ink);
+}
+
+.rf-apply {
+  min-width: 112px;
+  border: 1px solid #788744;
+  background: #788744;
+  color: #fff;
+}
+
+.rf-apply:hover {
+  background: #607036;
+}
+
+/* SORT BY */
+.rf-sort-button {
+  padding: 7px 5px;
+  border-radius: 20px;
+  color: var(--ink);
+  list-style: none;
+}
+
+.rf-sort-button::-webkit-details-marker {
+  display: none;
+}
+
+.rf-sort-button::marker {
+  content: '';
+}
+
+.rf-sort-arrow {
+  font-size: 9px;
+  transition: transform .2s ease;
+}
+
+.rf-sort[open] .rf-sort-arrow {
+  transform: rotate(180deg);
+}
+
+.rf-sort-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: 11;
+  width: 194px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 12px 30px rgba(0,0,0,.18);
+}
+
+.rf-sort-menu h3 {
+  margin: 2px 0 6px;
+  padding: 5px 6px;
+  font-size: 12px;
+}
+
+.rf-sort-menu label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 6px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.rf-sort-menu label:hover,
+.rf-sort-menu label:has(input:checked) {
+  background: rgba(145, 164, 81, .18);
+}
+
+.rf-sort-menu input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: #788744;
+  cursor: pointer;
+}
+
+/* Keyboard focus */
+.rf-filter-button:focus-visible,
+.rf-sort-button:focus-visible,
+.rf-reset:focus-visible,
+.rf-apply:focus-visible,
+.rf-close:focus-visible {
+  outline: 2px solid var(--olive);
+  outline-offset: 3px;
+}
+
+/* Responsive tablet: status di baris atas, toolbar di bawah */
+@media (max-width: 1050px) {
+  .dashboard-filters {
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+
+  .filter-toolbox.rf-toolbar {
+    display: flex;
+    width: 100%;
+    flex-basis: 100%;
+    margin: 0;
+    justify-content: space-between;
+  }
+}
+
+/* Responsive HP: panel filter dari bagian bawah layar */
+@media (max-width: 660px) {
+  .dashboard-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    overflow: visible;
+    margin-bottom: 14px;
+  }
+
+  .filter-toolbox.rf-toolbar {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    width: 100%;
+    flex-basis: 100%;
+    max-width: 100%;
+    margin: 3px 0 0;
+    padding: 7px 9px;
+    border-radius: 24px;
+  }
+
+  .rf-search {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    padding: 5px 3px;
+    gap: 5px;
+    font-size: 10px;
+  }
+
+  .rf-search input {
+    font-size: 10px;
+  }
+
+  .rf-actions {
+    gap: 5px;
+    margin-left: auto;
+  }
+
+  .rf-filter-button {
+    min-height: 32px;
+    padding: 8px 9px;
+    font-size: 10px;
+  }
+
+  .rf-sort-button {
+    min-height: 32px;
+    padding: 6px 4px;
+    gap: 5px;
+    font-size: 10px;
+  }
+
+  #rf-open:checked ~ .rf-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(12,20,32,.55);
+    cursor: pointer;
+  }
+
+  .rf-toolbar:has(#rf-open:checked) {
+    z-index: 9999;
+  }
+
+  .rf-filter-panel {
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1001;
+    width: 100%;
+    max-width: none;
+    max-height: 86vh;
+    max-height: 86dvh;
+    overflow-y: auto;
+    padding: 0;
+    border-radius: 22px 22px 0 0;
+    box-shadow: 0 -10px 35px rgba(0,0,0,.24);
+  }
+
+  .rf-mobile-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 19px 13px;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper);
+  }
+
+  .rf-mobile-header h3 {
+    margin: 0;
+    font-size: 17px;
+  }
+
+  .rf-close {
+    display: grid;
+    place-items: center;
+    width: 33px;
+    height: 33px;
+    border-radius: 9px;
+    background: rgba(145,164,81,.14);
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .rf-filter-group {
+    padding: 12px 20px 14px;
+  }
+
+  .rf-filter-group legend {
+    font-size: 15px;
+  }
+
+  .rf-options label {
+    min-height: 34px;
+    font-size: 13px;
+  }
+
+  .rf-filter-footer {
+    padding: 13px 20px 18px;
+  }
+
+  .rf-reset,
+  .rf-apply {
+    flex: 1;
+    min-height: 42px;
+    font-size: 13px;
+  }
+
+  .rf-sort-menu {
+    width: 190px;
+    max-width: calc(100vw - 24px);
+  }
+}
+
+@media (max-width: 360px) {
+  .filter-toolbox.rf-toolbar {
+    gap: 3px;
+    padding: 6px;
+  }
+
+  .rf-search {
+    font-size: 9px;
+  }
+
+  .rf-filter-button,
+  .rf-sort-button {
+    font-size: 9px;
+    padding-inline: 6px;
+  }
+
+  .rf-options-semester {
+    column-gap: 5px;
+  }
+}

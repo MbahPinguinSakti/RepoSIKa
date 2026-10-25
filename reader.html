@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pembaca Materi Terproteksi | RepoSIKa</title>
+
+  <!-- Google Font & Font Awesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="base.css">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #1e293b;
+      color: #f8fafc;
+      font-family: 'Poppins', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* TOP BAR READER */
+    .reader-header {
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 50;
+    }
+
+    .reader-title-area {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-back {
+      background: #334155;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-back:hover {
+      background: #475569;
+    }
+
+    .reader-title-area h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .security-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(234, 179, 8, 0.15);
+      color: #facc15;
+      border: 1px solid rgba(234, 179, 8, 0.3);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .reader-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .zoom-btn {
+      background: #334155;
+      color: white;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+    }
+
+    .zoom-btn:hover {
+      background: #475569;
+    }
+
+    /* VIEWER CONTAINER */
+    .reader-viewport {
+      flex: 1;
+      position: relative;
+      overflow: auto;
+      display: flex;
+      justify-content: center;
+      padding: 30px;
+      background: #1e293b;
+    }
+
+    /* WATERMARK OVERLAY (FR-04) */
+    .watermark-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 30;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 40px;
+      padding: 40px;
+    }
+
+    .watermark-item {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: rotate(-25deg);
+      color: rgba(255, 255, 255, 0.14);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      text-shadow: 0 0 1px rgba(0,0,0,0.2);
+    }
+
+    /* SIMULATED PROTECTED DOCUMENT */
+    .doc-page {
+      width: 100%;
+      max-width: 800px;
+      min-height: 1100px;
+      background: #ffffff;
+      color: #1e293b;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+      border-radius: 4px;
+      padding: 60px 50px;
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+
+    .doc-page h1 {
+      color: #34401e;
+      border-bottom: 2px solid #788744;
+      padding-bottom: 12px;
+      margin-top: 0;
+    }
+
+    .doc-page p {
+      line-height: 1.8;
+      font-size: 15px;
+      color: #334155;
+    }
+
+    .doc-callout {
+      background: #f8fafc;
+      border-left: 4px solid #788744;
+      padding: 16px;
+      margin: 24px 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .doc-footer {
+      position: absolute;
+      bottom: 40px;
+      left: 50px;
+      right: 50px;
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 12px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER READER -->
+  <header class="reader-header">
+    <div class="reader-title-area">
+      <a href="detail-matkul.html" class="btn-back">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Kembali</span>
+      </a>
+      <div>
+        <h2 id="material-title">Memuat Dokumen Materi...</h2>
+        <span class="security-badge">
+          <i class="fa-solid fa-shield-halved"></i>
+          Online-Only Protected Viewer (Signed URL 60 Min)
+        </span>
+      </div>
+    </div>
+
+    <div class="reader-controls">
+      <button class="zoom-btn" id="zoom-out" title="Perkecil"><i class="fa-solid fa-minus"></i></button>
+      <span id="zoom-level" style="font-size: 13px; font-weight: 600;">100%</span>
+      <button class="zoom-btn" id="zoom-in" title="Perbesar"><i class="fa-solid fa-plus"></i></button>
+    </div>
+  </header>
+
+  <!-- VIEWPORT DENGAN WATERMARK LAYER -->
+  <main class="reader-viewport">
+    
+    <!-- WATERMARK SEMI-TRANSPARAN DINAMIS (FR-04) -->
+    <div class="watermark-layer" id="watermark-container">
+      <!-- Watermark di-generate secara dinamis via JavaScript -->
+    </div>
+
+    <!-- HALAMAN DOKUMEN -->
+    <article class="doc-page" id="doc-container">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+        <img src="assets/logo-reposika.png" alt="Logo" style="width: 50px; height: 50px;">
+        <span style="font-size: 12px; color: #64748b; font-weight: 600;">REPOSIKA ARSIP PERKULIAHAN KAMPUS</span>
+      </div>
+
+      <h1 id="doc-heading">Konsep Sistem Informasi</h1>
+      <p style="font-size: 13px; color: #64748b; margin-top: -6px;">Pertemuan 1 • Semester Ganjil • Universitas Singaperbangsa Karawang</p>
+
+      <div class="doc-callout">
+        <strong>Pemberitahuan Hak Cipta & Keamanan Digital:</strong>
+        <p style="margin: 6px 0 0; font-size: 13px;">Dokumen ini dilindungi undang-undang hak cipta akademik. Dilarang mengunduh, mencetak, atau menyebarluaskan materi ini tanpa izin dosen pengampu.</p>
+      </div>
+
+      <h3>1. Pendahuluan</h3>
+      <p>Sistem Informasi adalah kombinasi terorganisir dari manusia, perangkat keras, perangkat lunak, jaringan komunikasi, sumber data, dan kebijakan serta prosedur yang menyimpan, mengambil, mengubah, dan menyebarkan informasi dalam suatu organisasi.</p>
+
+      <h3>2. Komponen Dasar Sistem Informasi</h3>
+      <p>Dalam penerapannya, sebuah sistem informasi terdiri dari 5 komponen utama:</p>
+      <ul>
+        <li><strong>Hardware:</strong> Perangkat fisik komputer dan periferal jaringan.</li>
+        <li><strong>Software:</strong> Program aplikasi dan sistem operasi yang memproses data.</li>
+        <li><strong>Data:</strong> Bahan baku fakta mentah yang diolah menjadi informasi bernilai.</li>
+        <li><strong>People:</strong> Pengguna, analis sistem, programmer, dan administrator sistem.</li>
+        <li><strong>Procedures:</strong> Kebijakan, instruksi, dan aturan alur kerja organisasi.</li>
+      </ul>
+
+      <div class="doc-footer">
+        <span>Repositori Akademik Kampus (RepoSIKa)</span>
+        <span>Halaman 1 dari 1</span>
+      </div>
+    </article>
+
+  </main>
+
+  <script type="module">
+    import { requireAuth, getCurrentUserProfile } from './JS-Login/auth.js';
+    import { alurBaca } from './JS-App/alur-project.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Proteksi Wajib Login (Guest mental ke login.html)
+      const user = await requireAuth();
+      if (!user) return;
+
+      const profile = await getCurrentUserProfile();
+
+      // 2. Ambil parameter URL
+      const params = new URLSearchParams(window.location.search);
+      const title = params.get('title') || 'Materi Perkuliahan';
+      const materiId = params.get('materi_id') || 1;
+
+      document.getElementById('material-title').textContent = title;
+      document.getElementById('doc-heading').textContent = title;
+
+      // 3. Catat riwayat baca & buat Signed URL (FR-04, FR-05)
+      try {
+        await alurBaca.bukaMateri(materiId);
+      } catch (e) {
+        console.warn('[Reader] Signed URL log:', e.message);
+      }
+
+      // 4. Pasang Watermark Dinamis (FR-04: Nama - NPM - Timestamp)
+      const nama = profile?.nama || user.user_metadata?.nama || 'Sivitas Akademika';
+      const npm = profile?.npm || user.user_metadata?.npm || 'UNSIKA';
+      const timeStr = new Date().toLocaleString('id-ID', {
+        day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+
+      const watermarkText = `${nama} • ${npm} • ${timeStr}`;
+      const container = document.getElementById('watermark-container');
+
+      container.innerHTML = Array.from({ length: 12 })
+        .map(() => `<div class="watermark-item">${watermarkText}</div>`)
+        .join('');
+
+      // 5. Fitur Zoom In / Out
+      let zoom = 100;
+      const doc = document.getElementById('doc-container');
+      const zoomLevelText = document.getElementById('zoom-level');
+
+      document.getElementById('zoom-in').addEventListener('click', () => {
+        if (zoom < 150) {
+          zoom += 10;
+          doc.style.transform = `scale(${zoom / 100})`;
+          zoomLevelText.textContent = `${zoom}%`;
+        }
+      });
+
+      document.getElementById('zoom-out').addEventListener('click', () => {
+        if (zoom > 70) {
+          zoom -= 10;
+          doc.style.transform = `scale(${zoom / 100})`;
+          zoomLevelText.textContent = `${zoom}%`;
+        }
+      });
+
+      // 6. PROTEKSI ANTI-DOWNLOAD & ANTI-PRINT (FR-04)
+      // Blokir Klik Kanan (Context Menu)
+      document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        alert('Peringatan: Dokumen perkuliahan terproteksi. Klik kanan dinonaktifkan.');
+      });
+
+      // Blokir Pintasan Keyboard Cetak (Ctrl+P, Ctrl+S, Ctrl+U, PrintScreen)
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S' || e.key === 'u' || e.key === 'U')) {
+          e.preventDefault();
+          alert('Tindakan diblokir: Dokumen dilindungi dan tidak dapat dicetak atau diunduh bebas.');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

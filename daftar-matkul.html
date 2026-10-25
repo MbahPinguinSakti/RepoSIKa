@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+  <!-- =========================================
+       1. PENGATURAN DASAR HALAMAN
+  ========================================== -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Daftar Mata Kuliah | RepoSIKa</title>
+
+
+  <!-- =========================================
+       2. IMPORT FONT POPPINS
+  ========================================== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+
+  <!-- =========================================
+       3. IMPORT IKON FONT AWESOME
+  ========================================== -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  >
+
+
+  <!-- =========================================
+       4. MENGHUBUNGKAN FILE CSS
+  ========================================== -->
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="daftar-matkul.css">
+
+</head>
+
+
+<body>
+
+  <!-- =========================================
+       5. INPUT INTERAKSI SIDEBAR DAN TEMA
+  ========================================== -->
+  <input
+    class="state-input"
+    type="checkbox"
+    id="sidebar-mini"
+    aria-label="Kecilkan sidebar"
+  >
+
+  <input
+    class="state-input"
+    type="checkbox"
+    id="theme-dark"
+    aria-label="Aktifkan mode gelap"
+  >
+
+
+  <!-- =========================================
+       6. SIDEBAR / MENU SAMPING
+  ========================================== -->
+  <aside class="sidebar" aria-label="Sidebar RepoSIKa">
+
+    <!-- 6.1 Logo dan Nama RepoSIKa -->
+    <a class="brand" href="dashboard.html">
+
+      <span class="brand-logo">
+        <img src="assets/logo-reposika.png" alt="Logo RepoSIKa">
+      </span>
+
+      <span class="brand-name">RepoSIKa</span>
+
+    </a>
+
+
+    <!-- 6.2 Judul Menu dan Tombol Sidebar -->
+    <div class="menu-heading">
+
+      <span class="menu-title">MENU</span>
+
+      <label
+        class="sidebar-toggle"
+        for="sidebar-mini"
+        title="Buka atau kecilkan sidebar"
+      >
+        <i class="fa-solid fa-angles-left close-icon" aria-hidden="true"></i>
+        <i class="fa-solid fa-angles-right open-icon" aria-hidden="true"></i>
+      </label>
+
+    </div>
+
+
+    <!-- 6.3 Navigasi Menu Utama -->
+    <nav class="side-nav" aria-label="Menu utama">
+
+      <!-- Menu Dashboard -->
+      <a class="nav-link" href="dashboard.html" title="Dashboard">
+        <i class="fa-solid fa-table-cells-large" aria-hidden="true"></i>
+        <span class="nav-text">Dashboard</span>
+      </a>
+
+      <!-- Menu Semua Materi -->
+      <a
+        class="nav-link active"
+        href="daftar-matkul.html"
+        aria-current="page"
+        title="Semua Materi"
+      >
+        <i class="fa-solid fa-book" aria-hidden="true"></i>
+        <span class="nav-text">Semua Materi</span>
+      </a>
+
+      <!-- Menu Riwayat dan Favorit -->
+      <a
+        class="nav-link"
+        href="riwayat-favorit.html"
+        title="Riwayat &amp; Favorit"
+      >
+        <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+        <span class="nav-text">Riwayat &amp; Favorit</span>
+      </a>
+
+    </nav>
+
+
+    <!-- 6.4 Menu Bagian Bawah Sidebar -->
+    <div class="sidebar-bottom">
+
+      <!-- Menu Profil -->
+      <span
+        class="side-bottom-link disabled-link"
+        title="Halaman profil menyusul"
+      >
+        <i class="fa-solid fa-user"></i>
+        <span class="nav-text">Profile</span>
+      </span>
+
+      <!-- Menu Pengaturan -->
+      <span
+        class="side-bottom-link disabled-link"
+        title="Halaman pengaturan menyusul"
+      >
+        <i class="fa-solid fa-gear"></i>
+        <span class="nav-text">Settings</span>
+      </span>
+
+      <!-- Tombol Logout -->
+      <a class="side-bottom-link" href="login.html">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span class="nav-text">Logout</span>
+      </a>
+
+      <!-- Menu Bantuan -->
+      <span class="side-bottom-link disabled-link help-link">
+        <i class="fa-solid fa-circle-question"></i>
+        <span class="nav-text">Help &amp; Support</span>
+      </span>
+
+    </div>
+
+  </aside>
+
+
+  <!-- =========================================
+       7. KONTEN UTAMA HALAMAN
+  ========================================== -->
+  <main class="main-content">
+
+
+    <!-- =========================================
+         8. HEADER DAFTAR MATA KULIAH
+    ========================================== -->
+    <header class="page-header">
+
+      <!-- 8.1 Judul dan Deskripsi Halaman -->
+      <div class="page-heading">
+        <h1>Daftar Mata Kuliah</h1>
+        <p>Pilih mata kuliah untuk melihat materi perkuliahan</p>
+      </div>
+
+
+      <!-- 8.2 Tombol Tema dan Avatar Pengguna -->
+      <div class="user-actions">
+
+        <!-- Tombol Light Mode / Dark Mode -->
+        <label
+          class="theme-label"
+          for="theme-dark"
+          title="Ganti light/dark mode"
+        >
+          <i class="fa-regular fa-moon moon-icon" aria-hidden="true"></i>
+          <i class="fa-solid fa-sun sun-icon" aria-hidden="true"></i>
+        </label>
+
+        <!-- Avatar Pengguna -->
+        <span class="avatar" aria-label="Avatar pengguna">👩🏻</span>
+
+      </div>
+
+    </header>
+
+
+    <!-- =========================================
+         9. PENCARIAN DAN FILTER SEMESTER
+    ========================================== -->
+    <div class="catalog-toolbar">
+
+
+      <!-- 9.1 Kolom Pencarian Mata Kuliah -->
+      <label class="catalog-search">
+
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+
+        <input
+          type="search"
+          placeholder="Search mata kuliah"
+          aria-label="Cari mata kuliah (demo tampilan)"
+        >
+
+      </label>
+
+
+      <!-- 9.2 Pilihan Semester -->
+      <details class="semester-panel" open>
+
+        <summary>
+          Pilih Semester
+          <i class="fa-solid fa-angle-down"></i>
+        </summary>
+
+        <div
+          class="semester-options"
+          role="group"
+          aria-label="Pilih semester"
+        >
+
+          <!-- Semua Semester -->
+          <input
+            class="semester-radio"
+            type="radio"
+            name="semester"
+            id="semester-all"
+            checked
+          >
+          <label for="semester-all">Semua</label>
+
+
+          <!-- Semester 1 -->
+          <input
+            class="semester-radio"
+            type="radio"
+            name="semester"
+            id="semester-1"
+          >
+          <label for="semester-1">Semester 1</label>
+
+
+          <!-- Semester 2 -->
+          <input
+            class="semester-radio"
+            type="radio"
+            name="semester"
+            id="semester-2"
+          >
+          <label for="semester-2">Semester 2</label>
+
+
+          <!-- Semester 3 -->
+          <input
+            class="semester-radio"
+            type="radio"
+            name="semester"
+            id="semester-3"
+          >
+          <label for="semester-3">Semester 3</label>
+
+
+          <!-- Semester 4 -->
+          <input
+            class="semester-radio"
+            type="radio"
+            name="semester"
+            id="semester-4"
+          >
+          <label for="semester-4">Semester 4</label>
+
+
+          <!-- Semester 5 -->
+          <input
+            class="semester-radio"
+            type="radio"
+            name="semester"
+            id="semester-5"
+          >
+          <label for="semester-5">Semester 5</label>
+
+
+          <!-- Semester 6 -->
+          <input
+            class="semester-radio"
+            type="radio"
+            name="semester"
+            id="semester-6"
+          >
+          <label for="semester-6">Semester 6</label>
+
+
+          <!-- Semester 7 -->
+          <input
+            class="semester-radio"
+            type="radio"
+            name="semester"
+            id="semester-7"
+          >
+          <label for="semester-7">Semester 7</label>
+
+
+          <!-- Semester 8 -->
+          <input
+            class="semester-radio"
+            type="radio"
+            name="semester"
+            id="semester-8"
+          >
+          <label for="semester-8">Semester 8</label>
+
+        </div>
+
+      </details>
+
+    </div>
+
+
+    <!-- =========================================
+         10. JUDUL DAFTAR MATA KULIAH
+    ========================================== -->
+    <div class="catalog-heading">
+
+      <h2>Mata Kuliah</h2>
+      <span>Daftar contoh perkuliahan</span>
+
+    </div>
+
+
+    <!-- =========================================
+         11. DAFTAR KARTU MATA KULIAH
+    ========================================== -->
+    <section class="course-grid" aria-label="Kartu mata kuliah">
+
+
+      <!-- =========================================
+           11.1 KONSEP SISTEM INFORMASI
+      ========================================== -->
+      <article class="course-card card" data-semester="1">
+
+        <!-- Sampul Mata Kuliah -->
+        <div class="course-cover">
+
+          <div class="cover-illustration">
+            <i class="fa-solid fa-laptop-code" aria-hidden="true"></i>
+          </div>
+
+          <span class="cover-label">
+            KONSEP<br>
+            SISTEM<br>
+            INFORMASI
+          </span>
+
+        </div>
+
+
+        <!-- Jenis Materi dan Tombol Favorit -->
+        <div class="course-meta">
+
+          <span>
+            <i class="fa-solid fa-book"></i>
+            Materi
+          </span>
+
+          <span>
+            <input
+              class="star-check"
+              type="checkbox"
+              id="fav-ksi"
+              aria-label="Tandai favorit Konsep Sistem Informasi"
+            >
+
+            <label
+              class="favorite-star"
+              for="fav-ksi"
+              title="Favorit"
+            >
+              <i class="fa-regular fa-star star-outline"></i>
+              <i class="fa-solid fa-star star-filled"></i>
+            </label>
+          </span>
+
+        </div>
+
+
+        <!-- Nama Mata Kuliah -->
+        <h3>Konsep Sistem Informasi</h3>
+
+
+        <!-- Informasi Semester dan Tombol Lihat -->
+        <div class="course-footer">
+
+          <span class="course-info">
+            <i class="fa-solid fa-graduation-cap"></i>
+            Semester 1 &nbsp;
+            <i class="fa-regular fa-file-lines"></i>
+            12 Materi
+          </span>
+
+          <a class="btn" href="#tahun-ajaran">
+            View <i class="fa-solid fa-arrow-right"></i>
+          </a>
+
+        </div>
+
+      </article>
+
+
+      <!-- =========================================
+           11.2 ALGORITMA DAN DASAR PEMROGRAMAN
+      ========================================== -->
+      <article class="course-card card" data-semester="1">
+
+        <div class="course-cover">
+
+          <div class="cover-illustration">
+            <i class="fa-solid fa-code" aria-hidden="true"></i>
+          </div>
+
+          <span class="cover-label">
+            ALGORITMA<br>
+            DAN DASAR<br>
+            PEMROGRAMAN
+          </span>
+
+        </div>
+
+        <div class="course-meta">
+
+          <span>
+            <i class="fa-solid fa-book"></i>
+            Materi
+          </span>
+
+          <span>
+            <input
+              class="star-check"
+              type="checkbox"
+              id="fav-adp"
+              aria-label="Tandai favorit Algoritma dan Dasar Pemrograman"
+            >
+
+            <label class="favorite-star" for="fav-adp" title="Favorit">
+              <i class="fa-regular fa-star star-outline"></i>
+              <i class="fa-solid fa-star star-filled"></i>
+            </label>
+          </span>
+
+        </div>
+
+        <h3>Algoritma dan Dasar Pemrograman</h3>
+
+        <div class="course-footer">
+
+          <span class="course-info">
+            <i class="fa-solid fa-graduation-cap"></i>
+            Semester 1 &nbsp;
+            <i class="fa-regular fa-file-lines"></i>
+            12 Materi
+          </span>
+
+          <a class="btn" href="#tahun-ajaran">
+            View <i class="fa-solid fa-arrow-right"></i>
+          </a>
+
+        </div>
+
+      </article>
+
+
+      <!-- =========================================
+           11.3 TRANSFORMASI DIGITAL
+      ========================================== -->
+      <article class="course-card card" data-semester="1">
+
+        <div class="course-cover">
+
+          <div class="cover-illustration">
+            <i class="fa-solid fa-laptop-code" aria-hidden="true"></i>
+          </div>
+
+          <span class="cover-label">
+            TRANSFORMASI<br>
+            DIGITAL
+          </span>
+
+        </div>
+
+        <div class="course-meta">
+
+          <span>
+            <i class="fa-solid fa-book"></i>
+            Materi
+          </span>
+
+          <span>
+            <input
+              class="star-check"
+              type="checkbox"
+              id="fav-td"
+              aria-label="Tandai favorit Transformasi Digital"
+            >
+
+            <label class="favorite-star" for="fav-td" title="Favorit">
+              <i class="fa-regular fa-star star-outline"></i>
+              <i class="fa-solid fa-star star-filled"></i>
+            </label>
+          </span>
+
+        </div>
+
+        <h3>Transformasi Digital</h3>
+
+        <div class="course-footer">
+
+          <span class="course-info">
+            <i class="fa-solid fa-graduation-cap"></i>
+            Semester 1 &nbsp;
+            <i class="fa-regular fa-file-lines"></i>
+            12 Materi
+          </span>
+
+          <a class="btn" href="#tahun-ajaran">
+            View <i class="fa-solid fa-arrow-right"></i>
+          </a>
+
+        </div>
+
+      </article>
+
+
+      <!-- =========================================
+           11.4 PENGANTAR TEKNOLOGI INFORMASI
+      ========================================== -->
+      <article class="course-card card" data-semester="1">
+
+        <div class="course-cover">
+
+          <div class="cover-illustration">
+            <i class="fa-solid fa-desktop" aria-hidden="true"></i>
+          </div>
+
+          <span class="cover-label">
+            PENGANTAR<br>
+            TEKNOLOGI<br>
+            INFORMASI
+          </span>
+
+        </div>
+
+        <div class="course-meta">
+
+          <span>
+            <i class="fa-solid fa-book"></i>
+            Materi
+          </span>
+
+          <span>
+            <input
+              class="star-check"
+              type="checkbox"
+              id="fav-pti"
+              aria-label="Tandai favorit Pengantar Teknologi Informasi"
+            >
+
+            <label class="favorite-star" for="fav-pti" title="Favorit">
+              <i class="fa-regular fa-star star-outline"></i>
+              <i class="fa-solid fa-star star-filled"></i>
+            </label>
+          </span>
+
+        </div>
+
+        <h3>Pengantar Teknologi Informasi</h3>
+
+        <div class="course-footer">
+
+          <span class="course-info">
+            <i class="fa-solid fa-graduation-cap"></i>
+            Semester 1 &nbsp;
+            <i class="fa-regular fa-file-lines"></i>
+            12 Materi
+          </span>
+
+          <a class="btn" href="#tahun-ajaran">
+            View <i class="fa-solid fa-arrow-right"></i>
+          </a>
+
+        </div>
+
+      </article>
+
+
+      <!-- =========================================
+           11.5 MATEMATIKA DISKRIT
+      ========================================== -->
+      <article class="course-card card" data-semester="1">
+
+        <div class="course-cover cover-green">
+
+          <div class="cover-illustration">
+            <i class="fa-solid fa-calculator" aria-hidden="true"></i>
+          </div>
+
+          <span class="cover-label">
+            MATEMATIKA<br>
+            DISKRIT
+          </span>
+
+        </div>
+
+        <div class="course-meta">
+
+          <span>
+            <i class="fa-solid fa-book"></i>
+            Materi
+          </span>
+
+          <span>
+            <input
+              class="star-check"
+              type="checkbox"
+              id="fav-md"
+              aria-label="Tandai favorit Matematika Diskrit"
+            >
+
+            <label class="favorite-star" for="fav-md" title="Favorit">
+              <i class="fa-regular fa-star star-outline"></i>
+              <i class="fa-solid fa-star star-filled"></i>
+            </label>
+          </span>
+
+        </div>
+
+        <h3>Matematika Diskrit</h3>
+
+        <div class="course-footer">
+
+          <span class="course-info">
+            <i class="fa-solid fa-graduation-cap"></i>
+            Semester 1 &nbsp;
+            <i class="fa-regular fa-file-lines"></i>
+            12 Materi
+          </span>
+
+          <a class="btn" href="#tahun-ajaran">
+            View <i class="fa-solid fa-arrow-right"></i>
+          </a>
+
+        </div>
+
+      </article>
+
+
+      <!-- =========================================
+           11.6 BAHASA INDONESIA
+      ========================================== -->
+      <article class="course-card card" data-semester="1">
+
+        <div class="course-cover cover-orange">
+
+          <div class="cover-illustration">
+            <i class="fa-solid fa-graduation-cap" aria-hidden="true"></i>
+          </div>
+
+          <span class="cover-label">
+            DI KELAS<br>
+            MATA KULIAH DASAR<br>
+            UMUM (MKDU)
+          </span>
+
+        </div>
+
+        <div class="course-meta">
+
+          <span>
+            <i class="fa-solid fa-book"></i>
+            Materi
+          </span>
+
+          <span>
+            <input
+              class="star-check"
+              type="checkbox"
+              id="fav-bi"
+              aria-label="Tandai favorit Bahasa Indonesia"
+            >
+
+            <label class="favorite-star" for="fav-bi" title="Favorit">
+              <i class="fa-regular fa-star star-outline"></i>
+              <i class="fa-solid fa-star star-filled"></i>
+            </label>
+          </span>
+
+        </div>
+
+        <h3>Bahasa Indonesia</h3>
+
+        <div class="course-footer">
+
+          <span class="course-info">
+            <i class="fa-solid fa-graduation-cap"></i>
+            Semester 1 &nbsp;
+            <i class="fa-regular fa-file-lines"></i>
+            12 Materi
+          </span>
+
+          <a class="btn" href="#tahun-ajaran">
+            View <i class="fa-solid fa-arrow-right"></i>
+          </a>
+
+        </div>
+
+      </article>
+
+
+      <!-- =========================================
+           11.7 PEMROGRAMAN BERORIENTASI OBJEK
+      ========================================== -->
+      <article class="course-card card" data-semester="2">
+
+        <div class="course-cover">
+
+          <div class="cover-illustration">
+            <i class="fa-solid fa-code" aria-hidden="true"></i>
+          </div>
+
+          <span class="cover-label">
+            PEMROGRAMAN<br>
+            BERORIENTASI<br>
+            OBJEK
+          </span>
+
+        </div>
+
+        <div class="course-meta">
+
+          <span>
+            <i class="fa-solid fa-book"></i>
+            Materi
+          </span>
+
+          <span>
+            <input
+              class="star-check"
+              type="checkbox"
+              id="fav-pbo"
+              aria-label="Tandai favorit Pemrograman Berorientasi Objek"
+            >
+
+            <label class="favorite-star" for="fav-pbo" title="Favorit">
+              <i class="fa-regular fa-star star-outline"></i>
+              <i class="fa-solid fa-star star-filled"></i>
+            </label>
+          </span>
+
+        </div>
+
+        <h3>Pemrograman Berorientasi Objek</h3>
+
+        <div class="course-footer">
+
+          <span class="course-info">
+            <i class="fa-solid fa-graduation-cap"></i>
+            Semester 2 &nbsp;
+            <i class="fa-regular fa-file-lines"></i>
+            12 Materi
+          </span>
+
+          <a class="btn" href="#tahun-ajaran">
+            View <i class="fa-solid fa-arrow-right"></i>
+          </a>
+
+        </div>
+
+      </article>
+
+
+      <!-- =========================================
+           11.8 BASIS DATA
+      ========================================== -->
+      <article class="course-card card" data-semester="2">
+
+        <div class="course-cover">
+
+          <div class="cover-illustration">
+            <i class="fa-solid fa-database" aria-hidden="true"></i>
+          </div>
+
+          <span class="cover-label">
+            BASIS<br>
+            DATA
+          </span>
+
+        </div>
+
+        <div class="course-meta">
+
+          <span>
+            <i class="fa-solid fa-book"></i>
+            Materi
+          </span>
+
+          <span>
+            <input
+              class="star-check"
+              type="checkbox"
+              id="fav-db"
+              aria-label="Tandai favorit Basis Data"
+            >
+
+            <label class="favorite-star" for="fav-db" title="Favorit">
+              <i class="fa-regular fa-star star-outline"></i>
+              <i class="fa-solid fa-star star-filled"></i>
+            </label>
+          </span>
+
+        </div>
+
+        <h3>Basis Data</h3>
+
+        <div class="course-footer">
+
+          <span class="course-info">
+            <i class="fa-solid fa-graduation-cap"></i>
+            Semester 2 &nbsp;
+            <i class="fa-regular fa-file-lines"></i>
+            12 Materi
+          </span>
+
+          <a class="btn" href="#tahun-ajaran">
+            View <i class="fa-solid fa-arrow-right"></i>
+          </a>
+
+        </div>
+
+      </article>
+
+
+      <!-- =========================================
+           11.9 STATISTIKA
+      ========================================== -->
+      <article class="course-card card" data-semester="3">
+
+        <div class="course-cover cover-green">
+
+          <div class="cover-illustration">
+            <i class="fa-solid fa-chart-simple" aria-hidden="true"></i>
+          </div>
+
+          <span class="cover-label">STATISTIKA</span>
+
+        </div>
+
+        <div class="course-meta">
+
+          <span>
+            <i class="fa-solid fa-book"></i>
+            Materi
+          </span>
+
+          <span>
+            <input
+              class="star-check"
+              type="checkbox"
+              id="fav-stat"
+              aria-label="Tandai favorit Statistika"
+            >
+
+            <label class="favorite-star" for="fav-stat" title="Favorit">
+              <i class="fa-regular fa-star star-outline"></i>
+              <i class="fa-solid fa-star star-filled"></i>
+            </label>
+          </span>
+
+        </div>
+
+        <h3>Statistika</h3>
+
+        <div class="course-footer">
+
+          <span class="course-info">
+            <i class="fa-solid fa-graduation-cap"></i>
+            Semester 3 &nbsp;
+            <i class="fa-regular fa-file-lines"></i>
+            12 Materi
+          </span>
+
+          <a class="btn" href="#tahun-ajaran">
+            View <i class="fa-solid fa-arrow-right"></i>
+          </a>
+
+        </div>
+
+      </article>
+
+    </section>
+
+
+    <!-- =========================================
+         12. PESAN JIKA MATERI TIDAK DITEMUKAN
+    ========================================== -->
+    <p class="filter-empty">
+      Belum ada contoh mata kuliah untuk semester ini.
+    </p>
+
+
+    <!-- =========================================
+         13. MODAL PILIH TAHUN AJARAN
+    ========================================== -->
+    <section
+      class="year-overlay"
+      id="tahun-ajaran"
+      aria-label="Pilih Tahun Ajaran"
+    >
+
+      <div class="year-dialog">
+
+        <!-- Tombol Menutup Modal -->
+        <a
+          href="#"
+          class="close-dialog"
+          aria-label="Tutup modal"
+        >
+          &times;
+        </a>
+
+
+        <!-- Judul dan Petunjuk Modal -->
+        <h2>Pilih Tahun Ajaran</h2>
+
+        <p>
+          Silakan pilih tahun ajaran untuk melihat materi.
+        </p>
+
+
+        <!-- Pilihan Tahun Ajaran -->
+        <div class="year-choices">
+
+          <a href="detail-matkul.html">2024/2025</a>
+          <a href="detail-matkul.html">2025/2026</a>
+          <a href="detail-matkul.html">2026/2027</a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+  </main>
+
+  <!-- Logic Aplikasi Utama RepoSIKa -->
+  <script type="module" src="JS-App/app.js"></script>
+</body>
+
+</html>
