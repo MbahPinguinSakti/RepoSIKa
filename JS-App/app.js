@@ -38,6 +38,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 2. Cek Sesi Pengguna & Setup Navigasi / Header
   await initUserSession();
 
+  // 2b. Inisialisasi Modal Interaktif Akun, Settings, & Bantuan
+  initUserModals();
+
   // 3. Inisialisasi Fitur Sesuai Halaman yang Aktif
   const pathname = window.location.pathname.toLowerCase();
 
@@ -288,6 +291,39 @@ async function loadDashboardData() {
       });
     });
 
+    // Jika di halaman index.html / dashboard.html (.overview-grid), render dinamis
+    const overviewGrid = document.querySelector('.overview-grid');
+    if (overviewGrid && state.allMatkul.length > 0) {
+      overviewGrid.innerHTML = state.allMatkul.map((m, i) => {
+        const colors = ['', 'cover-green', 'cover-orange'];
+        const colorClass = colors[i % 3];
+
+        return `
+          <article class="overview-card card" data-semester="${m.semester || 1}" data-matkul-id="${m.id}">
+            <div class="course-cover ${colorClass}">
+              <div class="cover-illustration">
+                <i class="fa-solid fa-laptop-code" aria-hidden="true"></i>
+              </div>
+              <span class="cover-label">
+                ${escapeHtml(m.nama).toUpperCase().replace(/\s+/g, '<br>')}
+              </span>
+            </div>
+            <span class="material-type">
+              <i class="fa-solid fa-book"></i>
+              Materi
+            </span>
+            <h3>${escapeHtml(m.nama)}</h3>
+            <div class="overview-footer">
+              <span>Semester ${m.semester || 1}</span>
+              <a class="btn btn-open-modal" href="#tahun-ajaran" data-matkul-id="${m.id}">
+                Start <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
     // Update jumlah materi total
     const countPill = document.querySelector('.count-pill');
     if (countPill && state.allMatkul.length > 0) {
@@ -336,6 +372,7 @@ async function initDetailMatkulPage() {
 
       if (state.allMateri.length > 0) {
         await renderMaterialRows(state.allMateri);
+        updatePreviewPanel(state.allMateri[0]);
       }
     } catch (e) {
       console.warn('Gagal memuat detail matkul / materi:', e.message);
@@ -345,6 +382,7 @@ async function initDetailMatkulPage() {
   // Setup interaksi materi
   initBookmarkButtons();
   initReadButtons();
+  initMaterialRowSelection();
 }
 
 async function renderMaterialRows(materiList) {
@@ -672,5 +710,236 @@ function initActivitySwitcher() {
     if (state.activityInterval) {
       clearInterval(state.activityInterval);
     }
+  });
+}
+
+
+// Helper untuk memperbarui panel preview di sebelah kanan (detail-matkul.html)
+function updatePreviewPanel(materi) {
+  if (!materi) return;
+
+  const previewHeader = document.querySelector('.preview-header h2');
+  if (previewHeader) previewHeader.textContent = materi.judul;
+
+  const paperTitle = document.querySelector('.pdf-paper h1');
+  if (paperTitle) paperTitle.textContent = materi.judul;
+
+  const paperDesc = document.querySelector('.pdf-paper p');
+  if (paperDesc && materi.deskripsi) paperDesc.textContent = materi.deskripsi;
+
+  // Update tombol baca di preview panel
+  const previewReadBtn = document.querySelector('.preview-actions .btn, .pdf-paper .btn');
+  if (previewReadBtn) {
+    previewReadBtn.setAttribute('data-materi-id', materi.id);
+    previewReadBtn.onclick = (e) => {
+      e.preventDefault();
+      window.location.href = `reader.html?title=${encodeURIComponent(materi.judul)}&materi_id=${encodeURIComponent(materi.id)}`;
+    };
+  }
+
+  applyDynamicWatermark();
+}
+
+function initMaterialRowSelection() {
+  document.querySelectorAll('.material-row').forEach((row) => {
+    row.addEventListener('click', (e) => {
+      if (e.target.closest('.bookmark-icon, .read-button')) return;
+
+      document.querySelectorAll('.material-row').forEach((r) => r.classList.remove('active'));
+      row.classList.add('active');
+
+      const materiId = row.getAttribute('data-materi-id');
+      const materi = state.allMateri.find((m) => String(m.id) === String(materiId));
+      if (materi) {
+        updatePreviewPanel(materi);
+      } else {
+        const title = row.getAttribute('data-title') || row.querySelector('h3')?.textContent || '';
+        updatePreviewPanel({ judul: title, id: materiId });
+      }
+    });
+  });
+}
+
+// =========================================================================
+// 8. MODAL INTERAKTIF: PROFIL, SETTINGS, & HELP & SUPPORT
+// =========================================================================
+function initUserModals() {
+  const avatar = document.querySelector('.avatar');
+  const profileLinks = document.querySelectorAll('.side-bottom-link:has(.fa-user), .sidebar-options span:has(.fa-user)');
+  const settingsLinks = document.querySelectorAll('.side-bottom-link:has(.fa-gear), .sidebar-options span:has(.fa-gear)');
+  const helpLinks = document.querySelectorAll('.side-bottom-link:has(.fa-circle-question), .help-link, .support');
+
+  // Modal Container Generator
+  function getOrCreateModal(id) {
+    let m = document.getElementById(id);
+    if (!m) {
+      m = document.createElement('div');
+      m.id = id;
+      m.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 9999; animation: fadeInScale 0.2s ease;';
+      document.body.appendChild(m);
+    }
+    return m;
+  }
+
+  // 1. Profil Modal
+  const showProfile = () => {
+    const rawName = state.profile?.nama || state.user?.user_metadata?.nama || state.user?.email?.split('@')[0] || 'Civitas Akademika';
+    const email = state.user?.email || '-';
+    const npm = state.profile?.npm || state.user?.user_metadata?.npm || 'Mahasiswa UNSIKA';
+    const role = state.profile?.role || 'mahasiswa';
+    const initial = rawName.charAt(0).toUpperCase();
+
+    const m = getOrCreateModal('user-profile-modal');
+    m.innerHTML = `
+      <div style="background: var(--paper, white); color: var(--ink, #1e293b); border-radius: 16px; padding: 28px; width: 90%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); font-family: 'Poppins', sans-serif; position: relative;">
+        <button type="button" class="close-modal" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 22px; cursor: pointer; color: var(--muted, #64748b);">&times;</button>
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="width: 72px; height: 72px; border-radius: 50%; background: var(--olive, #788744); color: white; font-size: 30px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; font-weight: bold; box-shadow: 0 4px 12px rgba(120,135,68,0.3);">
+            ${initial}
+          </div>
+          <h2 style="margin: 0; font-size: 18px;">${escapeHtml(rawName)}</h2>
+          <span style="display: inline-block; padding: 3px 12px; background: rgba(120, 135, 68, 0.15); color: var(--olive, #788744); border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-top: 6px;">
+            ${escapeHtml(role)}
+          </span>
+        </div>
+        <div style="background: var(--line, #f8fafc); border-radius: 12px; padding: 14px; margin-bottom: 20px; font-size: 13px;">
+          <div style="margin-bottom: 8px;"><strong>Email:</strong> ${escapeHtml(email)}</div>
+          <div style="margin-bottom: 8px;"><strong>NPM:</strong> ${escapeHtml(npm)}</div>
+          <div><strong>Status Akun:</strong> <span style="color: #16a34a; font-weight: bold;">● Aktif</span></div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn-logout-modal" style="flex: 1; padding: 10px; background: #dc2626; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+            <i class="fa-solid fa-right-from-bracket"></i> Keluar
+          </button>
+          <button type="button" class="btn-close-modal" style="flex: 1; padding: 10px; background: #e2e8f0; color: #334155; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+            Tutup
+          </button>
+        </div>
+      </div>
+    `;
+
+    m.style.display = 'flex';
+    const close = () => { m.style.display = 'none'; };
+    m.querySelector('.close-modal').onclick = close;
+    m.querySelector('.btn-close-modal').onclick = close;
+    m.onclick = (e) => { if (e.target === m) close(); };
+    m.querySelector('.btn-logout-modal').onclick = async () => {
+      if (confirm('Apakah Anda yakin ingin keluar dari akun?')) {
+        await signOut();
+        window.location.href = 'login.html';
+      }
+    };
+  };
+
+  // 2. Settings Modal
+  const showSettings = () => {
+    const isDark = document.body.classList.contains('dark-theme');
+    const m = getOrCreateModal('user-settings-modal');
+    m.innerHTML = `
+      <div style="background: var(--paper, white); color: var(--ink, #1e293b); border-radius: 16px; padding: 28px; width: 90%; max-width: 440px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); font-family: 'Poppins', sans-serif; position: relative;">
+        <button type="button" class="close-modal" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 22px; cursor: pointer; color: var(--muted, #64748b);">&times;</button>
+        <h2 style="margin: 0 0 16px; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-gear" style="color: var(--olive, #788744);"></i> Pengaturan Tampilan
+        </h2>
+        <div style="border-top: 1px solid var(--line, #e2e8f0); padding-top: 14px; margin-bottom: 20px; font-size: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div>
+              <strong>Mode Gelap (Dark Mode)</strong>
+              <p style="margin: 2px 0 0; font-size: 12px; color: var(--muted, #64748b);">Ubah tema ke mode gelap untuk kenyamanan mata.</p>
+            </div>
+            <input type="checkbox" id="settings-theme-toggle" ${isDark ? 'checked' : ''} style="width: 20px; height: 20px; cursor: pointer;">
+          </div>
+          <div style="margin-bottom: 12px;">
+            <strong>Akses Sesi:</strong>
+            <p style="margin: 2px 0 0; font-size: 12px; color: var(--muted, #64748b);">Tersambung ke Supabase Auth dengan otentikasi kampus UNSIKA.</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" style="width: 100%; padding: 10px; background: var(--olive, #788744); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+          Selesai
+        </button>
+      </div>
+    `;
+
+    m.style.display = 'flex';
+    const close = () => { m.style.display = 'none'; };
+    m.querySelector('.close-modal').onclick = close;
+    m.querySelector('.btn-close-modal').onclick = close;
+    m.onclick = (e) => { if (e.target === m) close(); };
+
+    const toggle = m.querySelector('#settings-theme-toggle');
+    if (toggle) {
+      toggle.onchange = () => {
+        const nextDark = toggle.checked;
+        localStorage.setItem(CONFIG.THEME_KEY, nextDark ? 'dark' : 'light');
+        if (nextDark) {
+          document.body.classList.add('dark-theme');
+        } else {
+          document.body.classList.remove('dark-theme');
+        }
+        const darkInput = document.getElementById('theme-dark');
+        if (darkInput) darkInput.checked = nextDark;
+      };
+    }
+  };
+
+  // 3. Help & Support Modal
+  const showHelp = () => {
+    const m = getOrCreateModal('user-help-modal');
+    m.innerHTML = `
+      <div style="background: var(--paper, white); color: var(--ink, #1e293b); border-radius: 16px; padding: 28px; width: 90%; max-width: 480px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); font-family: 'Poppins', sans-serif; position: relative; max-height: 85vh; overflow-y: auto;">
+        <button type="button" class="close-modal" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 22px; cursor: pointer; color: var(--muted, #64748b);">&times;</button>
+        <h2 style="margin: 0 0 16px; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-circle-question" style="color: var(--olive, #788744);"></i> Bantuan & Dukungan (FAQ)
+        </h2>
+        <div style="font-size: 13px; line-height: 1.6;">
+          <div style="margin-bottom: 14px; background: var(--line, #f8fafc); padding: 12px; border-radius: 8px;">
+            <strong style="color: var(--ink, #1e293b);">Bagaimana cara membaca materi perkuliahan?</strong>
+            <p style="margin: 4px 0 0; color: var(--muted, #64748b);">Pilih mata kuliah yang kamu inginkan, pilih tahun ajaran, lalu klik tombol "Baca Materi" untuk membuka pembaca daring terproteksi.</p>
+          </div>
+          <div style="margin-bottom: 14px; background: var(--line, #f8fafc); padding: 12px; border-radius: 8px;">
+            <strong style="color: var(--ink, #1e293b);">Mengapa berkas tidak bisa dicetak atau diunduh bebas?</strong>
+            <p style="margin: 4px 0 0; color: var(--muted, #64748b);">Sesuai kebijakan akademik kampus UNSIKA, seluruh materi perkuliahan dilindungi hak cipta untuk mencegah peredaran materi secara liar di luar civitas akademika.</p>
+          </div>
+          <div style="margin-bottom: 16px; background: var(--line, #f8fafc); padding: 12px; border-radius: 8px;">
+            <strong style="color: var(--ink, #1e293b);">Layanan Bantuan Perpustakaan UNSIKA:</strong>
+            <p style="margin: 4px 0 0; color: var(--muted, #64748b);">Gedung Perpustakaan UNSIKA Lt. 2<br>Email: <a href="mailto:perpustakaan@unsika.ac.id" style="color: var(--olive, #788744);">perpustakaan@unsika.ac.id</a></p>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" style="width: 100%; padding: 10px; background: var(--olive, #788744); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+          Tutup Bantuan
+        </button>
+      </div>
+    `;
+
+    m.style.display = 'flex';
+    const close = () => { m.style.display = 'none'; };
+    m.querySelector('.close-modal').onclick = close;
+    m.querySelector('.btn-close-modal').onclick = close;
+    m.onclick = (e) => { if (e.target === m) close(); };
+  };
+
+  // Pasang event listener
+  if (avatar) {
+    avatar.style.cursor = 'pointer';
+    avatar.setAttribute('title', 'Buka Profil Akun');
+    avatar.onclick = showProfile;
+  }
+
+  profileLinks.forEach((el) => {
+    el.style.cursor = 'pointer';
+    el.classList.remove('disabled-link');
+    el.onclick = (e) => { e.preventDefault(); showProfile(); };
+  });
+
+  settingsLinks.forEach((el) => {
+    el.style.cursor = 'pointer';
+    el.classList.remove('disabled-link');
+    el.onclick = (e) => { e.preventDefault(); showSettings(); };
+  });
+
+  helpLinks.forEach((el) => {
+    el.style.cursor = 'pointer';
+    el.classList.remove('disabled-link');
+    el.onclick = (e) => { e.preventDefault(); showHelp(); };
   });
 }

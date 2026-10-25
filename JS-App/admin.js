@@ -52,15 +52,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // 3. Deteksi Halaman Admin yang Sedang Aktif
+  // 3. Inisialisasi Modal Akun & Bantuan Admin
+  initAdminModals();
+
+  // 4. Deteksi Halaman Admin yang Sedang Aktif
   const path = window.location.pathname.toLowerCase();
 
   if (path.includes('admin-dashboard')) {
-    initAdminDashboard();
+    await initAdminDashboard();
   }
 
   if (path.includes('admin-materi')) {
-    initAdminMateriUpload();
+    await initAdminMateriUpload();
+  }
+
+  if (path.includes('admin-semua-materi')) {
+    await initAdminSemuaMateri();
+  }
+
+  if (path.includes('admin-detail-matkul')) {
+    await initAdminDetailMatkul();
   }
 });
 
@@ -431,3 +442,312 @@ async function initAdminMateriUpload() {
   }
 }
 
+
+
+// =========================================================================
+// 4. SEMUA MATERI ADMIN (FR-07: admin-semua-materi.html)
+// =========================================================================
+async function initAdminSemuaMateri() {
+  const grid = document.querySelector('.matkul-grid');
+  const countEl = document.querySelector('.materi-count');
+  const searchInput = document.querySelector('.materi-search input');
+  const filterSelect = document.querySelector('.materi-filter select');
+
+  if (!grid) return;
+
+  grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b;"><i class="fa-solid fa-spinner fa-spin" style="font-size: 28px; margin-bottom: 12px; color: #788744;"></i><p>Memuat daftar mata kuliah...</p></div>';
+
+  try {
+    // 1. Ambil seluruh mata kuliah
+    const matkulList = await matkulService.getAll();
+    adminState.allMatkul = matkulList || [];
+
+    // 2. Ambil seluruh materi untuk menghitung jumlah per matkul
+    const { data: allMateri } = await supabase.from('materi').select('id, matkul_id');
+    const materiCountMap = {};
+    (allMateri || []).forEach((m) => {
+      materiCountMap[m.matkul_id] = (materiCountMap[m.matkul_id] || 0) + 1;
+    });
+
+    if (countEl) {
+      countEl.textContent = `${adminState.allMatkul.length} Mata Kuliah`;
+    }
+
+    const renderMatkulCards = (courses) => {
+      if (courses.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748b;"><i class="fa-solid fa-book-open" style="font-size: 32px; margin-bottom: 10px;"></i><p>Tidak ada mata kuliah yang cocok dengan pencarian.</p></div>';
+        return;
+      }
+
+      grid.innerHTML = courses
+        .map((m) => {
+          const count = materiCountMap[m.id] || 0;
+          return `
+            <article class="matkul-card" data-semester="${m.semester || 1}" data-matkul-id="${m.id}">
+              <div class="matkul-top">
+                <span class="matkul-icon">
+                  <i class="fa-solid fa-book-bookmark"></i>
+                </span>
+                <span class="semester-badge">Semester ${m.semester || 1}</span>
+              </div>
+              <div class="matkul-content">
+                <h3>${escapeHtml(m.nama)}</h3>
+                <p>${escapeHtml(m.deskripsi || 'Materi perkuliahan ' + m.nama)}</p>
+              </div>
+              <div class="matkul-bottom">
+                <span class="jumlah-materi">
+                  <i class="fa-regular fa-file-lines"></i>
+                  ${count} Materi
+                </span>
+                <a href="admin-detail-matkul.html?matkul_id=${m.id}" class="lihat-materi">
+                  Lihat Materi <i class="fa-solid fa-arrow-right"></i>
+                </a>
+              </div>
+            </article>
+          `;
+        })
+        .join('');
+    };
+
+    renderMatkulCards(adminState.allMatkul);
+
+    // Filter & Search handler
+    const handleFilter = () => {
+      const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+      const sem = filterSelect ? filterSelect.value : 'semua';
+
+      const filtered = adminState.allMatkul.filter((m) => {
+        const matchesQuery = !q || (m.nama && m.nama.toLowerCase().includes(q)) || (m.kode && m.kode.toLowerCase().includes(q));
+        const matchesSem = sem === 'semua' || String(m.semester) === String(sem);
+        return matchesQuery && matchesSem;
+      });
+
+      renderMatkulCards(filtered);
+    };
+
+    if (searchInput) searchInput.addEventListener('input', handleFilter);
+    if (filterSelect) filterSelect.addEventListener('change', handleFilter);
+
+  } catch (err) {
+    console.error('[Admin Semua Materi]', err);
+    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: red; padding: 20px;">Gagal memuat mata kuliah: ${err.message}</div>`;
+  }
+}
+
+// =========================================================================
+// 5. DETAIL MATKUL & MANAJEMEN BERKAS (FR-07: admin-detail-matkul.html)
+// =========================================================================
+async function initAdminDetailMatkul() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const matkulId = urlParams.get('matkul_id');
+
+  const titleEl = document.querySelector('.detail-header-info h1');
+  const subEl = document.querySelector('.detail-header-info p');
+  const countEl = document.querySelector('.detail-count');
+  const listContainer = document.querySelector('.material-list');
+  const searchInput = document.querySelector('.detail-search input');
+  const sortSelect = document.querySelector('.detail-sort select');
+
+  if (!listContainer) return;
+
+  if (!matkulId) {
+    listContainer.innerHTML = '<div style="text-align: center; padding: 30px; color: #dc2626;"><p>Mata kuliah tidak ditemukan. Silakan pilih dari halaman Semua Materi.</p><a href="admin-semua-materi.html" class="btn" style="margin-top: 10px; display: inline-block;">Kembali</a></div>';
+    return;
+  }
+
+  listContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #64748b;"><i class="fa-solid fa-spinner fa-spin" style="font-size: 28px; margin-bottom: 12px; color: #788744;"></i><p>Memuat materi perkuliahan...</p></div>';
+
+  try {
+    // 1. Ambil data matkul
+    const matkul = await matkulService.getById(matkulId);
+    if (matkul) {
+      if (titleEl) titleEl.textContent = matkul.nama;
+    }
+
+    // 2. Ambil materi untuk matkul ini
+    let materiList = await materiService.getByMatkul(matkulId);
+    materiList = materiList || [];
+
+    const updateCounts = (total) => {
+      if (subEl && matkul) {
+        subEl.innerHTML = `Semester ${matkul.semester || 1} <span>•</span> ${total} Materi`;
+      }
+      if (countEl) {
+        countEl.textContent = `${total} Materi`;
+      }
+    };
+
+    updateCounts(materiList.length);
+
+    const renderItems = (items) => {
+      if (items.length === 0) {
+        listContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #64748b;"><i class="fa-regular fa-file-lines" style="font-size: 32px; margin-bottom: 10px;"></i><p>Belum ada berkas materi untuk mata kuliah ini.</p><a href="admin-materi.html" class="btn" style="margin-top: 12px; display: inline-block; font-size: 13px;"><i class="fa-solid fa-plus"></i> Unggah Materi Pertama</a></div>';
+        return;
+      }
+
+      listContainer.innerHTML = items
+        .map((m) => {
+          const d = m.dibuat_pada ? new Date(m.dibuat_pada) : new Date();
+          const dateStr = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+
+          return `
+            <article class="material-item" data-materi-id="${m.id}">
+              <div class="material-icon pdf">
+                <i class="fa-solid fa-file-pdf"></i>
+              </div>
+              <div class="material-info">
+                <h3>${escapeHtml(m.judul)}</h3>
+                <p>${escapeHtml(m.tahun_akademik || 'Tahun Ajaran')} <span>•</span> ${m.jumlah_dilihat || 0}x dilihat</p>
+              </div>
+              <time datetime="${m.dibuat_pada || ''}">${dateStr}</time>
+              <div style="display: flex; gap: 8px; align-items: center; margin-left: auto;">
+                <a href="reader.html?materi_id=${m.id}&title=${encodeURIComponent(m.judul)}" class="btn-read-admin" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #e0e7ff; color: #4338ca; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600;" title="Buka Pembaca Terproteksi">
+                  <i class="fa-regular fa-eye"></i> Baca
+                </a>
+                <button type="button" class="btn-delete-admin-materi" data-materi-id="${m.id}" data-file-path="${escapeHtml(m.file_path || '')}" data-title="${escapeHtml(m.judul)}" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #fee2e2; color: #dc2626; border: 1px solid #f87171; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;" title="Hapus Berkas & Data Materi">
+                  <i class="fa-solid fa-trash-can"></i> Hapus
+                </button>
+              </div>
+            </article>
+          `;
+        })
+        .join('');
+
+      // Handler Tombol Hapus Materi (FR-07: Cascade Storage + Database)
+      listContainer.querySelectorAll('.btn-delete-admin-materi').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-materi-id');
+          const filePath = btn.getAttribute('data-file-path');
+          const title = btn.getAttribute('data-title');
+
+          if (confirm(`PERINGATAN: Hapus materi "${title}"?\nBerkas di private storage dan baris database akan dihapus permanen.`)) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menghapus...';
+
+            try {
+              // 1. Hapus berkas dari Supabase Storage jika ada
+              if (filePath) {
+                await supabase.storage.from('materi').remove([filePath]);
+              }
+              // 2. Hapus baris dari tabel materi
+              await materiService.remove(id);
+
+              alert(`Materi "${title}" berhasil dihapus.`);
+              materiList = materiList.filter((x) => String(x.id) !== String(id));
+              updateCounts(materiList.length);
+              renderItems(materiList);
+            } catch (err) {
+              alert('Gagal menghapus materi: ' + err.message);
+              btn.disabled = false;
+              btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Hapus';
+            }
+          }
+        });
+      });
+    };
+
+    renderItems(materiList);
+
+    // Live search & sort handler
+    const applySearchAndSort = () => {
+      const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+      const sort = sortSelect ? sortSelect.value : 'terbaru';
+
+      let filtered = materiList.filter((m) => !q || (m.judul && m.judul.toLowerCase().includes(q)));
+
+      if (sort === 'terbaru') {
+        filtered.sort((a, b) => new Date(b.dibuat_pada || 0) - new Date(a.dibuat_pada || 0));
+      } else if (sort === 'terlama') {
+        filtered.sort((a, b) => new Date(a.dibuat_pada || 0) - new Date(b.dibuat_pada || 0));
+      } else if (sort === 'az') {
+        filtered.sort((a, b) => (a.judul || '').localeCompare(b.judul || ''));
+      }
+
+      renderItems(filtered);
+    };
+
+    if (searchInput) searchInput.addEventListener('input', applySearchAndSort);
+    if (sortSelect) sortSelect.addEventListener('change', applySearchAndSort);
+
+  } catch (err) {
+    console.error('[Admin Detail Matkul]', err);
+    listContainer.innerHTML = `<div style="text-align: center; color: red; padding: 20px;">Gagal memuat materi: ${err.message}</div>`;
+  }
+}
+
+// =========================================================================
+// 6. MODAL PROFIL & BANTUAN ADMIN (Interaktif Avatar & Menu Footer)
+// =========================================================================
+function initAdminModals() {
+  const avatar = document.querySelector('.page-header .avatar');
+  const profileLink = document.querySelector('.side-footer a:has(.fa-user)');
+
+  const showProfileModal = () => {
+    const nama = adminState.adminProfile?.nama || 'Administrator';
+    const email = adminState.adminUser?.email || '-';
+    const npm = adminState.adminProfile?.npm || 'Staf Kampus';
+    const role = adminState.adminProfile?.role || 'admin';
+
+    let modal = document.getElementById('admin-profile-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'admin-profile-modal';
+      modal.style.cssText = 'position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; animation: fadeInScale 0.2s ease;';
+      document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+      <div style="background: white; border-radius: 16px; padding: 28px; width: 90%; max-width: 420px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); font-family: 'Poppins', sans-serif; position: relative;">
+        <button type="button" id="close-admin-profile" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 20px; cursor: pointer; color: #64748b;">&times;</button>
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="width: 70px; height: 70px; border-radius: 50%; background: #e0e7ff; color: #4338ca; font-size: 32px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; font-weight: bold;">
+            👩🏻
+          </div>
+          <h2 style="margin: 0; font-size: 18px; color: #1e293b;">${escapeHtml(nama)}</h2>
+          <span style="display: inline-block; padding: 3px 10px; background: #fef3c7; color: #92400e; border-radius: 12px; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-top: 6px;">
+            ${escapeHtml(role)}
+          </span>
+        </div>
+        <div style="background: #f8fafc; border-radius: 10px; padding: 14px; margin-bottom: 20px; font-size: 13px;">
+          <div style="margin-bottom: 8px;"><strong>Email:</strong> ${escapeHtml(email)}</div>
+          <div><strong>Identitas:</strong> ${escapeHtml(npm)}</div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" id="admin-modal-logout" style="flex: 1; padding: 10px; background: #dc2626; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+            <i class="fa-solid fa-right-from-bracket"></i> Keluar
+          </button>
+          <button type="button" id="admin-modal-close-btn" style="flex: 1; padding: 10px; background: #e2e8f0; color: #334155; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+            Tutup
+          </button>
+        </div>
+      </div>
+    `;
+
+    modal.style.display = 'flex';
+
+    const closeModal = () => { modal.style.display = 'none'; };
+    modal.querySelector('#close-admin-profile').addEventListener('click', closeModal);
+    modal.querySelector('#admin-modal-close-btn').addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+    modal.querySelector('#admin-modal-logout').addEventListener('click', async () => {
+      if (confirm('Keluar dari sesi Administrator?')) {
+        await signOut();
+        window.location.href = 'login.html';
+      }
+    });
+  };
+
+  if (avatar) {
+    avatar.style.cursor = 'pointer';
+    avatar.setAttribute('title', 'Lihat Akun Admin');
+    avatar.addEventListener('click', showProfileModal);
+  }
+
+  if (profileLink) {
+    profileLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      showProfileModal();
+    });
+  }
+}

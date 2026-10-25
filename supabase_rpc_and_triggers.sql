@@ -210,3 +210,4 @@ CREATE TRIGGER tr_protect_user_roles
 BEFORE UPDATE ON public.users
 FOR EACH ROW
 EXECUTE FUNCTION public.protect_user_roles();
+
