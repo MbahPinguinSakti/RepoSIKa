@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beranda | RepoSIKa</title>
+  <link rel="stylesheet" href="CSS-login/login.css">
+  <style>
+    .welcome-container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      border: 2px solid #464704;
+    }
+    .profile-card {
+      background: #f1f2df;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      border-left: 6px solid #464704;
+    }
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .profile-item {
+      font-size: 14px;
+    }
+    .profile-item strong {
+      color: #464704;
+      display: block;
+    }
+    .btn-logout {
+      background-color: #991b1b;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 30px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-logout:hover {
+      background-color: #b91c1c;
+    }
+    .matkul-section {
+      margin-top: 28px;
+    }
+    .matkul-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 14px;
+    }
+    .matkul-card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .matkul-card h4 {
+      color: #464704;
+      margin-bottom: 6px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      background: #e0f2fe;
+      color: #0369a1;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="welcome-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e1e1d7; padding-bottom: 16px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <img src="assets/logo-reposika.png" alt="Logo" style="width: 50px; height: 50px; object-fit: contain;">
+        <div>
+          <h2 style="color: #464704; margin: 0;">RepoSIKa</h2>
+          <small style="color: #666;">Repositori Akademik Kampus UNSIKA</small>
+        </div>
+      </div>
+      <button id="btn-logout" class="btn-logout">Keluar (Logout)</button>
+    </div>
+
+    <div class="profile-card">
+      <h3 style="color: #464704; margin-top: 0;">Sesi Aktif Pengguna</h3>
+      <div class="profile-grid">
+        <div class="profile-item">
+          <strong>Nama:</strong>
+          <span id="user-name">Memuat...</span>
+        </div>
+        <div class="profile-item">
+          <strong>Email:</strong>
+          <span id="user-email">Memuat...</span>
+        </div>
+        <div class="profile-item">
+          <strong>NPM:</strong>
+          <span id="user-npm">-</span>
+        </div>
+        <div class="profile-item">
+          <strong>Role:</strong>
+          <span id="user-role" class="badge">Mahasiswa</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="matkul-section">
+      <h3 style="color: #464704;">Daftar Mata Kuliah (Database Service)</h3>
+      <p style="font-size: 13px; color: #666;">Data di bawah ini ditarik secara langsung dari tabel <code>matkul</code> di Supabase melalui modul <code>JS-App/db-services.js</code>:</p>
+      <div id="matkul-list" class="matkul-grid">
+        <p style="color: #888;">Memuat data mata kuliah...</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { requireAuth, signOut, getCurrentUserProfile } from './JS-Login/auth.js';
+    import { matkulService } from './JS-App/db-services.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Proteksi halaman (wajib login)
+      const user = await requireAuth();
+      if (!user) return;
+
+      // 2. Ambil profil user
+      const profile = await getCurrentUserProfile();
+      document.getElementById('user-name').textContent = profile?.nama || user.user_metadata?.nama || 'Sivitas Akademika';
+      document.getElementById('user-email').textContent = user.email || '-';
+      document.getElementById('user-npm').textContent = profile?.npm || user.user_metadata?.npm || 'Khusus Mahasiswa';
+      
+      const roleBadge = document.getElementById('user-role');
+      roleBadge.textContent = profile?.role || 'mahasiswa';
+      if (profile?.role === 'admin') {
+        roleBadge.style.background = '#fef3c7';
+        roleBadge.style.color = '#92400e';
+      }
+
+      // 3. Tombol Logout
+      document.getElementById('btn-logout').addEventListener('click', async () => {
+        if (confirm('Apakah Anda yakin ingin keluar?')) {
+          await signOut();
+          window.location.replace('login.html');
+        }
+      });
+
+      // 4. Uji koneksi data matkul buatan Ardhi & Aurelia
+      const matkulContainer = document.getElementById('matkul-list');
+      try {
+        const daftarMatkul = await matkulService.getAll();
+        if (daftarMatkul && daftarMatkul.length > 0) {
+          matkulContainer.innerHTML = daftarMatkul.map(m => `
+            <div class="matkul-card">
+              <span class="badge">${m.kode || 'MK'}</span>
+              <h4 style="margin-top: 8px;">${m.nama}</h4>
+              <p style="font-size: 12px; color: #666;">Semester ${m.semester || '-'}</p>
+              <p style="font-size: 12px; color: #888;">${m.deskripsi || 'Tidak ada deskripsi'}</p>
+            </div>
+          `).join('');
+        } else {
+          matkulContainer.innerHTML = '<p style="color: #666; font-style: italic;">Belum ada data mata kuliah di tabel matkul Supabase.</p>';
+        }
+      } catch (err) {
+        console.warn('Matkul fetch note:', err.message);
+        matkulContainer.innerHTML = '<p style="color: #666; font-style: italic;">Tabel matkul siap diisi via Supabase.</p>';
+      }
+    });
+  </script>
+
+</body>
+</html>
