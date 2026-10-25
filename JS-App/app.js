@@ -61,9 +61,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initActivitySwitcher();
 });
 
-// =========================================================================
 // 1. MANAJEMEN TEMA (FR-06: Global Light / Dark Mode via localStorage)
-// =========================================================================
 function initThemeManager() {
   const themeDarkCheckbox = document.getElementById('theme-dark');
   const savedTheme = localStorage.getItem(CONFIG.THEME_KEY) || 'light';
@@ -101,9 +99,8 @@ function initThemeManager() {
   });
 }
 
-// =========================================================================
+
 // 2. SESI PENGGUNA & SIDEBAR
-// =========================================================================
 async function initUserSession() {
   state.user = await getCurrentUser();
 
@@ -138,9 +135,7 @@ async function initUserSession() {
   });
 }
 
-// =========================================================================
 // 3. DASHBOARD & MOTHER BUTTON (FR-02, FR-03)
-// =========================================================================
 async function initDashboardPage() {
   initMotherButtonModal();
   initDashboardSearchAndFilter();
@@ -275,18 +270,15 @@ async function loadDashboardData() {
   }
 }
 
-// =========================================================================
 // 4. DAFTAR MATA KULIAH (daftar-matkul.html)
-// =========================================================================
 async function initDaftarMatkulPage() {
   initMotherButtonModal();
   initDashboardSearchAndFilter();
   await loadDashboardData();
 }
 
-// =========================================================================
+
 // 5. DETAIL MATKUL & PREVIEW MATERI (detail-matkul.html)
-// =========================================================================
 async function initDetailMatkulPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const matkulId = urlParams.get('matkul_id');
@@ -439,9 +431,8 @@ function applyContentProtection() {
   });
 }
 
-// =========================================================================
+
 // 6. RIWAYAT & FAVORIT (riwayat-favorit.html)
-// =========================================================================
 async function initRiwayatFavoritPage() {
   if (!state.user) {
     alert('Silakan login terlebih dahulu untuk melihat riwayat dan materi favorit Anda.');
@@ -485,9 +476,7 @@ async function initRiwayatFavoritPage() {
   }
 }
 
-// =========================================================================
 // 7. ACTIVITY SWITCHER 3D FLIP (FR-05)
-// =========================================================================
 function initActivitySwitcher() {
   const switcher = document.querySelector('.activity-switcher');
   if (!switcher) return;
