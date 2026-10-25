@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <!-- ========================================
+         PENGATURAN DASAR HALAMAN
+    ======================================== -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Detail Mata Kuliah - Admin RepoSIKa</title>
+
+    <!-- Library ikon -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- CSS utama Admin -->
+    <link rel="stylesheet" href="admin-base.css">
+
+    <!-- CSS halaman Detail Mata Kuliah -->
+    <link rel="stylesheet" href="admin-detail-matkul.css">
+</head>
+
+<body>
+
+    <!-- ========================================
+         PENGATURAN MODE TERANG DAN GELAP
+    ======================================== -->
+    <input
+        type="checkbox"
+        id="theme-toggle"
+        class="theme-check"
+        aria-label="Aktifkan mode gelap"
+    >
+
+    <div class="layout">
+
+        <!-- ========================================
+             SIDEBAR ADMIN
+        ======================================== -->
+        <aside class="sidebar">
+
+            <!-- Logo -->
+            <a href="admin-dashboard.html" class="brand">
+                <img
+                    src="assets/logo-reposika.png"
+                    alt="Logo RepoSIKa"
+                >
+                <span>RepoSIKa</span>
+            </a>
+
+            <!-- Navigasi utama -->
+            <nav class="side-nav" aria-label="Navigasi Admin">
+
+                <a href="admin-dashboard.html">
+                    <i class="fa-solid fa-table-cells-large"></i>
+                    Dashboard
+                </a>
+
+                <a
+                    href="admin-semua-materi.html"
+                    class="active"
+                    aria-current="page"
+                >
+                    <i class="fa-solid fa-book"></i>
+                    Semua Materi
+                </a>
+
+                <a href="admin-dashboard.html#manajemen-user">
+                    <i class="fa-solid fa-users"></i>
+                    Manajemen User
+                </a>
+
+                <a href="admin-materi.html">
+                    <i class="fa-regular fa-file-lines"></i>
+                    Manajemen Materi
+                </a>
+
+            </nav>
+
+            <!-- Navigasi akun -->
+            <nav class="side-nav side-footer" aria-label="Menu Akun">
+
+                <a href="#">
+                    <i class="fa-solid fa-user"></i>
+                    Profile
+                </a>
+
+                <a href="#">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Logout
+                </a>
+
+            </nav>
+
+        </aside>
+
+        <!-- ========================================
+             KONTEN UTAMA HALAMAN
+        ======================================== -->
+        <main class="page">
+
+            <!-- ========================================
+                 HEADER HALAMAN
+            ======================================== -->
+            <header class="page-header detail-page-header">
+
+                <!-- Informasi mata kuliah -->
+                <div class="detail-header-info">
+
+                    <a
+                        href="admin-semua-materi.html"
+                        class="back-link"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Kembali ke Semua Materi
+                    </a>
+
+                    <h1>Algoritma dan Dasar Pemrograman</h1>
+
+                    <p>Semester 1 <span>•</span> 12 Materi</p>
+
+                </div>
+
+                <!-- Mode gelap dan avatar -->
+                <div class="header-right">
+
+                    <label
+                        for="theme-toggle"
+                        class="theme-switch"
+                        title="Ganti mode tampilan"
+                    >
+                        <i class="fa-regular fa-moon moon"></i>
+                        <i class="fa-solid fa-sun sun"></i>
+                    </label>
+
+                    <span class="avatar" aria-label="Avatar Admin">
+                        👩🏻
+                    </span>
+
+                </div>
+
+            </header>
+
+            <!-- ========================================
+                 BAGIAN DAFTAR MATERI
+            ======================================== -->
+            <section class="detail-card">
+
+                <!-- Judul bagian -->
+                <div class="detail-section-heading">
+
+                    <div>
+                        <h2>Daftar Materi</h2>
+                        <p>
+                            Materi yang telah diunggah
+                            untuk mata kuliah ini.
+                        </p>
+                    </div>
+
+                    <span class="detail-count">
+                        12 Materi
+                    </span>
+
+                </div>
+
+                <!-- ========================================
+                     PENCARIAN DAN PENGURUTAN
+                ======================================== -->
+                <div class="detail-toolbar">
+
+                    <!-- Kolom pencarian -->
+                    <label class="detail-search">
+
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                        <input
+                            type="search"
+                            placeholder="Cari materi..."
+                            aria-label="Cari materi"
+                        >
+
+                    </label>
+
+                    <!-- Dropdown urutan -->
+                    <label class="detail-sort">
+
+                        <span>Urutkan:</span>
+
+                        <select aria-label="Urutkan materi">
+                            <option value="terbaru">Terbaru</option>
+                            <option value="terlama">Terlama</option>
+                            <option value="az">A - Z</option>
+                        </select>
+
+                    </label>
+
+                </div>
+
+                <!-- ========================================
+                     LIST FILE MATERI
+                ======================================== -->
+                <div class="material-list">
+
+                    <!-- MATERI 1 -->
+                    <article class="material-item">
+
+                        <div class="material-icon pdf">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
+
+                        <div class="material-info">
+                            <h3>Pseudocode dan Flowchart</h3>
+                            <p>PDF <span>•</span> 2.4 MB</p>
+                        </div>
+
+                        <time datetime="2026-01-12">
+                            12 Jan 2026
+                        </time>
+
+                        <button
+                            type="button"
+                            class="material-more"
+                            aria-label="Opsi Pseudocode dan Flowchart"
+                        >
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </button>
+
+                    </article>
+
+                    <!-- MATERI 2 -->
+                    <article class="material-item">
+
+                        <div class="material-icon ppt">
+                            <i class="fa-solid fa-file-powerpoint"></i>
+                        </div>
+
+                        <div class="material-info">
+                            <h3>Dasar-Dasar Pemrograman</h3>
+                            <p>PPT <span>•</span> 3.1 MB</p>
+                        </div>
+
+                        <time datetime="2026-01-10">
+                            10 Jan 2026
+                        </time>
+
+                        <button
+                            type="button"
+                            class="material-more"
+                            aria-label="Opsi Dasar-Dasar Pemrograman"
+                        >
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </button>
+
+                    </article>
+
+                    <!-- MATERI 3 -->
+                    <article class="material-item">
+
+                        <div class="material-icon pdf">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
+
+                        <div class="material-info">
+                            <h3>Variabel dan Tipe Data</h3>
+                            <p>PDF <span>•</span> 1.8 MB</p>
+                        </div>
+
+                        <time datetime="2026-01-08">
+                            08 Jan 2026
+                        </time>
+
+                        <button
+                            type="button"
+                            class="material-more"
+                            aria-label="Opsi Variabel dan Tipe Data"
+                        >
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </button>
+
+                    </article>
+
+                    <!-- MATERI 4 -->
+                    <article class="material-item">
+
+                        <div class="material-icon doc">
+                            <i class="fa-solid fa-file-word"></i>
+                        </div>
+
+                        <div class="material-info">
+                            <h3>Percabangan (If-Else)</h3>
+                            <p>DOCX <span>•</span> 2.0 MB</p>
+                        </div>
+
+                        <time datetime="2026-01-05">
+                            05 Jan 2026
+                        </time>
+
+                        <button
+                            type="button"
+                            class="material-more"
+                            aria-label="Opsi Percabangan"
+                        >
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </button>
+
+                    </article>
+
+                    <!-- MATERI 5 -->
+                    <article class="material-item">
+
+                        <div class="material-icon pdf">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
+
+                        <div class="material-info">
+                            <h3>Perulangan (Loop)</h3>
+                            <p>PDF <span>•</span> 2.6 MB</p>
+                        </div>
+
+                        <time datetime="2026-01-02">
+                            02 Jan 2026
+                        </time>
+
+                        <button
+                            type="button"
+                            class="material-more"
+                            aria-label="Opsi Perulangan"
+                        >
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </button>
+
+                    </article>
+
+                </div>
+
+                <!-- ========================================
+                     INFORMASI TAMBAHAN
+                ======================================== -->
+                <p class="detail-note">
+                    Menampilkan 5 dari 12 materi contoh.
+                </p>
+
+            </section>
+
+        </main>
+
+    </div>
+
+  <!-- Logic Admin RepoSIKa -->
+  <script type="module" src="JS-App/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,396 @@
+/* =========================================
+   ADMIN SEMUA MATERI - RepoSIKa
+   Styling khusus halaman Semua Materi
+========================================= */
+
+
+/* =========================================
+   1. TOOLBAR PENCARIAN DAN FILTER
+========================================= */
+
+.materi-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    margin-bottom: 30px;
+}
+
+/* Kolom pencarian */
+.materi-search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    flex: 1;
+    min-width: 0;
+
+    padding: 14px 18px;
+
+    border: 1px solid var(--border, #e3e7d9);
+    border-radius: 12px;
+
+    background-color: var(--input, #f9faef);
+    color: var(--ink, #29301f);
+}
+
+.materi-search i {
+    color: var(--muted, #777b69);
+    font-size: 16px;
+}
+
+.materi-search input {
+    width: 100%;
+    min-width: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+    color: var(--ink, #29301f);
+
+    font-size: 13px;
+}
+
+.materi-search input::placeholder {
+    color: var(--muted, #777b69);
+}
+
+/* Filter semester */
+.materi-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 14px 16px;
+
+    border: 1px solid var(--border, #e3e7d9);
+    border-radius: 12px;
+
+    background-color: var(--input, #f9faef);
+    color: var(--ink, #29301f);
+}
+
+.materi-filter select {
+    min-width: 140px;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+    color: var(--ink, #29301f);
+
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* Tombol Tambah Materi */
+.tambah-materi {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    min-height: 50px;
+    padding: 12px 18px;
+
+    border-radius: 12px;
+
+    background-color: var(--accent, #dbe87d);
+    color: #303a19;
+
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition: background-color 0.2s ease;
+}
+
+.tambah-materi:hover {
+    background-color: #cadb61;
+}
+
+
+/* =========================================
+   2. JUDUL DAFTAR MATA KULIAH
+========================================= */
+
+.materi-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+.materi-heading h2 {
+    margin: 0;
+
+    color: var(--ink, #29301f);
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.materi-heading p {
+    margin: 5px 0 0;
+
+    color: var(--muted, #777b69);
+    font-size: 13px;
+}
+
+.materi-count {
+    padding: 9px 14px;
+
+    border: 1px solid var(--border, #e3e7d9);
+    border-radius: 20px;
+
+    background-color: var(--card, #ffffff);
+    color: var(--ink, #29301f);
+
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+/* =========================================
+   3. GRID KARTU MATA KULIAH
+========================================= */
+
+.matkul-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.matkul-card {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+    min-height: 270px;
+    padding: 22px;
+
+    border: 1px solid var(--border, #e3e7d9);
+    border-radius: 18px;
+
+    background-color: var(--card, #ffffff);
+    box-shadow: var(--shadow, 0 5px 18px rgba(0, 0, 0, 0.04));
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.matkul-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(35, 43, 15, 0.12);
+}
+
+
+/* =========================================
+   4. BAGIAN ATAS KARTU
+========================================= */
+
+.matkul-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-bottom: 20px;
+}
+
+.matkul-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+
+    border-radius: 14px;
+
+    background-color: var(--card-soft, #f3f6e7);
+    color: var(--ink, #29301f);
+
+    font-size: 25px;
+}
+
+.semester-badge {
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    background-color: var(--accent, #dbe87d);
+    color: #363d16;
+
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+/* =========================================
+   5. INFORMASI MATA KULIAH
+========================================= */
+
+.matkul-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.matkul-content h3 {
+    margin: 0 0 10px;
+
+    color: var(--ink, #29301f);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.matkul-content p {
+    margin: 0 0 20px;
+
+    color: var(--muted, #777b69);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+
+/* =========================================
+   6. BAGIAN BAWAH KARTU
+========================================= */
+
+.matkul-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    padding-top: 15px;
+
+    border-top: 1px solid var(--border, #e3e7d9);
+}
+
+.jumlah-materi {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    color: var(--muted, #777b69);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.lihat-materi {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    color: var(--ink, #29301f);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition:
+        gap 0.2s ease,
+        color 0.2s ease;
+}
+
+.lihat-materi:hover {
+    gap: 12px;
+    color: var(--olive, #687a30);
+}
+
+
+/* =========================================
+   7. RESPONSIVE LAPTOP
+========================================= */
+
+@media (max-width: 1250px) {
+
+    .matkul-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .materi-toolbar {
+        flex-wrap: wrap;
+    }
+
+    .materi-search {
+        flex-basis: 100%;
+    }
+}
+
+
+/* =========================================
+   8. RESPONSIVE TABLET
+========================================= */
+
+@media (max-width: 900px) {
+
+    .matkul-grid {
+        gap: 15px;
+    }
+
+    .matkul-card {
+        padding: 18px;
+    }
+
+    .matkul-content h3 {
+        font-size: 15px;
+    }
+}
+
+
+/* =========================================
+   9. RESPONSIVE HANDPHONE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .materi-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .materi-search {
+        width: 100%;
+        flex-basis: auto;
+    }
+
+    .materi-filter {
+        width: 100%;
+    }
+
+    .materi-filter select {
+        width: 100%;
+    }
+
+    .tambah-materi {
+        width: 100%;
+    }
+
+    .materi-heading {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .matkul-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .matkul-card {
+        min-height: 250px;
+    }
+
+    .matkul-content h3 {
+        font-size: 16px;
+    }
+}

@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <!-- ========================================
+         PENGATURAN DASAR HALAMAN
+    ======================================== -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Semua Materi - Admin RepoSIKa</title>
+
+    <!-- Library ikon -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- CSS dasar Admin -->
+    <link rel="stylesheet" href="admin-base.css">
+
+    <!-- CSS halaman Semua Materi -->
+    <link rel="stylesheet" href="admin-semua-materi.css">
+</head>
+
+<body>
+
+    <!-- ========================================
+         TOGGLE MODE GELAP
+    ======================================== -->
+    <input
+        type="checkbox"
+        id="theme-toggle"
+        class="theme-check"
+        aria-label="Aktifkan mode gelap"
+    >
+
+    <div class="layout">
+
+        <!-- ========================================
+             SIDEBAR ADMIN
+        ======================================== -->
+        <aside class="sidebar">
+
+            <!-- Logo RepoSIKa -->
+            <a href="admin-dashboard.html" class="brand">
+                <img
+                    src="assets/logo-reposika.png"
+                    alt="Logo RepoSIKa"
+                >
+                <span>RepoSIKa</span>
+            </a>
+
+            <!-- Navigasi utama -->
+            <nav class="side-nav" aria-label="Navigasi Admin">
+
+                <a href="admin-dashboard.html">
+                    <i class="fa-solid fa-table-cells-large"></i>
+                    Dashboard
+                </a>
+
+                <a
+                    href="admin-semua-materi.html"
+                    class="active"
+                    aria-current="page"
+                >
+                    <i class="fa-solid fa-book"></i>
+                    Semua Materi
+                </a>
+
+                <a href="admin-dashboard.html#manajemen-user">
+                    <i class="fa-solid fa-users"></i>
+                    Manajemen User
+                </a>
+
+                <a href="admin-materi.html">
+                    <i class="fa-regular fa-file-lines"></i>
+                    Manajemen Materi
+                </a>
+
+            </nav>
+
+            <!-- Navigasi akun -->
+            <nav class="side-nav side-footer" aria-label="Menu Akun">
+
+                <a href="admin-profile.html">
+                    <i class="fa-solid fa-user"></i>
+                    Profile
+                </a>
+
+                <a href="#">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Logout
+                </a>
+
+            </nav>
+
+        </aside>
+
+        <!-- ========================================
+             KONTEN UTAMA
+        ======================================== -->
+        <main class="page">
+
+            <!-- ========================================
+                 HEADER HALAMAN
+            ======================================== -->
+            <header class="page-header">
+
+                <div class="page-title">
+                    <h1>Semua Materi</h1>
+
+                    <p>
+                        Lihat seluruh mata kuliah dan materi
+                        yang tersedia di RepoSIKa.
+                    </p>
+                </div>
+
+                <!-- Mode gelap dan avatar -->
+                <div class="header-right">
+
+                    <label
+                        for="theme-toggle"
+                        class="theme-switch"
+                        title="Ganti mode tampilan"
+                    >
+                        <i class="fa-regular fa-moon moon"></i>
+                        <i class="fa-solid fa-sun sun"></i>
+                    </label>
+
+                    <span class="avatar" aria-label="Avatar Admin">
+                        👩🏻
+                    </span>
+
+                </div>
+
+            </header>
+
+            <!-- ========================================
+                 PENCARIAN DAN FILTER
+            ======================================== -->
+            <section
+                class="materi-toolbar"
+                aria-label="Pencarian dan filter mata kuliah"
+            >
+
+                <!-- Kolom pencarian -->
+                <label class="materi-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        type="search"
+                        placeholder="Cari mata kuliah..."
+                        aria-label="Cari mata kuliah"
+                    >
+                </label>
+
+                <!-- Filter semester -->
+                <label class="materi-filter">
+                    <i class="fa-solid fa-filter"></i>
+
+                    <select aria-label="Filter semester">
+                        <option value="semua">Semua Semester</option>
+                        <option value="1">Semester 1</option>
+                        <option value="2">Semester 2</option>
+                        <option value="3">Semester 3</option>
+                        <option value="4">Semester 4</option>
+                        <option value="5">Semester 5</option>
+                        <option value="6">Semester 6</option>
+                        <option value="7">Semester 7</option>
+                        <option value="8">Semester 8</option>
+                    </select>
+                </label>
+
+                <!-- Tombol tambah materi -->
+                <a href="admin-materi.html" class="tambah-materi">
+                    <i class="fa-solid fa-plus"></i>
+                    Tambah Materi
+                </a>
+
+            </section>
+
+            <!-- ========================================
+                 JUDUL DAFTAR MATA KULIAH
+            ======================================== -->
+            <div class="materi-heading">
+
+                <div>
+                    <h2>Daftar Mata Kuliah</h2>
+
+                    <p>
+                        Materi yang telah tersedia
+                        berdasarkan mata kuliah.
+                    </p>
+                </div>
+
+                <span class="materi-count">
+                    6 Mata Kuliah
+                </span>
+
+            </div>
+
+            <!-- ========================================
+                 GRID DAFTAR MATA KULIAH
+            ======================================== -->
+            <section
+                class="matkul-grid"
+                aria-label="Daftar mata kuliah"
+            >
+
+                <!-- ========================================
+                     KARTU 1 - ALGORITMA
+                ======================================== -->
+                <article class="matkul-card">
+
+                    <div class="matkul-top">
+                        <span class="matkul-icon">
+                            <i class="fa-solid fa-code"></i>
+                        </span>
+
+                        <span class="semester-badge">
+                            Semester 1
+                        </span>
+                    </div>
+
+                    <div class="matkul-content">
+                        <h3>Algoritma dan Dasar Pemrograman</h3>
+
+                        <p>
+                            Materi dasar algoritma, flowchart,
+                            dan pemrograman.
+                        </p>
+                    </div>
+
+                    <div class="matkul-bottom">
+                        <span class="jumlah-materi">
+                            <i class="fa-regular fa-file-lines"></i>
+                            12 Materi
+                        </span>
+
+                        <a
+                            href="admin-detail-matkul.html"
+                            class="lihat-materi"
+                        >
+                            Lihat Materi
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                </article>
+
+                <!-- ========================================
+                     KARTU 2 - BASIS DATA
+                ======================================== -->
+                <article class="matkul-card">
+
+                    <div class="matkul-top">
+                        <span class="matkul-icon">
+                            <i class="fa-solid fa-database"></i>
+                        </span>
+
+                        <span class="semester-badge">
+                            Semester 2
+                        </span>
+                    </div>
+
+                    <div class="matkul-content">
+                        <h3>Basis Data</h3>
+
+                        <p>
+                            Konsep database, ERD, relasi,
+                            dan dasar SQL.
+                        </p>
+                    </div>
+
+                    <div class="matkul-bottom">
+                        <span class="jumlah-materi">
+                            <i class="fa-regular fa-file-lines"></i>
+                            10 Materi
+                        </span>
+
+                        <a
+                            href="admin-detail-matkul.html"
+                            class="lihat-materi"
+                        >
+                            Lihat Materi
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                </article>
+
+                <!-- ========================================
+                     KARTU 3 - PEMROGRAMAN WEB
+                ======================================== -->
+                <article class="matkul-card">
+
+                    <div class="matkul-top">
+                        <span class="matkul-icon">
+                            <i class="fa-solid fa-globe"></i>
+                        </span>
+
+                        <span class="semester-badge">
+                            Semester 3
+                        </span>
+                    </div>
+
+                    <div class="matkul-content">
+                        <h3>Pemrograman Web</h3>
+
+                        <p>
+                            Pengenalan HTML, CSS, JavaScript,
+                            dan pengembangan website.
+                        </p>
+                    </div>
+
+                    <div class="matkul-bottom">
+                        <span class="jumlah-materi">
+                            <i class="fa-regular fa-file-lines"></i>
+                            15 Materi
+                        </span>
+
+                        <a
+                            href="admin-detail-matkul.html"
+                            class="lihat-materi"
+                        >
+                            Lihat Materi
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                </article>
+
+                <!-- ========================================
+                     KARTU 4 - STRUKTUR DATA
+                ======================================== -->
+                <article class="matkul-card">
+
+                    <div class="matkul-top">
+                        <span class="matkul-icon">
+                            <i class="fa-solid fa-diagram-project"></i>
+                        </span>
+
+                        <span class="semester-badge">
+                            Semester 2
+                        </span>
+                    </div>
+
+                    <div class="matkul-content">
+                        <h3>Struktur Data</h3>
+
+                        <p>
+                            Array, linked list, stack, queue,
+                            tree, dan graph.
+                        </p>
+                    </div>
+
+                    <div class="matkul-bottom">
+                        <span class="jumlah-materi">
+                            <i class="fa-regular fa-file-lines"></i>
+                            9 Materi
+                        </span>
+
+                        <a
+                            href="admin-detail-matkul.html"
+                            class="lihat-materi"
+                        >
+                            Lihat Materi
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                </article>
+
+                <!-- ========================================
+                     KARTU 5 - SISTEM OPERASI
+                ======================================== -->
+                <article class="matkul-card">
+
+                    <div class="matkul-top">
+                        <span class="matkul-icon">
+                            <i class="fa-solid fa-desktop"></i>
+                        </span>
+
+                        <span class="semester-badge">
+                            Semester 3
+                        </span>
+                    </div>
+
+                    <div class="matkul-content">
+                        <h3>Sistem Operasi</h3>
+
+                        <p>
+                            Proses, manajemen memori,
+                            sistem berkas, dan keamanan.
+                        </p>
+                    </div>
+
+                    <div class="matkul-bottom">
+                        <span class="jumlah-materi">
+                            <i class="fa-regular fa-file-lines"></i>
+                            8 Materi
+                        </span>
+
+                        <a
+                            href="admin-detail-matkul.html"
+                            class="lihat-materi"
+                        >
+                            Lihat Materi
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                </article>
+
+                <!-- ========================================
+                     KARTU 6 - JARINGAN KOMPUTER
+                ======================================== -->
+                <article class="matkul-card">
+
+                    <div class="matkul-top">
+                        <span class="matkul-icon">
+                            <i class="fa-solid fa-network-wired"></i>
+                        </span>
+
+                        <span class="semester-badge">
+                            Semester 4
+                        </span>
+                    </div>
+
+                    <div class="matkul-content">
+                        <h3>Jaringan Komputer</h3>
+
+                        <p>
+                            Topologi jaringan, TCP/IP,
+                            routing, dan konfigurasi jaringan.
+                        </p>
+                    </div>
+
+                    <div class="matkul-bottom">
+                        <span class="jumlah-materi">
+                            <i class="fa-regular fa-file-lines"></i>
+                            11 Materi
+                        </span>
+
+                        <a
+                            href="admin-detail-matkul.html"
+                            class="lihat-materi"
+                        >
+                            Lihat Materi
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                </article>
+
+            </section>
+
+        </main>
+
+    </div>
+
+  <!-- Logic Admin RepoSIKa -->
+  <script type="module" src="JS-App/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manajemen Materi — RepoSIKa</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="admin-base.css"><link rel="stylesheet" href="admin-materi.css">
+</head>
+<body>
+<!-- Toggle tema CSS-only: tampilan berubah tanpa JavaScript; belum tersimpan antarhalaman -->
+<input class="theme-check" type="checkbox" id="theme-toggle" aria-label="Aktifkan mode malam">
+
+<!-- ===== LAYOUT DAN SIDEBAR ADMIN ===== -->
+<div class="layout">
+<!-- Sidebar digunakan pada semua halaman Admin -->
+<aside class="sidebar">
+  <a class="brand" href="admin-dashboard.html"><img src="assets/logo-reposika.png" alt="Logo RepoSIKa"><span>RepoSIKa</span></a>
+  
+<!-- Menu navigasi Admin dan mahasiswa -->
+<nav class="side-nav" aria-label="Navigasi admin">
+    <a class="" href="admin-dashboard.html"><i class="fa-solid fa-table-cells-large"></i>Dashboard</a>
+    <a href="admin-semua-materi.html"><i class="fa-solid fa-book"></i>Semua Materi</a>
+    <a href="admin-dashboard.html#manajemen-user"><i class="fa-solid fa-users"></i>Manajemen User</a>
+    <a class="active" href="admin-materi.html"><i class="fa-regular fa-file-lines"></i>Manajemen Materi</a>
+  </nav>
+  <nav class="side-nav side-footer" aria-label="Akun">
+    <a href="#" aria-label="Profil (belum terhubung)"><i class="fa-solid fa-user"></i>Profile</a>
+    <a href="#" aria-label="Logout (belum terhubung)"><i class="fa-solid fa-right-from-bracket"></i>Logout</a>
+  </nav>
+</aside>
+<!-- ===== KONTEN UTAMA HALAMAN ===== -->
+<main class="page">
+
+<!-- Header dan tombol mode malam di kanan atas -->
+<header class="page-header">
+ <div><a href="admin-dashboard.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard</a><h1>Manajemen Materi</h1><p>Lengkapi informasi di bawah ini untuk menambahkan materi perkuliahan baru.</p></div>
+ <div class="header-right"><label for="theme-toggle" class="theme-switch" title="Ganti mode terang / malam"><i class="fa-regular fa-moon moon"></i><i class="fa-solid fa-sun sun"></i></label><span class="avatar" aria-label="Avatar admin">👩🏻</span></div>
+</header>
+<!-- FORM PENAMBAHAN MATERI -->
+
+<!-- ===== FORM MANAJEMEN MATERI ===== -->
+<form class="material-grid" action="#" method="get">
+ <div class="form-left">
+  
+<!-- Informasi materi / upload materi -->
+<section class="card form-card">
+   <div class="form-heading"><span class="step">1</span><div><h2>Informasi Materi</h2><p>Isi detail materi sesuai dengan mata kuliah dan perkuliahan.</p></div></div>
+   <div class="fields">
+    <label>Mata Kuliah <b>*</b><input type="text" name="mata_kuliah" placeholder="Tulis Mata Kuliah" required></label>
+    <label>Kategori <b>*</b><input type="text" name="kategori" placeholder="Tulis Kategori" required></label>
+    <label>Tahun Ajaran <b>*</b><input type="text" name="tahun_ajaran" placeholder="Contoh: 2026/2027" required></label>
+    <label>Semester <b>*</b><select name="semester" required><option value="" disabled selected>Pilih Semester</option><option value="1">Semester 1</option><option value="2">Semester 2</option><option value="3">Semester 3</option><option value="4">Semester 4</option><option value="5">Semester 5</option><option value="6">Semester 6</option><option value="7">Semester 7</option><option value="8">Semester 8</option></select></label>
+    <label class="full">Judul Materi <b>*</b><input type="text" name="judul_materi" placeholder="Tulis Judul Materi" required></label>
+   </div>
+  </section>
+  
+<!-- Informasi materi / upload materi -->
+<section class="card form-card">
+   <div class="form-heading"><span class="step">2</span><div><h2>Upload Materi</h2><p>Unggah file materi dalam format PDF, PPT, atau lainnya.</p></div></div>
+   <label class="upload-box" for="file-materi"><i class="fa-solid fa-cloud-arrow-up"></i><b>Klik untuk mengunggah file</b><small>PDF, PPT, PPTX, DOC, DOCX, ZIP (maks. 50 MB)</small></label>
+   <input class="file-input" id="file-materi" type="file" name="file_materi" accept=".pdf,.ppt,.pptx,.doc,.docx,.zip">
+   <p class="file-caption"><i class="fa-solid fa-file-lines"></i><span><b>File yang akan diunggah</b><small>Nama file terlihat pada pemilih file di atas setelah dipilih.</small></span></p>
+  </section>
+  <div class="submit-row"><button type="button" class="btn" title="Tombol simpan materi"><i class="fa-solid fa-floppy-disk"></i> Simpan Materi (UI)</button><a class="btn btn-outline" href="admin-dashboard.html">Batal</a></div>
+ </div>
+ 
+<!-- Informasi tambahan: kata kunci, tag, status, tips -->
+<aside class="card extra-card">
+  <h2>Informasi Tambahan</h2><p>Berikan informasi tambahan untuk mempermudah pencarian materi.</p>
+  <label>Kata Kunci <span>(opsional)</span><textarea name="kata_kunci" placeholder="Contoh: algoritma, pemrograman, loop..."></textarea></label>
+  <label>Tag <span>(opsional)</span><textarea name="tag" placeholder="Ketik tag"></textarea></label>
+  <div class="status-block"><b>Status Materi</b><label class="status-toggle"><input type="checkbox" name="aktif" checked><span class="toggle-track"></span> Aktif</label><small>Materi akan langsung tersedia untuk mahasiswa setelah disimpan oleh sistem.</small></div>
+  <div class="note tips"><b><i class="fa-solid fa-circle-info"></i> Tips</b><ul><li>Pastikan judul materi sesuai dengan isi file.</li><li>Gunakan kategori dan tag yang relevan agar mudah ditemukan.</li><li>Ukuran file maksimal 50 MB.</li><li>File yang diunggah nantinya tersimpan di penyimpanan yang terhubung ke sistem.</li></ul></div>
+ </aside>
+</form>
+</main></div>  <!-- Logic Admin RepoSIKa -->
+  <script type="module" src="JS-App/admin.js"></script>
+</body></html>

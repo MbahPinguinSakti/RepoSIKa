@@ -1,0 +1,475 @@
+/* =========================================
+   ADMIN DETAIL MATA KULIAH - RepoSIKa
+   Styling halaman daftar materi per mata kuliah
+========================================= */
+
+
+/* =========================================
+   1. HEADER DETAIL MATA KULIAH
+========================================= */
+
+/* Mengatur jarak header dengan daftar materi */
+.detail-page-header {
+    margin-bottom: 28px;
+}
+
+/* Informasi judul mata kuliah */
+.detail-header-info {
+    min-width: 0;
+}
+
+/* Tombol kembali */
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+
+    margin-bottom: 14px;
+
+    color: var(--muted, #777b69);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+/* Efek hover tombol kembali */
+.back-link:hover {
+    color: var(--ink, #29301f);
+}
+
+/* Judul mata kuliah */
+.detail-header-info h1 {
+    margin: 0 0 8px;
+
+    color: var(--ink, #29301f);
+    font-size: clamp(22px, 3vw, 30px);
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+/* Informasi semester dan jumlah materi */
+.detail-header-info p {
+    margin: 0;
+
+    color: var(--muted, #777b69);
+    font-size: 13px;
+}
+
+/* Pemisah informasi */
+.detail-header-info p span {
+    margin: 0 6px;
+}
+
+
+/* =========================================
+   2. KARTU DAFTAR MATERI
+========================================= */
+
+/* Container utama daftar materi */
+.detail-card {
+    display: block;
+    width: 100%;
+
+    padding: 26px;
+
+    border: 1px solid var(--border, #e3e7d9);
+    border-radius: 18px;
+
+    background-color: var(--card, #ffffff);
+    box-shadow: var(--shadow, 0 5px 18px rgba(0, 0, 0, 0.04));
+}
+
+/* Judul bagian daftar materi */
+.detail-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    margin-bottom: 24px;
+}
+
+/* Judul daftar materi */
+.detail-section-heading h2 {
+    margin: 0 0 6px;
+
+    color: var(--ink, #29301f);
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* Deskripsi daftar materi */
+.detail-section-heading p {
+    margin: 0;
+
+    color: var(--muted, #777b69);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* Label jumlah materi */
+.detail-count {
+    padding: 9px 14px;
+
+    border: 1px solid var(--border, #e3e7d9);
+    border-radius: 20px;
+
+    background-color: var(--card-soft, #f3f6e7);
+    color: var(--ink, #29301f);
+
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+/* =========================================
+   3. PENCARIAN DAN PENGURUTAN
+========================================= */
+
+/* Container pencarian dan dropdown */
+.detail-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    margin-bottom: 20px;
+}
+
+/* Kolom pencarian */
+.detail-search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    flex: 1;
+    min-width: 0;
+
+    padding: 14px 18px;
+
+    border: 1px solid var(--border, #e3e7d9);
+    border-radius: 12px;
+
+    background-color: var(--input, #f9faef);
+    color: var(--ink, #29301f);
+}
+
+/* Ikon pencarian */
+.detail-search i {
+    color: var(--muted, #777b69);
+    font-size: 16px;
+}
+
+/* Input pencarian */
+.detail-search input {
+    width: 100%;
+    min-width: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+    color: var(--ink, #29301f);
+
+    font-size: 13px;
+}
+
+/* Placeholder pencarian */
+.detail-search input::placeholder {
+    color: var(--muted, #777b69);
+}
+
+/* Label pengurutan */
+.detail-sort {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: var(--ink, #29301f);
+    font-size: 13px;
+}
+
+/* Dropdown urutan materi */
+.detail-sort select {
+    min-width: 140px;
+    padding: 14px 16px;
+
+    border: 1px solid var(--border, #e3e7d9);
+    border-radius: 12px;
+
+    background-color: var(--input, #f9faef);
+    color: var(--ink, #29301f);
+
+    font-size: 13px;
+    cursor: pointer;
+}
+
+
+/* =========================================
+   4. DAFTAR FILE MATERI
+========================================= */
+
+/* Container seluruh baris materi */
+.material-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Baris setiap materi */
+.material-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    width: 100%;
+    min-height: 88px;
+    padding: 16px 12px;
+
+    border-bottom: 1px solid var(--border, #e3e7d9);
+
+    transition: background-color 0.2s ease;
+}
+
+/* Efek hover baris materi */
+.material-item:hover {
+    background-color: var(--card-soft, #f3f6e7);
+    border-radius: 10px;
+}
+
+/* Menghilangkan garis pada baris terakhir */
+.material-item:last-child {
+    border-bottom: none;
+}
+
+
+/* =========================================
+   5. IKON JENIS FILE
+========================================= */
+
+/* Kotak ikon file */
+.material-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 52px;
+    height: 58px;
+    flex-shrink: 0;
+
+    border-radius: 12px;
+    font-size: 27px;
+}
+
+/* File PDF */
+.material-icon.pdf {
+    background-color: #ffe5e5;
+    color: #d94b4b;
+}
+
+/* File PowerPoint */
+.material-icon.ppt {
+    background-color: #fff0dc;
+    color: #d47a2d;
+}
+
+/* File Word */
+.material-icon.doc {
+    background-color: #dceaff;
+    color: #2459b8;
+}
+
+
+/* =========================================
+   6. INFORMASI FILE MATERI
+========================================= */
+
+/* Container nama dan ukuran file */
+.material-info {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Judul materi */
+.material-info h3 {
+    margin: 0 0 6px;
+
+    color: var(--ink, #29301f);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+/* Jenis dan ukuran file */
+.material-info p {
+    margin: 0;
+
+    color: var(--muted, #777b69);
+    font-size: 12px;
+}
+
+/* Pemisah informasi file */
+.material-info p span {
+    margin: 0 6px;
+}
+
+/* Tanggal upload */
+.material-item time {
+    flex-shrink: 0;
+
+    color: var(--muted, #777b69);
+    font-size: 12px;
+}
+
+
+/* =========================================
+   7. TOMBOL OPSI MATERI
+========================================= */
+
+/* Tombol titik tiga */
+.material-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+
+    border: none;
+    border-radius: 8px;
+
+    background-color: transparent;
+    color: var(--ink, #29301f);
+
+    font-size: 18px;
+    cursor: pointer;
+
+    transition: background-color 0.2s ease;
+}
+
+/* Efek hover tombol titik tiga */
+.material-more:hover {
+    background-color: var(--card-soft, #f3f6e7);
+}
+
+/* Catatan jumlah materi yang ditampilkan */
+.detail-note {
+    margin: 18px 0 0;
+
+    color: var(--muted, #777b69);
+    font-size: 12px;
+    text-align: center;
+}
+
+
+/* =========================================
+   8. RESPONSIVE TABLET
+========================================= */
+
+@media (max-width: 900px) {
+
+    /* Padding kartu lebih kecil */
+    .detail-card {
+        padding: 20px;
+    }
+
+    /* Menyesuaikan jarak antarbaris */
+    .material-item {
+        gap: 12px;
+        padding: 14px 8px;
+    }
+
+    /* Menyesuaikan ukuran teks */
+    .material-info h3 {
+        font-size: 13px;
+    }
+
+    .material-item time {
+        font-size: 11px;
+    }
+}
+
+
+/* =========================================
+   9. RESPONSIVE HANDPHONE
+========================================= */
+
+@media (max-width: 600px) {
+
+    /* Header lebih fleksibel */
+    .detail-page-header {
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    /* Judul daftar dan badge dapat turun */
+    .detail-section-heading {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* Pencarian dan urutan disusun vertikal */
+    .detail-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    /* Pencarian memenuhi lebar */
+    .detail-search {
+        width: 100%;
+    }
+
+    /* Dropdown memenuhi lebar */
+    .detail-sort {
+        justify-content: space-between;
+    }
+
+    .detail-sort select {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* Mengurangi padding kartu */
+    .detail-card {
+        padding: 14px;
+    }
+
+    /* Baris materi fleksibel */
+    .material-item {
+        flex-wrap: wrap;
+        gap: 10px;
+
+        padding: 14px 6px;
+    }
+
+    /* Ikon file lebih kecil */
+    .material-icon {
+        width: 44px;
+        height: 48px;
+
+        font-size: 23px;
+    }
+
+    /* Ukuran judul materi */
+    .material-info h3 {
+        font-size: 12px;
+    }
+
+    /* Ukuran informasi file */
+    .material-info p {
+        font-size: 11px;
+    }
+
+    /* Tanggal upload turun ke bawah */
+    .material-item time {
+        margin-left: 54px;
+        font-size: 10px;
+    }
+
+    /* Tombol opsi tetap di kanan */
+    .material-more {
+        margin-left: auto;
+    }
+}
