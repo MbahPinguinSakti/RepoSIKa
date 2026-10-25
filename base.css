@@ -13,7 +13,7 @@
 }
 
 /* Warna saat mode gelap aktif */
-body:has(#theme-dark:checked) {
+body:has(#theme-dark:checked), body.dark-theme, body[data-theme="dark"] {
   --bg: #111827;
   --ink: #f1f5e9;
   --muted: #b9c99b;

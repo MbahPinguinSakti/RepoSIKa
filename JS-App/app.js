@@ -204,14 +204,27 @@ function initMotherButtonModal() {
 function initDashboardSearchAndFilter() {
   const searchInput = document.getElementById('dashboard-material-search') || document.querySelector('input[type="search"]');
   const filterForm = document.getElementById('dashboard-filter-form');
+  const semesterRadios = document.querySelectorAll('.semester-radio, input[name="semester"]');
+  const emptyNotice = document.querySelector('.filter-empty');
 
   const filterCards = () => {
     const keyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
-    const checkedSemesters = filterForm
+
+    // 1. Cek checkbox dari dashboard.html (semester[])
+    const checkedCheckboxes = filterForm
       ? Array.from(filterForm.querySelectorAll('input[name="semester[]"]:checked')).map((cb) => cb.value)
       : [];
 
+    // 2. Cek radio button dari daftar-matkul.html (semester-1 s/d semester-8 atau semester-all)
+    let selectedRadioSem = null;
+    const checkedRadio = document.querySelector('.semester-radio:checked, input[name="semester"]:checked');
+    if (checkedRadio && checkedRadio.id && checkedRadio.id !== 'semester-all') {
+      selectedRadioSem = checkedRadio.id.replace('semester-', '');
+    }
+
     const cards = document.querySelectorAll('.overview-card, .course-card, .learning-card');
+    let visibleCount = 0;
+
     cards.forEach((card) => {
       const title = card.querySelector('h2, h3, p, strong')?.textContent?.toLowerCase() || '';
       const text = card.textContent?.toLowerCase() || '';
@@ -220,16 +233,32 @@ function initDashboardSearchAndFilter() {
       const matchesSearch = !keyword || title.includes(keyword) || text.includes(keyword);
       let matchesSemester = true;
 
-      if (checkedSemesters.length > 0) {
+      // Filter via Checkboxes (Dashboard)
+      if (checkedCheckboxes.length > 0) {
         if (cardSemester) {
-          matchesSemester = checkedSemesters.includes(String(cardSemester));
+          matchesSemester = checkedCheckboxes.includes(String(cardSemester));
         } else {
-          matchesSemester = checkedSemesters.some((sem) => text.includes(`semester ${sem}`));
+          matchesSemester = checkedCheckboxes.some((sem) => text.includes(`semester ${sem}`));
         }
       }
 
-      card.style.display = matchesSearch && matchesSemester ? '' : 'none';
+      // Filter via Radio Button (Daftar Matkul)
+      if (selectedRadioSem) {
+        if (cardSemester) {
+          matchesSemester = String(cardSemester) === String(selectedRadioSem);
+        } else {
+          matchesSemester = text.includes(`semester ${selectedRadioSem}`);
+        }
+      }
+
+      const isVisible = matchesSearch && matchesSemester;
+      card.style.display = isVisible ? '' : 'none';
+      if (isVisible) visibleCount++;
     });
+
+    if (emptyNotice) {
+      emptyNotice.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
   };
 
   if (searchInput) searchInput.addEventListener('input', filterCards);
@@ -237,6 +266,9 @@ function initDashboardSearchAndFilter() {
     filterForm.addEventListener('change', filterCards);
     filterForm.addEventListener('reset', () => setTimeout(filterCards, 50));
   }
+  semesterRadios.forEach((radio) => {
+    radio.addEventListener('change', filterCards);
+  });
 }
 
 // Mengambil Data Mata Kuliah dari Supabase (Aurelia: 'matkul')
@@ -542,6 +574,22 @@ function applyContentProtection() {
 
 // 6. RIWAYAT & FAVORIT (riwayat-favorit.html)
 async function initRiwayatFavoritPage() {
+  // Sync ARIA attributes on tab change (NFR Accessibility)
+  const radioRiwayat = document.getElementById('tab-riwayat');
+  const radioFavorit = document.getElementById('tab-favorit');
+  const btnRiwayat = document.getElementById('tab-btn-riwayat');
+  const btnFavorit = document.getElementById('tab-btn-favorit');
+
+  const updateTabAria = () => {
+    if (btnRiwayat && btnFavorit) {
+      const isRiwayat = radioRiwayat ? radioRiwayat.checked : true;
+      btnRiwayat.setAttribute('aria-selected', isRiwayat ? 'true' : 'false');
+      btnFavorit.setAttribute('aria-selected', !isRiwayat ? 'true' : 'false');
+    }
+  };
+
+  if (radioRiwayat) radioRiwayat.addEventListener('change', updateTabAria);
+  if (radioFavorit) radioFavorit.addEventListener('change', updateTabAria);
   if (!state.user) {
     alert('Silakan login terlebih dahulu untuk melihat riwayat dan materi favorit Anda.');
     window.location.href = `login.html?returnUrl=${encodeURIComponent(window.location.href)}`;

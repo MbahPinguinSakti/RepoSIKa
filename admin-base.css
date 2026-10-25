@@ -70,7 +70,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 }
 
 
-body:has(.theme-check:checked) {
+body:has(.theme-check:checked), body.dark-theme, body[data-theme="dark"] {
  --bg:#101b2c;
     --sidebar:#1b2b3d;
     --card:#22354a;

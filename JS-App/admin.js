@@ -60,18 +60,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (path.includes('admin-dashboard')) {
     await initAdminDashboard();
-  }
-
-  if (path.includes('admin-materi')) {
-    await initAdminMateriUpload();
-  }
-
-  if (path.includes('admin-semua-materi')) {
+  } else if (path.includes('admin-semua-materi')) {
     await initAdminSemuaMateri();
-  }
-
-  if (path.includes('admin-detail-matkul')) {
+  } else if (path.includes('admin-detail-matkul')) {
     await initAdminDetailMatkul();
+  } else if (path.includes('admin-materi')) {
+    await initAdminMateriUpload();
   }
 });
 
