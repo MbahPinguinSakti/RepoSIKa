@@ -499,8 +499,14 @@ body:has(#theme-dark:checked) .theme-label .sun-icon {
 }
 
 /* Pop-up muncul setelah tombol View diklik */
-.year-overlay:target {
-  display: flex;
+.year-overlay:target,
+.year-overlay.is-open {
+  display: flex !important;
+}
+
+/* Override paksa saat modal ditutup */
+.year-overlay.is-closed {
+  display: none !important;
 }
 
 /* Kotak pop-up */

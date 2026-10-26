@@ -180,11 +180,43 @@ function initMotherButtonModal() {
   const modalOverlay = document.getElementById('tahun-ajaran');
   if (!modalOverlay) return;
 
-  // Tombol tutup modal
+  // Hindari duplikasi event listener jika fungsi dipanggil ulang
+  if (modalOverlay.dataset.initialized === 'true') return;
+  modalOverlay.dataset.initialized = 'true';
+
+  const openModal = (matkulId) => {
+    if (matkulId) state.selectedMatkulId = matkulId;
+    modalOverlay.classList.remove('is-closed');
+    modalOverlay.classList.add('is-open');
+    modalOverlay.style.display = 'flex';
+  };
+
+  const closeModal = () => {
+    // Jika modal sudah tertutup, jangan lakukan apapun (mencegah loop / callback liar)
+    if (modalOverlay.classList.contains('is-closed') && modalOverlay.style.display === 'none') {
+      return;
+    }
+
+    modalOverlay.classList.remove('is-open');
+    modalOverlay.classList.add('is-closed');
+    modalOverlay.style.display = 'none';
+
+    // Bersihkan hash #tahun-ajaran dari URL tanpa trigger reload
+    if (window.location.hash === '#tahun-ajaran') {
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
+      } else {
+        window.location.hash = '';
+      }
+    }
+  };
+
+  // Tombol tutup modal (X)
   const closeBtn = modalOverlay.querySelector('.close-dialog');
   if (closeBtn) {
     closeBtn.addEventListener('click', (e) => {
       e.preventDefault();
+      e.stopPropagation();
       closeModal();
     });
   }
@@ -192,16 +224,46 @@ function initMotherButtonModal() {
   // Tutup dengan klik di luar area modal (backdrop)
   modalOverlay.addEventListener('click', (e) => {
     if (e.target === modalOverlay) {
+      e.preventDefault();
+      e.stopPropagation();
       closeModal();
     }
   });
 
   // Tutup dengan tombol Escape (FR-02 & Non-Functional A11y)
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && window.location.hash === '#tahun-ajaran') {
+    if (e.key === 'Escape') {
+      if (modalOverlay.classList.contains('is-open') || modalOverlay.style.display === 'flex' || window.location.hash === '#tahun-ajaran') {
+        closeModal();
+      }
+    }
+  });
+
+  // Tangani navigasi back browser / popstate / hashchange (khususnya tombol Back di HP Android/iOS)
+  window.addEventListener('hashchange', () => {
+    if (window.location.hash === '#tahun-ajaran') {
+      openModal();
+    } else {
       closeModal();
     }
   });
+
+  // Delegasi universal untuk seluruh tombol yang membuka modal tahun ajaran
+  document.addEventListener('click', (e) => {
+    const trigger = e.target.closest('a[href="#tahun-ajaran"], .btn-open-modal');
+    if (trigger) {
+      const explicitId = trigger.getAttribute('data-matkul-id') || trigger.closest('[data-matkul-id]')?.getAttribute('data-matkul-id');
+      openModal(explicitId);
+    }
+  });
+
+  // Sinkronisasi status awal modal saat halaman selesai dimuat
+  if (window.location.hash === '#tahun-ajaran') {
+    openModal();
+  } else {
+    modalOverlay.classList.add('is-closed');
+    modalOverlay.style.display = 'none';
+  }
 
   // Pilihan Tahun Ajaran (Redirect Guest vs Logged-In)
   const yearChoices = modalOverlay.querySelectorAll('.year-choices a');
@@ -209,7 +271,11 @@ function initMotherButtonModal() {
     choice.addEventListener('click', (e) => {
       e.preventDefault();
       const tahunText = choice.textContent.trim();
-      const matkulId = state.selectedMatkulId || '';
+      let matkulId = state.selectedMatkulId || '';
+
+      if (!matkulId && state.allMatkul && state.allMatkul.length > 0) {
+        matkulId = state.allMatkul[0].id;
+      }
 
       localStorage.setItem('tahun_ajaran', tahunText);
       const targetUrl = `detail-matkul.html?matkul_id=${encodeURIComponent(matkulId)}&tahun=${encodeURIComponent(tahunText)}`;
@@ -222,14 +288,6 @@ function initMotherButtonModal() {
       }
     });
   });
-
-  function closeModal() {
-    window.history.pushState('', document.title, window.location.pathname + window.location.search);
-    modalOverlay.style.display = 'none';
-    setTimeout(() => {
-      modalOverlay.style.display = '';
-    }, 100);
-  }
 }
 
 // Handler Search, Filter (Semester, Format, Status), & Sort
