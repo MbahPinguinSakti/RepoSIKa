@@ -20,6 +20,9 @@
   >
 
   <!-- CSS Detail Mata Kuliah -->
+  <!-- CSS Dasar & Tema RepoSIKa -->
+  <link rel="stylesheet" href="CSS-App/base.css">
+  <!-- CSS Detail Mata Kuliah -->
   <link rel="stylesheet" href="CSS-App/detail-matkul.css">
 </head>
 
@@ -32,7 +35,7 @@
 <aside class="sidebar">
 
   <!-- LOGO -->
-  <a href="daftar-matkul.html#dashboard" class="brand">
+  <a href="dashboard.html" class="brand">
     <span class="brand-logo">
       <img src="assets/logo-reposika.png" alt="Logo RepoSIKa">
     </span>
@@ -42,12 +45,12 @@
   <!-- MENU -->
   <nav class="sidebar-menu">
 
-    <a href="daftar-matkul.html#dashboard">
+    <a href="dashboard.html">
       <i class="fa-solid fa-table-cells-large"></i>
       Dashboard
     </a>
 
-    <a href="daftar-matkul.html#materi" class="active">
+    <a href="daftar-matkul.html" class="active">
       <i class="fa-solid fa-book"></i>
       Semua Materi
     </a>
@@ -95,7 +98,7 @@
   <!-- HEADER -->
   <header class="detail-header">
 
-    <a href="daftar-matkul.html#materi" class="back-link">
+    <a href="daftar-matkul.html" class="back-link">
       <i class="fa-solid fa-arrow-left"></i>
       Kembali ke Daftar Mata Kuliah
     </a>
@@ -500,7 +503,9 @@
         </div>
 
         <div class="preview-actions">
-          <i class="fa-regular fa-bookmark"></i>
+          <button type="button" class="preview-bookmark-btn bookmark-icon" title="Simpan ke favorit" aria-label="Simpan ke favorit" style="background: none; border: none; font-size: 18px; color: inherit; cursor: pointer; padding: 4px 8px;">
+            <i class="fa-regular fa-bookmark"></i>
+          </button>
           <i class="fa-solid fa-ellipsis-vertical"></i>
         </div>
 
@@ -513,7 +518,7 @@
         <div class="pdf-toolbar">
           <span>1 / 15</span>
           <span>− &nbsp; 100% &nbsp; +</span>
-          <span>
+          <span class="btn-expand-preview" style="cursor: pointer;" title="Baca Materi Layar Penuh">
             <i class="fa-solid fa-expand"></i>
           </span>
         </div>

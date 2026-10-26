@@ -135,7 +135,7 @@ button {
   margin-top: 59px;
 }
 
-.sidebar-menu a {
+.sidebar-menu a:not(.activity-switcher) {
   display: flex;
   align-items: center;
 
@@ -154,13 +154,13 @@ button {
   white-space: nowrap;
 }
 
-.sidebar-menu a i {
+.sidebar-menu a:not(.activity-switcher) i {
   width: 14px;
   font-size: 13px;
   text-align: center;
 }
 
-.sidebar-menu a.active {
+.sidebar-menu a:not(.activity-switcher).active {
   color: #ffffff;
 
   background: linear-gradient(
@@ -168,6 +168,74 @@ button {
     #f7f8e7,
     #d5e53f
   );
+}
+
+/* =====================================
+   ISOLASI ACTIVITY SWITCHER 3D FLIP (FR-05)
+===================================== */
+.sidebar-menu .activity-switcher-container {
+  perspective: 800px;
+  margin: 6px 0;
+  display: block;
+}
+
+.sidebar-menu a.activity-switcher {
+  display: block !important;
+  position: relative !important;
+  width: 100% !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  padding: 0 !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  transform-style: preserve-3d !important;
+  text-decoration: none !important;
+  white-space: normal !important;
+}
+
+.sidebar-menu a.activity-switcher.flipped {
+  transform: rotateX(180deg) !important;
+}
+
+.sidebar-menu .activity-card-face {
+  position: absolute !important;
+  inset: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 0 16px !important;
+  border-radius: 12px !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  background: #ffffff !important;
+  color: #1e293b !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  border: 1px solid rgba(0,0,0,0.08) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+}
+
+.sidebar-menu .activity-face-back {
+  transform: rotateX(180deg) !important;
+  background: var(--button, #788540) !important;
+  color: #ffffff !important;
+}
+
+.sidebar-menu .activity-card-face i {
+  font-size: 16px !important;
+  width: 20px !important;
+  text-align: center !important;
+}
+
+body.dark-theme .sidebar-menu .activity-card-face {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-color: rgba(255,255,255,0.12) !important;
+}
+
+body.dark-theme .sidebar-menu .activity-face-back {
+  background: #788540 !important;
+  color: #ffffff !important;
 }
 
 

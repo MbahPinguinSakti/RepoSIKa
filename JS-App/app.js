@@ -615,6 +615,17 @@ async function initDetailMatkulPage() {
   const matkulId = urlParams.get('matkul_id');
   const tahunAjaran = urlParams.get('tahun') || '2024/2025';
 
+  // Load status bookmark pengguna dari Supabase
+  state.userBookmarks = [];
+  if (state.user) {
+    try {
+      const favs = await favoritService.getByUser(state.user.id);
+      state.userBookmarks = favs ? favs.map((f) => String(f.materi?.id || f.materi_id)) : [];
+    } catch (e) {
+      console.warn('Bookmarks check:', e);
+    }
+  }
+
   if (matkulId) {
     try {
       const matkul = await matkulService.getById(matkulId);
@@ -639,7 +650,7 @@ async function initDetailMatkulPage() {
       if (totalCountEl) totalCountEl.textContent = `${state.allMateri.length} Materi`;
 
       if (state.allMateri.length > 0) {
-        await renderMaterialRows(state.allMateri);
+        renderMaterialRows(state.allMateri);
         updatePreviewPanel(state.allMateri[0]);
       }
     } catch (e) {
@@ -647,33 +658,63 @@ async function initDetailMatkulPage() {
     }
   }
 
-  // Setup interaksi materi
+  // Setup toolbar (Search & Sort) & Interaksi Materi
+  initDetailToolbar();
   initBookmarkButtons();
   initReadButtons();
   initMaterialRowSelection();
 }
 
-async function renderMaterialRows(materiList) {
+function initDetailToolbar() {
+  const searchInput = document.querySelector('.material-toolbar input[type="search"]');
+  const sortSelect = document.querySelector('.material-toolbar select');
+
+  const filterAndSort = () => {
+    if (!state.allMateri || state.allMateri.length === 0) return;
+    const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    const sortBy = sortSelect ? sortSelect.value : 'terbaru';
+
+    let result = state.allMateri.filter(m => {
+      const title = (m.judul || '').toLowerCase();
+      const desc = (m.deskripsi || '').toLowerCase();
+      return title.includes(q) || desc.includes(q);
+    });
+
+    if (sortBy === 'terlama') {
+      result.sort((a, b) => new Date(a.dibuat_pada || 0) - new Date(b.dibuat_pada || 0));
+    } else if (sortBy === 'az') {
+      result.sort((a, b) => (a.judul || '').localeCompare(b.judul || ''));
+    } else {
+      result.sort((a, b) => new Date(b.dibuat_pada || 0) - new Date(a.dibuat_pada || 0));
+    }
+
+    renderMaterialRows(result);
+  };
+
+  if (searchInput) searchInput.addEventListener('input', filterAndSort);
+  if (sortSelect) sortSelect.addEventListener('change', filterAndSort);
+}
+
+function renderMaterialRows(materiList) {
   const container = document.querySelector('.material-list');
   if (!container) return;
 
-  // Cek apakah user telah memfavoritkan materi-materi ini
-  let userBookmarks = [];
-  if (state.user) {
-    try {
-      const favs = await favoritService.getByUser(state.user.id);
-      userBookmarks = favs ? favs.map((f) => f.materi?.id || f.materi_id) : [];
-    } catch (e) {
-      console.warn('Bookmarks check:', e);
-    }
+  if (materiList.length === 0) {
+    container.innerHTML = `
+      <div style="padding: 30px 20px; text-align: center; color: #64748b; background: rgba(0,0,0,0.02); border-radius: 12px; grid-column: 1 / -1;">
+        <i class="fa-regular fa-folder-open" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
+        <p>Tidak ada materi yang sesuai dengan pencarian Anda.</p>
+      </div>
+    `;
+    return;
   }
 
   container.innerHTML = materiList.map((m, idx) => {
-    const isFav = userBookmarks.includes(m.id);
+    const isFav = state.userBookmarks ? state.userBookmarks.includes(String(m.id)) : false;
     const starClass = isFav ? 'fa-solid' : 'fa-regular';
     const starStyle = isFav ? 'color: #eab308;' : '';
     const dateFormatted = m.dibuat_pada ? new Date(m.dibuat_pada).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Terbaru';
-    const activeClass = idx === 0 ? 'active' : '';
+    const activeClass = (state.currentPreviewMateri && String(state.currentPreviewMateri.id) === String(m.id)) || (!state.currentPreviewMateri && idx === 0) ? 'active' : '';
 
     return `
       <article class="material-row ${activeClass}" data-materi-id="${m.id}" data-title="${escapeHtml(m.judul)}">
@@ -682,10 +723,10 @@ async function renderMaterialRows(materiList) {
           <h3>${escapeHtml(m.judul)}</h3>
           <p>Materi ${idx + 1} • ${dateFormatted} • ${m.jumlah_dilihat || 0}x dilihat</p>
         </div>
-        <span class="bookmark-icon" data-materi-id="${m.id}" title="Simpan ke favorit">
-          <i class="${starClass} fa-bookmark" style="${starStyle}"></i>
-        </span>
-        <button type="button" class="read-button" data-materi-id="${m.id}">
+        <button type="button" class="bookmark-btn bookmark-icon" data-materi-id="${m.id}" title="${isFav ? 'Hapus dari favorit' : 'Simpan ke favorit'}" aria-label="Simpan ke favorit" style="background: none; border: none; padding: 6px 10px; cursor: pointer;">
+          <i class="${starClass} fa-bookmark" style="${starStyle} font-size: 18px;"></i>
+        </button>
+        <button type="button" class="read-button" data-materi-id="${m.id}" title="Baca Materi">
           Baca Materi
         </button>
         <i class="fa-solid fa-ellipsis-vertical more-icon"></i>
@@ -694,75 +735,127 @@ async function renderMaterialRows(materiList) {
   }).join('');
 }
 
-function initBookmarkButtons() {
-  const bookmarkIcons = document.querySelectorAll('.bookmark-icon, .preview-actions i.fa-bookmark');
-  bookmarkIcons.forEach((btn, index) => {
-    btn.style.cursor = 'pointer';
-    btn.addEventListener('click', async (e) => {
-      e.stopPropagation();
+// Handler Bookmark Universal (Sinkron List & Preview Panel)
+async function toggleBookmark(materiId) {
+  if (!state.user) {
+    alert('Silakan login terlebih dahulu untuk menyimpan materi favorit.');
+    window.location.href = `login.html?returnUrl=${encodeURIComponent(window.location.href)}`;
+    return;
+  }
 
-      if (!state.user) {
-        alert('Silakan login terlebih dahulu untuk menyimpan materi favorit.');
-        window.location.href = `login.html?returnUrl=${encodeURIComponent(window.location.href)}`;
-        return;
-      }
+  if (!materiId) return;
 
-      const icon = btn.querySelector('i') || btn;
-      const isBookmarked = icon.classList.contains('fa-solid');
+  try {
+    const isNowFav = await favoritService.toggle(state.user.id, materiId);
 
-      if (isBookmarked) {
-        icon.classList.remove('fa-solid');
-        icon.classList.add('fa-regular');
-        icon.style.color = '';
-      } else {
-        icon.classList.remove('fa-regular');
-        icon.classList.add('fa-solid');
+    // Perbarui state lokal userBookmarks
+    if (!state.userBookmarks) state.userBookmarks = [];
+    const strId = String(materiId);
+    if (isNowFav) {
+      if (!state.userBookmarks.includes(strId)) state.userBookmarks.push(strId);
+    } else {
+      state.userBookmarks = state.userBookmarks.filter(id => id !== strId);
+    }
+
+    // 1. Update seluruh ikon di daftar materi
+    const icons = document.querySelectorAll(`[data-materi-id="${materiId}"] .fa-bookmark, button[data-materi-id="${materiId}"] i.fa-bookmark`);
+    icons.forEach(icon => {
+      if (isNowFav) {
+        icon.className = 'fa-solid fa-bookmark';
         icon.style.color = '#eab308';
-      }
-
-      try {
-        const materiId = btn.getAttribute('data-materi-id') || (index + 1);
-        await favoritService.toggle(state.user.id, materiId);
-      } catch (err) {
-        console.warn('Sinkronisasi favorit:', err.message);
+      } else {
+        icon.className = 'fa-regular fa-bookmark';
+        icon.style.color = '';
       }
     });
+
+    // 2. Update ikon bookmark di preview panel jika sedang menampilkan materi yang sama
+    const previewBtn = document.querySelector('.preview-bookmark-btn');
+    const previewIcon = document.querySelector('.preview-actions .fa-bookmark, .preview-bookmark-btn i');
+    if (previewBtn && String(previewBtn.getAttribute('data-materi-id')) === strId) {
+      if (isNowFav) {
+        if (previewIcon) {
+          previewIcon.className = 'fa-solid fa-bookmark';
+          previewIcon.style.color = '#eab308';
+        }
+        previewBtn.setAttribute('title', 'Hapus dari favorit');
+      } else {
+        if (previewIcon) {
+          previewIcon.className = 'fa-regular fa-bookmark';
+          previewIcon.style.color = '';
+        }
+        previewBtn.setAttribute('title', 'Simpan ke favorit');
+      }
+    }
+
+    // Feedback Toast Visual
+    showNotificationToast(isNowFav ? 'Materi berhasil ditambahkan ke Favorit! ⭐' : 'Materi dihapus dari Favorit.');
+  } catch (err) {
+    console.error('Gagal toggle bookmark:', err);
+    alert('Gagal memperbarui status favorit: ' + err.message);
+  }
+}
+
+function initBookmarkButtons() {
+  if (state.bookmarkDelegationInitialized) return;
+  state.bookmarkDelegationInitialized = true;
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.bookmark-icon, .bookmark-btn, .preview-bookmark-btn');
+    if (!btn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    let materiId = btn.getAttribute('data-materi-id');
+    if (!materiId) {
+      const row = btn.closest('.material-row');
+      materiId = row?.getAttribute('data-materi-id');
+    }
+    if (!materiId && state.currentPreviewMateri) {
+      materiId = state.currentPreviewMateri.id;
+    }
+    if (!materiId && state.allMateri && state.allMateri.length > 0) {
+      materiId = state.allMateri[0].id;
+    }
+
+    if (materiId) {
+      toggleBookmark(materiId);
+    }
   });
 }
 
+// Buka Halaman Reader & Catat Riwayat Akses ke Supabase (FR-05)
+async function bukaReader(materiId, title) {
+  if (!state.user) {
+    alert('Akses materi dibatasi khusus civitas akademika. Silakan login terlebih dahulu.');
+    window.location.href = `login.html?returnUrl=${encodeURIComponent(window.location.href)}`;
+    return;
+  }
+
+  try {
+    await riwayatBacaService.catat(state.user.id, materiId);
+  } catch (err) {
+    console.warn('Pencatatan riwayat:', err.message);
+  }
+
+  window.location.href = `reader.html?title=${encodeURIComponent(title || 'Materi Perkuliahan')}&materi_id=${encodeURIComponent(materiId)}`;
+}
+
 function initReadButtons() {
-  const readButtons = document.querySelectorAll('.read-button');
-  readButtons.forEach((btn, idx) => {
-    btn.addEventListener('click', async (e) => {
-      e.preventDefault();
+  if (state.readDelegationInitialized) return;
+  state.readDelegationInitialized = true;
 
-      if (!state.user) {
-        alert('Akses materi dibatasi khusus civitas akademika. Silakan login terlebih dahulu.');
-        window.location.href = `login.html?returnUrl=${encodeURIComponent(window.location.href)}`;
-        return;
-      }
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.read-button');
+    if (!btn) return;
 
-      const row = btn.closest('.material-row');
-      const title = row?.getAttribute('data-title') || row?.querySelector('h3')?.textContent || 'Materi Perkuliahan';
-      const materiId = btn.getAttribute('data-materi-id') || row?.getAttribute('data-materi-id') || (idx + 1);
+    e.preventDefault();
+    const row = btn.closest('.material-row');
+    const title = row?.getAttribute('data-title') || row?.querySelector('h3')?.textContent || 'Materi Perkuliahan';
+    const materiId = btn.getAttribute('data-materi-id') || row?.getAttribute('data-materi-id') || 1;
 
-      // Update Panel Preview di Kanan jika ada
-      const previewTitle = document.querySelector('.preview-header h2');
-      if (previewTitle) previewTitle.textContent = title;
-
-      // Catat Riwayat Akses ke Supabase (FR-05)
-      try {
-        await riwayatBacaService.catat(state.user.id, materiId);
-      } catch (err) {
-        console.warn('Pencatatan riwayat:', err.message);
-      }
-
-      // Watermark Dinamis Mahasiswa (FR-04: Nama - NPM - Timestamp)
-      applyDynamicWatermark();
-
-      // Buka Halaman Reader Terproteksi Penuh
-      window.location.href = `reader.html?title=${encodeURIComponent(title)}&materi_id=${encodeURIComponent(materiId)}`;
-    });
+    bukaReader(materiId, title);
   });
 
   applyDynamicWatermark();
@@ -818,6 +911,16 @@ async function initRiwayatFavoritPage() {
       btnFavorit.setAttribute('aria-selected', !isRiwayat ? 'true' : 'false');
     }
   };
+
+  // Baca parameter URL tab (?tab=favorit atau ?tab=riwayat atau hash)
+  const urlParams = new URLSearchParams(window.location.search);
+  const targetTab = urlParams.get('tab') || (window.location.hash ? window.location.hash.replace('#', '') : '');
+  if (targetTab === 'favorit' && radioFavorit) {
+    radioFavorit.checked = true;
+  } else if (targetTab === 'riwayat' && radioRiwayat) {
+    radioRiwayat.checked = true;
+  }
+  updateTabAria();
 
   if (radioRiwayat) radioRiwayat.addEventListener('change', updateTabAria);
   if (radioFavorit) radioFavorit.addEventListener('change', updateTabAria);
@@ -979,10 +1082,13 @@ function initActivitySwitcher() {
   if (!switcher) return;
 
   let isFlipped = false;
+  switcher.setAttribute('href', 'riwayat-favorit.html?tab=favorit');
+
   state.activityInterval = setInterval(() => {
     isFlipped = !isFlipped;
     switcher.classList.toggle('flipped', isFlipped);
-  }, 2000);
+    switcher.setAttribute('href', isFlipped ? 'riwayat-favorit.html?tab=riwayat' : 'riwayat-favorit.html?tab=favorit');
+  }, 2500);
 
   // Pembersihan interval saat halaman ditutup (PRD FR-05)
   window.addEventListener('beforeunload', () => {
@@ -996,23 +1102,55 @@ function initActivitySwitcher() {
 // Helper untuk memperbarui panel preview di sebelah kanan (detail-matkul.html)
 function updatePreviewPanel(materi) {
   if (!materi) return;
+  state.currentPreviewMateri = materi;
 
   const previewHeader = document.querySelector('.preview-header h2');
   if (previewHeader) previewHeader.textContent = materi.judul;
 
-  const paperTitle = document.querySelector('.pdf-paper h1');
+  const paperTitle = document.querySelector('.pdf-paper h1, .paper-content h2');
   if (paperTitle) paperTitle.textContent = materi.judul;
 
-  const paperDesc = document.querySelector('.pdf-paper p');
+  const paperDesc = document.querySelector('.pdf-paper p, .paper-content p');
   if (paperDesc && materi.deskripsi) paperDesc.textContent = materi.deskripsi;
 
-  // Update tombol baca di preview panel
-  const previewReadBtn = document.querySelector('.preview-actions .btn, .pdf-paper .btn');
-  if (previewReadBtn) {
-    previewReadBtn.setAttribute('data-materi-id', materi.id);
-    previewReadBtn.onclick = (e) => {
+  // Sinkronkan status bookmark di panel preview
+  const previewBookmarkBtn = document.querySelector('.preview-bookmark-btn');
+  const previewBookmarkIcon = document.querySelector('.preview-actions .fa-bookmark, .preview-bookmark-btn i');
+  const isFav = state.userBookmarks ? state.userBookmarks.includes(String(materi.id)) : false;
+
+  if (previewBookmarkBtn) {
+    previewBookmarkBtn.setAttribute('data-materi-id', materi.id);
+    previewBookmarkBtn.setAttribute('title', isFav ? 'Hapus dari favorit' : 'Simpan ke favorit');
+  }
+
+  if (previewBookmarkIcon) {
+    previewBookmarkIcon.setAttribute('data-materi-id', materi.id);
+    if (isFav) {
+      previewBookmarkIcon.className = 'fa-solid fa-bookmark';
+      previewBookmarkIcon.style.color = '#eab308';
+    } else {
+      previewBookmarkIcon.className = 'fa-regular fa-bookmark';
+      previewBookmarkIcon.style.color = '';
+    }
+  }
+
+  // Pasang aksi klik baca pada toolbar expand & kertas dokumen
+  const expandBtn = document.querySelector('.btn-expand-preview, .pdf-toolbar .fa-expand');
+  if (expandBtn) {
+    expandBtn.style.cursor = 'pointer';
+    expandBtn.onclick = (e) => {
       e.preventDefault();
-      window.location.href = `reader.html?title=${encodeURIComponent(materi.judul)}&materi_id=${encodeURIComponent(materi.id)}`;
+      bukaReader(materi.id, materi.judul);
+    };
+  }
+
+  const pdfPaper = document.querySelector('.pdf-paper');
+  if (pdfPaper) {
+    pdfPaper.style.cursor = 'pointer';
+    pdfPaper.setAttribute('title', 'Klik untuk membaca materi');
+    pdfPaper.onclick = (e) => {
+      if (e.target.closest('.preview-actions, .bookmark-btn, .bookmark-icon')) return;
+      bukaReader(materi.id, materi.judul);
     };
   }
 
@@ -1221,4 +1359,24 @@ function initUserModals() {
     el.classList.remove('disabled-link');
     el.onclick = (e) => { e.preventDefault(); showHelp(); };
   });
+}
+
+
+function showNotificationToast(message) {
+  let toast = document.getElementById('reposika-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'reposika-toast';
+    toast.style.cssText = 'position: fixed; bottom: 24px; right: 24px; z-index: 9999; background: #1e293b; color: #ffffff; padding: 12px 20px; border-radius: 10px; font-size: 14px; font-weight: 500; font-family: "Poppins", sans-serif; box-shadow: 0 10px 25px rgba(0,0,0,0.25); display: flex; align-items: center; gap: 10px; transition: opacity 0.3s ease, transform 0.3s ease; opacity: 0; transform: translateY(10px); pointer-events: none;';
+    document.body.appendChild(toast);
+  }
+  toast.innerHTML = `<i class="fa-solid fa-circle-check" style="color: #22c55e;"></i> <span>${message}</span>`;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateY(0)';
+
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(10px)';
+  }, 2500);
 }
