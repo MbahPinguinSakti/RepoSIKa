@@ -23,14 +23,26 @@ export const CONFIG = {
 
 export const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
-// Sanitasi XSS (FR-03): pakai ini sebelum inject teks dinamis ke innerHTML
+// Sanitasi XSS Berlapis (FR-03 & Standar OWASP Encoding)
 export function escapeHtml(value) {
-  return String(value ?? '')
+  if (value === null || value === undefined) return '';
+  let str = String(value);
+
+  // 1. Netralkan tag script dan protokol payload berbahaya
+  str = str.replace(/<\s*script[^>]*>[\s\S]*?<\s*\/\s*script\s*>/gi, '')
+           .replace(/<\s*script[^>]*>/gi, '')
+           .replace(/javascript\s*:/gi, 'blocked:')
+           .replace(/data\s*:/gi, 'blocked:');
+
+  // 2. Encoding karakter khusus OWASP
+  return str
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replace(/'/g, '&#39;')
+    .replace(/`/g, '&#96;')
+    .replace(/\//g, '&#x2F;');
 }
 
 // Menampilkan pesan notifikasi ke pengguna

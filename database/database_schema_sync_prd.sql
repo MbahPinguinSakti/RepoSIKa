@@ -10,7 +10,9 @@
 -- ==============================================================================
 
 -- 1.1 PROFILES (PRD) <-> USERS (LIVE)
-CREATE OR REPLACE VIEW public.profiles AS
+-- Proteksi Security Invoker: View menjalankan RLS dari pemanggil (bukan bypass)
+CREATE OR REPLACE VIEW public.profiles 
+WITH (security_invoker = on) AS
 SELECT 
   id,
   npm,
@@ -22,7 +24,8 @@ SELECT
 FROM public.users;
 
 -- 1.2 COURSES (PRD) <-> MATKUL (LIVE)
-CREATE OR REPLACE VIEW public.courses AS
+CREATE OR REPLACE VIEW public.courses 
+WITH (security_invoker = on) AS
 SELECT 
   id,
   kode AS code,
@@ -32,7 +35,8 @@ SELECT
 FROM public.matkul;
 
 -- 1.3 MATERIALS (PRD) <-> MATERI (LIVE)
-CREATE OR REPLACE VIEW public.materials AS
+CREATE OR REPLACE VIEW public.materials 
+WITH (security_invoker = on) AS
 SELECT 
   id,
   matkul_id AS course_id,
@@ -46,7 +50,8 @@ SELECT
 FROM public.materi;
 
 -- 1.4 BOOKMARKS (PRD) <-> FAVORIT (LIVE)
-CREATE OR REPLACE VIEW public.bookmarks AS
+CREATE OR REPLACE VIEW public.bookmarks 
+WITH (security_invoker = on) AS
 SELECT 
   id,
   user_id,
@@ -55,7 +60,8 @@ SELECT
 FROM public.favorit;
 
 -- 1.5 READING_HISTORIES (PRD) <-> RIWAYAT_BACA (LIVE)
-CREATE OR REPLACE VIEW public.reading_histories AS
+CREATE OR REPLACE VIEW public.reading_histories 
+WITH (security_invoker = on) AS
 SELECT 
   id,
   user_id,
@@ -63,12 +69,12 @@ SELECT
   dibaca_pada AS read_at
 FROM public.riwayat_baca;
 
--- Berikan izin akses SELECT ke authenticated & anon users
-GRANT SELECT ON public.profiles TO authenticated, anon;
+-- Izin akses dibatasi: data privat (profiles, bookmarks, reading_histories) hanya untuk authenticated
 GRANT SELECT ON public.courses TO authenticated, anon;
 GRANT SELECT ON public.materials TO authenticated, anon;
-GRANT SELECT ON public.bookmarks TO authenticated, anon;
-GRANT SELECT ON public.reading_histories TO authenticated, anon;
+GRANT SELECT ON public.profiles TO authenticated;
+GRANT SELECT ON public.bookmarks TO authenticated;
+GRANT SELECT ON public.reading_histories TO authenticated;
 
 
 -- ==============================================================================
@@ -88,8 +94,11 @@ CREATE POLICY "Authenticated users can read users" ON public.users
   FOR SELECT TO authenticated USING (true);
 
 DROP POLICY IF EXISTS "Users can update own profile" ON public.users;
+-- Defense-in-Depth: Cegah manipulasi kolom role langsung di RLS level
 CREATE POLICY "Users can update own profile" ON public.users
-  FOR UPDATE TO authenticated USING (auth.uid() = id);
+  FOR UPDATE TO authenticated 
+  USING (auth.uid() = id)
+  WITH CHECK (auth.uid() = id AND role = (SELECT u.role FROM public.users u WHERE u.id = auth.uid()));
 
 -- 2.2 Kebijakan RLS Tabel MATKUL
 DROP POLICY IF EXISTS "Anyone can view matkul" ON public.matkul;

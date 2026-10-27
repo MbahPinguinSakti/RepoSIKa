@@ -13,11 +13,23 @@ export function getEmailDomain(email) {
 }
 
 export function isCampusEmail(email) {
-  return CONFIG.ALLOWED_DOMAINS.includes(getEmailDomain(email));
+  const normalized = normalizeEmail(email);
+  const parts = normalized.split('@');
+  if (parts.length !== 2) return false;
+
+  const [localPart, domain] = parts;
+
+  // Validasi ketat format username (local-part) sebelum '@'
+  // Wajib ada, alfanumerik diawal/akhir, tidak boleh karakter khusus liar
+  if (!localPart || !/^[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*$/.test(localPart)) {
+    return false;
+  }
+
+  return CONFIG.ALLOWED_DOMAINS.includes(domain);
 }
 
 export function isStudentEmail(email) {
-  return getEmailDomain(email) === CONFIG.STUDENT_DOMAIN;
+  return isCampusEmail(email) && getEmailDomain(email) === CONFIG.STUDENT_DOMAIN;
 }
 
 // Helper universal status akun (mendukung kolom 'aktif' di database tim & 'is_active' di PRD)
@@ -30,10 +42,11 @@ export function isUserActive(profile) {
 
 // Validasi Form Login
 export function validateLogin({ email, password }) {
-  if (!normalizeEmail(email)) return 'Email wajib diisi.';
+  const cleanEmail = normalizeEmail(email);
+  if (!cleanEmail) return 'Email wajib diisi.';
   if (!password) return 'Kata sandi wajib diisi.';
-  if (!isCampusEmail(email)) {
-    return 'Gunakan email kampus (@unsika.ac.id atau @student.unsika.ac.id).';
+  if (!isCampusEmail(cleanEmail)) {
+    return 'Format email tidak valid. Gunakan email resmi civitas akademika (@unsika.ac.id atau @student.unsika.ac.id) dengan username yang benar.';
   }
   return null; // null = valid
 }
@@ -247,10 +260,20 @@ export async function updatePassword(newPassword, confirmPassword) {
   return { ok: true, message: 'Kata sandi berhasil diperbarui. Silakan login kembali.', data };
 }
 
-// 6. Keluar Akun (Sign Out) - Pembersihan Menyeluruh (Anti-Looping)
+// 6. Keluar Akun (Sign Out) - Server Revocation & Pembersihan Menyeluruh (Anti-Looping)
 export async function signOut() {
+  // 1. Upayakan pencabutan (revoke) token sesi di server Supabase secara global
   try {
-    // 1. Bersihkan seluruh cache aplikasi dan auth tokens di localStorage & sessionStorage
+    const serverRevokePromise = supabase.auth.signOut({ scope: 'global' });
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 2000));
+    await Promise.race([serverRevokePromise, timeoutPromise]);
+  } catch (err) {
+    // Jika timeout jaringan atau offline, abaikan error revoke server dan lanjutkan pembersihan lokal
+    console.warn('[SignOut] Server revoke token bypassed/fallback:', err.message || err);
+  }
+
+  // 2. Bersihkan seluruh cache aplikasi dan auth tokens di localStorage & sessionStorage
+  try {
     sessionStorage.clear();
     for (let i = localStorage.length - 1; i >= 0; i--) {
       const key = localStorage.key(i);
@@ -260,11 +283,11 @@ export async function signOut() {
     }
   } catch (_) {}
 
+  // 3. Pastikan state lokal Supabase client ter-reset
   try {
-    // 2. Beritahu Supabase client untuk signOut lokal & global
     await supabase.auth.signOut({ scope: 'local' });
   } catch (e) {
-    console.warn('[SignOut] Warning:', e);
+    console.warn('[SignOut] Local cleanup notice:', e);
   }
 
   return { ok: true, message: 'Berhasil keluar.', data: null };

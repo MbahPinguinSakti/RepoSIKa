@@ -132,12 +132,19 @@ DECLARE
   v_nama text;
   v_npm text;
   v_role text := 'mahasiswa';
+  v_local_part text;
 BEGIN
   v_email := LOWER(NEW.email);
 
   -- Validasi mutlak whitelist domain kampus @unsika.ac.id / @student.unsika.ac.id (FR-01)
   IF v_email NOT LIKE '%@unsika.ac.id' AND v_email NOT LIKE '%@student.unsika.ac.id' THEN
     RAISE EXCEPTION 'Pendaftaran ditolak: Sistem hanya menerima email resmi kampus UNSIKA (@unsika.ac.id / @student.unsika.ac.id).';
+  END IF;
+
+  -- Validasi format username sebelum '@' (mencegah email kosong / karakter liar)
+  v_local_part := SPLIT_PART(v_email, '@', 1);
+  IF LENGTH(v_local_part) < 2 OR v_local_part !~ '^[a-zA-Z0-9._-]+$' THEN
+    RAISE EXCEPTION 'Pendaftaran ditolak: Format alamat email sebelum tanda @ tidak valid.';
   END IF;
 
   -- Ekstraksi nama dari user_metadata (auth signup / google oauth)
