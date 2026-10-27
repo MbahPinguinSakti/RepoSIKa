@@ -76,6 +76,13 @@ GRANT SELECT ON public.profiles TO authenticated;
 GRANT SELECT ON public.bookmarks TO authenticated;
 GRANT SELECT ON public.reading_histories TO authenticated;
 
+-- Pastikan opsi security_invoker aktif pada Postgres (memenuhi Supabase Security Linter 0010_security_definer_view)
+ALTER VIEW public.courses SET (security_invoker = true);
+ALTER VIEW public.materials SET (security_invoker = true);
+ALTER VIEW public.profiles SET (security_invoker = true);
+ALTER VIEW public.bookmarks SET (security_invoker = true);
+ALTER VIEW public.reading_histories SET (security_invoker = true);
+
 
 -- ==============================================================================
 -- 2. KEBIJAKAN ROW LEVEL SECURITY (RLS) UNTUK SEMUA TABEL

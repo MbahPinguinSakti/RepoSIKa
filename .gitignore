@@ -42,3 +42,8 @@ pnpm-debug.log*
 .temp/
 *.tmp
 *.bak
+
+# Local Technical Documentation & PDF (Internal only - Do not push to remote)
+*.pdf
+DOKUMENTASI_KOMPREHENSIF_REPOSIKA.*
+
