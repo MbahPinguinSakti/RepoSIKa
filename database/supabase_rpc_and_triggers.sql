@@ -5,10 +5,11 @@
 -- ==============================================================================
 
 -- 1. HELPER KEAMANAN: Memeriksa apakah pemanggil adalah Admin
+-- Berjalan sebagai SECURITY INVOKER (Least Privilege: mengevaluasi hak akses pengguna pemanggil)
 CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS boolean
 LANGUAGE sql
-SECURITY DEFINER
+SECURITY INVOKER
 SET search_path = public
 STABLE
 AS $$
@@ -17,6 +18,9 @@ AS $$
     WHERE id = auth.uid() AND role = 'admin' AND aktif = true
   );
 $$;
+
+REVOKE EXECUTE ON FUNCTION public.is_admin() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
 
 
 -- ==============================================================================
@@ -42,7 +46,8 @@ BEGIN
 END;
 $$;
 
--- Berikan izin eksekusi ke pengguna terautentikasi (mahasiswa & admin)
+-- Berikan izin eksekusi HANYA ke authenticated (cabut dari anon dan public untuk mematuhi Linter 0028)
+REVOKE EXECUTE ON FUNCTION public.increment_material_views(int8) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.increment_material_views(int8) TO authenticated;
 
 
@@ -81,6 +86,7 @@ BEGIN
 END;
 $$;
 
+REVOKE EXECUTE ON FUNCTION public.set_user_role(uuid, text) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.set_user_role(uuid, text) TO authenticated;
 
 
@@ -115,6 +121,7 @@ BEGIN
 END;
 $$;
 
+REVOKE EXECUTE ON FUNCTION public.delete_user_by_admin(uuid) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.delete_user_by_admin(uuid) TO authenticated;
 
 
@@ -203,6 +210,7 @@ CREATE OR REPLACE FUNCTION public.protect_user_roles()
 RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
   -- Jika kolom role mencoba diubah
@@ -232,6 +240,14 @@ CREATE TRIGGER tr_protect_user_roles
 BEFORE UPDATE ON public.users
 FOR EACH ROW
 EXECUTE FUNCTION public.protect_user_roles();
+
+-- Fungsi Trigger dijalankan otomatis oleh mesin PostgreSQL.
+-- Cabut izin pemanggilan langsung via REST/RPC untuk anon & authenticated (mematuhi Linter 0028 & 0029)
+REVOKE EXECUTE ON FUNCTION public.handle_new_campus_user() FROM PUBLIC, anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.protect_user_roles() FROM PUBLIC, anon, authenticated;
+
+-- Hapus fungsi trigger lawas handle_new_user jika tertinggal dari migrasi lama
+DROP FUNCTION IF EXISTS public.handle_new_user() CASCADE;
 
 
 -- ==============================================================================
