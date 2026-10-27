@@ -153,13 +153,61 @@ async function initUserSession() {
     }
   }
 
-  // Handler Tombol Logout Pengguna
+  // Handler Tombol Logout Pengguna — inline confirmation tanpa dialog browser
   const handleUserLogout = async (e) => {
     if (e) e.preventDefault();
-    if (confirm('Apakah Anda yakin ingin keluar dari akun?')) {
+
+    // Cek apakah sudah ada overlay konfirmasi aktif, hindari duplikasi
+    if (document.getElementById('rsk-logout-confirm')) return;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'rsk-logout-confirm';
+    overlay.style.cssText = [
+      'position:fixed', 'inset:0', 'z-index:99998',
+      'display:flex', 'align-items:center', 'justify-content:center',
+      'background:rgba(15,23,42,0.55)', 'backdrop-filter:blur(4px)',
+      'animation:rskFadeIn 0.2s ease',
+    ].join(';');
+
+    overlay.innerHTML = [
+      '<style>@keyframes rskFadeIn{from{opacity:0}to{opacity:1}}',
+      '@keyframes rskSlideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}</style>',
+      '<div style="background:#fff;color:#1e293b;border-radius:20px;padding:32px 28px;',
+      'width:90%;max-width:360px;box-shadow:0 24px 48px rgba(0,0,0,0.2);',
+      'font-family:Poppins,Arial,sans-serif;animation:rskSlideUp 0.25s ease;text-align:center;">',
+      '<div style="width:64px;height:64px;border-radius:50%;background:#fee2e2;display:inline-flex;',
+      'align-items:center;justify-content:center;margin-bottom:16px;">',
+      '<i class="fa-solid fa-right-from-bracket" style="color:#dc2626;font-size:26px;"></i></div>',
+      '<h3 style="margin:0 0 8px;font-size:17px;font-weight:700;">Keluar dari Akun?</h3>',
+      '<p style="margin:0 0 24px;font-size:13.5px;color:#64748b;line-height:1.5;">',
+      'Sesi kamu akan diakhiri dan kamu perlu login kembali untuk mengakses materi.</p>',
+      '<div style="display:flex;gap:10px;">',
+      '<button id="rsk-logout-cancel" style="flex:1;padding:11px;border-radius:10px;border:1.5px solid #e2e8f0;',
+      'background:#f8fafc;color:#475569;font-family:Poppins,Arial,sans-serif;',
+      'font-size:13.5px;font-weight:600;cursor:pointer;">Batal</button>',
+      '<button id="rsk-logout-yes" style="flex:1;padding:11px;border-radius:10px;border:none;',
+      'background:#dc2626;color:#fff;font-family:Poppins,Arial,sans-serif;',
+      'font-size:13.5px;font-weight:600;cursor:pointer;">Ya, Keluar</button>',
+      '</div></div>',
+    ].join('');
+
+    document.body.appendChild(overlay);
+
+    const removeOverlay = () => overlay.remove();
+
+    overlay.querySelector('#rsk-logout-cancel').onclick = removeOverlay;
+    overlay.addEventListener('click', (ev) => { if (ev.target === overlay) removeOverlay(); });
+    document.addEventListener('keydown', function escHandler(ev) {
+      if (ev.key === 'Escape') { removeOverlay(); document.removeEventListener('keydown', escHandler); }
+    });
+
+    overlay.querySelector('#rsk-logout-yes').onclick = async () => {
+      const btn = overlay.querySelector('#rsk-logout-yes');
+      btn.textContent = 'Keluar...';
+      btn.disabled = true;
       await signOut();
       window.location.replace('login.html?logout=true');
-    }
+    };
   };
 
   const logoutLinks = document.querySelectorAll('a[href*="login"], .sidebar-options span:has(.fa-right-from-bracket), .side-bottom-link:has(.fa-right-from-bracket), .btn-logout');
@@ -1240,12 +1288,7 @@ function initUserModals() {
     m.querySelector('.close-modal').onclick = close;
     m.querySelector('.btn-close-modal').onclick = close;
     m.onclick = (e) => { if (e.target === m) close(); };
-    m.querySelector('.btn-logout-modal').onclick = async () => {
-      if (confirm('Apakah Anda yakin ingin keluar dari akun?')) {
-        await signOut();
-        window.location.replace('login.html?logout=true');
-      }
-    };
+    m.querySelector('.btn-logout-modal').onclick = handleUserLogout;
   };
 
   // 2. Settings Modal

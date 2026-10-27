@@ -45,33 +45,84 @@ export function escapeHtml(value) {
     .replace(/\//g, '&#x2F;');
 }
 
-// Menampilkan pesan notifikasi ke pengguna
-export function showAlert(message, type = 'info', containerId = 'alert-container') {
-  const container = document.getElementById(containerId);
-  if (!container) {
-    // Fallback jika halaman belum memiliki container alert
-    alert(message);
-    return;
+// Toast notification interaktif (menggantikan alert box statis)
+let _toastTimeout = null;
+export function showAlert(message, type, containerId) {
+  if (!type) type = 'info';
+  if (!containerId) containerId = 'alert-container';
+  let toast = document.getElementById('rsk-toast-notification');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'rsk-toast-notification';
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'polite');
+    const s = toast.style;
+    s.position = 'fixed';
+    s.bottom = '28px';
+    s.left = '50%';
+    s.transform = 'translateX(-50%) translateY(28px)';
+    s.zIndex = '99999';
+    s.minWidth = '280px';
+    s.maxWidth = '440px';
+    s.width = '90vw';
+    s.padding = '14px 18px';
+    s.borderRadius = '14px';
+    s.fontFamily = "Poppins,Arial,sans-serif";
+    s.fontSize = '13.5px';
+    s.fontWeight = '500';
+    s.lineHeight = '1.45';
+    s.display = 'flex';
+    s.alignItems = 'center';
+    s.gap = '12px';
+    s.boxShadow = '0 12px 32px rgba(0,0,0,0.18)';
+    s.opacity = '0';
+    s.transition = 'opacity 0.3s ease,transform 0.35s ease';
+    s.cursor = 'pointer';
+    document.body.appendChild(toast);
   }
-  const el = document.createElement('div');
-  el.className = `alert alert-${type}`;
-  el.setAttribute('role', 'alert');
-  el.textContent = message;
-
-  container.replaceChildren(el); // satu alert pada satu waktu
-  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-  if (type === 'success') {
-    setTimeout(() => {
-      if (el.parentNode === container) {
-        el.remove();
-      }
-    }, 6000);
-  }
+  const cfg = {
+    error:   { icon: 'fa-circle-xmark',         bg: '#fee2e2', color: '#991b1b', border: '#f87171' },
+    success: { icon: 'fa-circle-check',          bg: '#dcfce7', color: '#166534', border: '#86efac' },
+    info:    { icon: 'fa-circle-info',           bg: '#e0f2fe', color: '#075985', border: '#7dd3fc' },
+    warning: { icon: 'fa-triangle-exclamation', bg: '#fef9c3', color: '#854d0e', border: '#fde047' },
+  };
+  const cc = cfg[type] || cfg.info;
+  toast.style.background = cc.bg;
+  toast.style.color = cc.color;
+  toast.style.border = '1px solid ' + cc.border;
+  toast.innerHTML = [
+    '<i class="fa-solid ' + cc.icon + '" style="font-size:18px;flex-shrink:0;"></i>',
+    '<span style="flex:1;">' + message + '</span>',
+    '<i class="fa-solid fa-xmark rsk-toast-close" style="font-size:14px;opacity:0.55;cursor:pointer;flex-shrink:0;"></i>',
+  ].join('');
+  const closeToast = function() {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(28px)';
+  };
+  toast.querySelector('.rsk-toast-close').addEventListener('click', function(e) { e.stopPropagation(); closeToast(); });
+  toast.onclick = closeToast;
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+    });
+  });
+  clearTimeout(_toastTimeout);
+  var dur = type === 'error' ? 6500 : type === 'success' ? 4000 : 5000;
+  _toastTimeout = setTimeout(closeToast, dur);
+  var staticCont = document.getElementById(containerId);
+  if (staticCont) staticCont.replaceChildren();
 }
 
-export function clearAlert(containerId = 'alert-container') {
-  document.getElementById(containerId)?.replaceChildren();
+export function clearAlert(containerId) {
+  if (!containerId) containerId = 'alert-container';
+  var toast = document.getElementById('rsk-toast-notification');
+  if (toast) {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(28px)';
+  }
+  var staticCont = document.getElementById(containerId);
+  if (staticCont) staticCont.replaceChildren();
 }
 
 // Tema gelap/terang (FR-06). Pakai atribut data-theme di <html>.

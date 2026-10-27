@@ -179,7 +179,7 @@ function initSignupForm() {
     formSignup.querySelector('button[type="submit"]') ||
     formSignup.querySelector('.signup-button');
 
-  // Penyesuaian Dinamis Mahasiswa vs Dosen
+  // Penyesuaian Dinamis Mahasiswa vs Dosen + Auto-extract NPM
   if (emailInput && npmInput) {
     const handleEmailInput = () => {
       const emailVal = emailInput.value.trim().toLowerCase();
@@ -193,7 +193,7 @@ function initSignupForm() {
         npmLabel.textContent = isStudent ? 'NPM (Wajib untuk Mahasiswa)' : 'NPM (Khusus Mahasiswa)';
       }
 
-      // Auto-ekstrak jika student
+      // Auto-extract NPM dari prefix email mahasiswa
       if (isStudent) {
         const potentialNpm = emailVal.split('@')[0];
         if (/^\d+$/.test(potentialNpm) && (!npmInput.value || /^\d+$/.test(npmInput.value))) {
@@ -202,8 +202,24 @@ function initSignupForm() {
       }
     };
 
-    emailInput.addEventListener('input', handleEmailInput);
-    emailInput.addEventListener('change', handleEmailInput);
+    // Tangani semua event: ketik, paste, autofill browser, perubahan programatik
+    ['input', 'change', 'paste', 'blur'].forEach((ev) => {
+      emailInput.addEventListener(ev, () => {
+        // Untuk paste, beri jeda agar browser selesai menaruh value
+        setTimeout(handleEmailInput, 50);
+      });
+    });
+
+    // Polling singkat setelah halaman load untuk tangkap browser autofill yang tidak trigger event
+    let _pollCount = 0;
+    const _pollAutofill = setInterval(() => {
+      _pollCount++;
+      if (emailInput.value.trim()) {
+        handleEmailInput();
+        clearInterval(_pollAutofill);
+      }
+      if (_pollCount > 20) clearInterval(_pollAutofill); // Stop setelah 2 detik
+    }, 100);
   }
 
   formSignup.addEventListener('submit', async (event) => {

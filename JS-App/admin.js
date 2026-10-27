@@ -49,10 +49,85 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Handler Tombol Logout Admin
   const handleAdminLogout = async (e) => {
     if (e) e.preventDefault();
-    if (confirm('Keluar dari Panel Administrator?')) {
+    // Remove existing overlay if any
+    const existing = document.getElementById('rsk-admin-logout-confirm');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'rsk-admin-logout-confirm';
+    overlay.style.cssText = [
+      'position:fixed', 'inset:0', 'z-index:99999',
+      'background:rgba(0,0,0,0.55)', 'backdrop-filter:blur(4px)',
+      'display:flex', 'align-items:center', 'justify-content:center',
+      'animation:rskFadeIn 0.18s ease'
+    ].join(';');
+
+    overlay.innerHTML = `
+      <style>
+        @keyframes rskFadeIn { from { opacity:0 } to { opacity:1 } }
+        @keyframes rskSlideUp { from { transform:translateY(28px);opacity:0 } to { transform:translateY(0);opacity:1 } }
+        #rsk-admin-logout-confirm .rsk-card {
+          background:#1e1e2e; border:1px solid rgba(255,255,255,0.1);
+          border-radius:16px; padding:32px 28px 24px;
+          max-width:360px; width:90%; text-align:center;
+          animation:rskSlideUp 0.22s cubic-bezier(.22,.68,0,1.2);
+          box-shadow:0 24px 64px rgba(0,0,0,0.5);
+        }
+        #rsk-admin-logout-confirm .rsk-icon {
+          width:56px;height:56px;border-radius:50%;
+          background:rgba(239,68,68,0.15); display:flex;
+          align-items:center;justify-content:center;margin:0 auto 16px;
+        }
+        #rsk-admin-logout-confirm h3 {
+          color:#f1f5f9;font-size:1.15rem;font-weight:700;margin:0 0 8px;
+        }
+        #rsk-admin-logout-confirm p {
+          color:#94a3b8;font-size:0.875rem;margin:0 0 24px;line-height:1.5;
+        }
+        #rsk-admin-logout-confirm .rsk-btns {
+          display:flex;gap:10px;justify-content:center;
+        }
+        #rsk-admin-logout-confirm .rsk-btn-cancel {
+          flex:1;padding:10px;border-radius:10px;font-weight:600;font-size:0.9rem;
+          border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);
+          color:#cbd5e1;cursor:pointer;transition:all 0.15s;
+        }
+        #rsk-admin-logout-confirm .rsk-btn-cancel:hover { background:rgba(255,255,255,0.1); }
+        #rsk-admin-logout-confirm .rsk-btn-confirm {
+          flex:1;padding:10px;border-radius:10px;font-weight:600;font-size:0.9rem;
+          border:none;background:linear-gradient(135deg,#ef4444,#b91c1c);
+          color:#fff;cursor:pointer;transition:all 0.15s;
+        }
+        #rsk-admin-logout-confirm .rsk-btn-confirm:hover { filter:brightness(1.1); }
+      </style>
+      <div class="rsk-card">
+        <div class="rsk-icon">
+          <i class="fa-solid fa-right-from-bracket" style="color:#ef4444;font-size:1.4rem;"></i>
+        </div>
+        <h3>Keluar dari Admin Panel?</h3>
+        <p>Sesi administrator Anda akan diakhiri.<br>Anda perlu login kembali untuk mengakses panel ini.</p>
+        <div class="rsk-btns">
+          <button class="rsk-btn-cancel" id="rsk-admin-logout-cancel">Batal</button>
+          <button class="rsk-btn-confirm" id="rsk-admin-logout-yes">Ya, Keluar</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const close = () => overlay.remove();
+    overlay.querySelector('#rsk-admin-logout-cancel').addEventListener('click', close);
+    overlay.addEventListener('click', (ev) => { if (ev.target === overlay) close(); });
+    document.addEventListener('keydown', function escHandler(ev) {
+      if (ev.key === 'Escape') { close(); document.removeEventListener('keydown', escHandler); }
+    });
+
+    overlay.querySelector('#rsk-admin-logout-yes').addEventListener('click', async () => {
+      overlay.querySelector('#rsk-admin-logout-yes').textContent = 'Keluar...';
+      overlay.querySelector('#rsk-admin-logout-yes').disabled = true;
       await signOut();
       window.location.replace('login.html?logout=true');
-    }
+    });
   };
 
   const logoutBtns = document.querySelectorAll('nav.side-footer a:has(.fa-right-from-bracket), nav.side-footer a[href*="login"], .btn-logout-admin');
@@ -835,11 +910,9 @@ function initAdminModals() {
     modal.querySelector('#admin-modal-close-btn').addEventListener('click', closeModal);
     modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
 
-    modal.querySelector('#admin-modal-logout').addEventListener('click', async () => {
-      if (confirm('Keluar dari sesi Administrator?')) {
-        await signOut();
-        window.location.replace('login.html?logout=true');
-      }
+    modal.querySelector('#admin-modal-logout').addEventListener('click', (e) => {
+      closeModal();
+      handleAdminLogout(e);
     });
   };
 
