@@ -107,6 +107,18 @@ CREATE POLICY "Users can update own profile" ON public.users
   USING (auth.uid() = id)
   WITH CHECK (auth.uid() = id AND role = (SELECT u.role FROM public.users u WHERE u.id = auth.uid()));
 
+-- Kebijakan RLS agar Administrator dapat mengelola (suspend & hapus) akun pengguna
+DROP POLICY IF EXISTS "Admin can update users" ON public.users;
+CREATE POLICY "Admin can update users" ON public.users
+  FOR UPDATE TO authenticated
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
+
+DROP POLICY IF EXISTS "Admin can delete users" ON public.users;
+CREATE POLICY "Admin can delete users" ON public.users
+  FOR DELETE TO authenticated
+  USING (public.is_admin());
+
 -- 2.2 Kebijakan RLS Tabel MATKUL
 DROP POLICY IF EXISTS "Anyone can view matkul" ON public.matkul;
 CREATE POLICY "Anyone can view matkul" ON public.matkul

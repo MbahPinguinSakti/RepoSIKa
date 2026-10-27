@@ -41,12 +41,8 @@ export const usersService = {
 
   async update(id, fields) {
     return unwrap(
-      await supabase.from("users").update(fields).eq("id", id).select().single()
+      await supabase.from("users").update(fields).eq("id", id).select().maybeSingle()
     );
-  },
-
-  async setAktif(id, aktif) {
-    return this.update(id, { aktif });
   },
 
   async catatLogin(id) {
@@ -94,6 +90,20 @@ export const usersService = {
     if (id && currentUserId && String(id) === String(currentUserId) && !aktif) {
       throw new Error("Tindakan ditolak: Anda tidak dapat menonaktifkan (suspend) akun Anda sendiri!");
     }
+
+    try {
+      const { data, error } = await supabase.rpc('set_user_active', { p_user_id: id, p_aktif: aktif });
+      if (!error) return true;
+      if (error && (error.message.includes('Akses ditolak') || error.message.includes('Tindakan'))) {
+        throw new Error(error.message);
+      }
+    } catch (e) {
+      if (e.message && (e.message.includes('Tindakan') || e.message.includes('Akses ditolak'))) {
+        throw e;
+      }
+      console.warn("RPC set_user_active fallback:", e);
+    }
+
     return this.update(id, { aktif });
   },
 

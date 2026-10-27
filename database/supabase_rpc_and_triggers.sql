@@ -89,6 +89,35 @@ $$;
 REVOKE EXECUTE ON FUNCTION public.set_user_role(uuid, text) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.set_user_role(uuid, text) TO authenticated;
 
+-- ==============================================================================
+-- 3.1 FR-08 / FR-09: SUSPEND / AKTIFKAN AKUN PENGGUNA OLEH ADMIN (set_user_active)
+-- ==============================================================================
+CREATE OR REPLACE FUNCTION public.set_user_active(p_user_id uuid, p_aktif boolean)
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF NOT public.is_admin() THEN
+    RAISE EXCEPTION 'Akses ditolak: Hanya Administrator yang berhak mengubah status akun pengguna.';
+  END IF;
+
+  IF p_user_id = auth.uid() AND NOT p_aktif THEN
+    RAISE EXCEPTION 'Tindakan dibatalkan: Anda tidak dapat menonaktifkan (suspend) akun Anda sendiri!';
+  END IF;
+
+  UPDATE public.users
+  SET aktif = p_aktif
+  WHERE id = p_user_id;
+
+  RETURN true;
+END;
+$$;
+
+REVOKE EXECUTE ON FUNCTION public.set_user_active(uuid, boolean) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.set_user_active(uuid, boolean) TO authenticated;
+
 
 -- ==============================================================================
 -- 4. FR-08: HAPUS AKUN SECARA MENYELURUH OLEH ADMIN (delete_user_by_admin)
