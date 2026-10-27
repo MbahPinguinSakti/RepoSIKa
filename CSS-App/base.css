@@ -376,14 +376,24 @@ body:has(#theme-dark:checked) .theme-label .sun-icon {
 
 /* Avatar pengguna */
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   background: #f4c0c4;
-  display: grid;
-  place-items: center;
-  font-size: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
   overflow: hidden;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.avatar:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 3px rgba(120, 135, 68, 0.35);
 }
 
 

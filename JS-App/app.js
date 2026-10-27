@@ -105,59 +105,60 @@ function initThemeManager() {
 // 2. SESI PENGGUNA & SIDEBAR
 // Handler Tombol Logout Pengguna — inline confirmation tanpa dialog browser
 const handleUserLogout = async (e) => {
-    if (e) e.preventDefault();
+  if (e) e.preventDefault();
 
-    // Cek apakah sudah ada overlay konfirmasi aktif, hindari duplikasi
-    if (document.getElementById('rsk-logout-confirm')) return;
+  // Cek apakah sudah ada overlay konfirmasi aktif, hindari duplikasi
+  if (document.getElementById('rsk-logout-confirm')) return;
 
-    const overlay = document.createElement('div');
-    overlay.id = 'rsk-logout-confirm';
-    overlay.style.cssText = [
-      'position:fixed', 'inset:0', 'z-index:99998',
-      'display:flex', 'align-items:center', 'justify-content:center',
-      'background:rgba(15,23,42,0.55)', 'backdrop-filter:blur(4px)',
-      'animation:rskFadeIn 0.2s ease',
-    ].join(';');
+  const overlay = document.createElement('div');
+  overlay.id = 'rsk-logout-confirm';
+  overlay.style.cssText = [
+    'position:fixed', 'inset:0', 'z-index:99998',
+    'display:flex', 'align-items:center', 'justify-content:center',
+    'background:rgba(15,23,42,0.55)', 'backdrop-filter:blur(4px)',
+    'animation:rskFadeIn 0.2s ease',
+  ].join(';');
 
-    overlay.innerHTML = [
-      '<style>@keyframes rskFadeIn{from{opacity:0}to{opacity:1}}',
-      '@keyframes rskSlideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}</style>',
-      '<div style="background:#fff;color:#1e293b;border-radius:20px;padding:32px 28px;',
-      'width:90%;max-width:360px;box-shadow:0 24px 48px rgba(0,0,0,0.2);',
-      'font-family:Poppins,Arial,sans-serif;animation:rskSlideUp 0.25s ease;text-align:center;">',
-      '<div style="width:64px;height:64px;border-radius:50%;background:#fee2e2;display:inline-flex;',
-      'align-items:center;justify-content:center;margin-bottom:16px;">',
-      '<i class="fa-solid fa-right-from-bracket" style="color:#dc2626;font-size:26px;"></i></div>',
-      '<h3 style="margin:0 0 8px;font-size:17px;font-weight:700;">Keluar dari Akun?</h3>',
-      '<p style="margin:0 0 24px;font-size:13.5px;color:#64748b;line-height:1.5;">',
-      'Sesi kamu akan diakhiri dan kamu perlu login kembali untuk mengakses materi.</p>',
-      '<div style="display:flex;gap:10px;">',
-      '<button id="rsk-logout-cancel" style="flex:1;padding:11px;border-radius:10px;border:1.5px solid #e2e8f0;',
-      'background:#f8fafc;color:#475569;font-family:Poppins,Arial,sans-serif;',
-      'font-size:13.5px;font-weight:600;cursor:pointer;">Batal</button>',
-      '<button id="rsk-logout-yes" style="flex:1;padding:11px;border-radius:10px;border:none;',
-      'background:#dc2626;color:#fff;font-family:Poppins,Arial,sans-serif;',
-      'font-size:13.5px;font-weight:600;cursor:pointer;">Ya, Keluar</button>',
-      '</div></div>',
-    ].join('');
+  overlay.innerHTML = [
+    '<style>@keyframes rskFadeIn{from{opacity:0}to{opacity:1}}',
+    '@keyframes rskSlideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}</style>',
+    '<div style="background:#fff;color:#1e293b;border-radius:20px;padding:32px 28px;',
+    'width:90%;max-width:360px;box-shadow:0 24px 48px rgba(0,0,0,0.2);',
+    'font-family:Poppins,Arial,sans-serif;animation:rskSlideUp 0.25s ease;text-align:center;">',
+    '<div style="width:64px;height:64px;border-radius:50%;background:#fee2e2;display:inline-flex;',
+    'align-items:center;justify-content:center;margin-bottom:16px;">',
+    '<i class="fa-solid fa-right-from-bracket" style="color:#dc2626;font-size:26px;"></i></div>',
+    '<h3 style="margin:0 0 8px;font-size:17px;font-weight:700;">Keluar dari Akun?</h3>',
+    '<p style="margin:0 0 24px;font-size:13.5px;color:#64748b;line-height:1.5;">',
+    'Sesi kamu akan diakhiri dan kamu perlu login kembali untuk mengakses materi.</p>',
+    '<div style="display:flex;gap:10px;">',
+    '<button id="rsk-logout-cancel" style="flex:1;padding:11px;border-radius:10px;border:1.5px solid #e2e8f0;',
+    'background:#f8fafc;color:#475569;font-family:Poppins,Arial,sans-serif;',
+    'font-size:13.5px;font-weight:600;cursor:pointer;">Batal</button>',
+    '<button id="rsk-logout-yes" style="flex:1;padding:11px;border-radius:10px;border:none;',
+    'background:#dc2626;color:#fff;font-family:Poppins,Arial,sans-serif;',
+    'font-size:13.5px;font-weight:600;cursor:pointer;">Ya, Keluar</button>',
+    '</div></div>',
+  ].join('');
 
-    document.body.appendChild(overlay);
+  document.body.appendChild(overlay);
 
-    const removeOverlay = () => overlay.remove();
+  const removeOverlay = () => overlay.remove();
 
-    overlay.querySelector('#rsk-logout-cancel').onclick = removeOverlay;
-    overlay.addEventListener('click', (ev) => { if (ev.target === overlay) removeOverlay(); });
-    document.addEventListener('keydown', function escHandler(ev) {
-      if (ev.key === 'Escape') { removeOverlay(); document.removeEventListener('keydown', escHandler); }
-    });
+  overlay.querySelector('#rsk-logout-cancel').onclick = removeOverlay;
+  overlay.addEventListener('click', (ev) => { if (ev.target === overlay) removeOverlay(); });
+  document.addEventListener('keydown', function escHandler(ev) {
+    if (ev.key === 'Escape') { removeOverlay(); document.removeEventListener('keydown', escHandler); }
+  });
 
-    overlay.querySelector('#rsk-logout-yes').onclick = async () => {
-      const btn = overlay.querySelector('#rsk-logout-yes');
-      btn.textContent = 'Keluar...';
-      btn.disabled = true;
-      await signOut();
-      window.location.replace('login.html?logout=true');
-    };
+  overlay.querySelector('#rsk-logout-yes').onclick = async () => {
+    const btn = overlay.querySelector('#rsk-logout-yes');
+    btn.textContent = 'Keluar...';
+    btn.disabled = true;
+    await signOut();
+    window.location.replace('login.html?logout=true');
+  };
+};
 
 async function initUserSession() {
   state.user = await getCurrentUser();
@@ -179,8 +180,8 @@ async function initUserSession() {
 
   // Update Nama Pengguna di Header
   const userNameEl = document.querySelector('.page-heading h1');
+  const rawName = state.profile?.nama || state.user?.user_metadata?.nama || state.user?.email?.split('@')[0] || 'Civitas';
   if (userNameEl) {
-    const rawName = state.profile?.nama || state.user?.user_metadata?.nama || state.user?.email?.split('@')[0] || 'Civitas';
     userNameEl.textContent = `Welcome Back, ${rawName.split(' ')[0]}!`;
   }
 
@@ -1375,7 +1376,8 @@ function initUserModals() {
     m.onclick = (e) => { if (e.target === m) close(); };
   };
 
-  // Pasang event listener
+  // Pasang event listener ke elemen-elemen interaktif
+  // 1. Avatar Pengguna di Header
   document.querySelectorAll('.avatar').forEach((el) => {
     el.style.cursor = 'pointer';
     el.setAttribute('title', 'Buka Profil Akun');
@@ -1385,22 +1387,66 @@ function initUserModals() {
     };
   });
 
-  profileLinks.forEach((el) => {
+  // 2. Tombol Profil di Sidebar
+  const profileSelectors = [
+    '.side-bottom-link:has(.fa-user)',
+    '.sidebar-options span:has(.fa-user)',
+    '.side-bottom-link:has(.fa-regular.fa-user)',
+    '.sidebar-options span:has(.fa-regular.fa-user)',
+    '#btn-sidebar-profile',
+    '[title*="profil" i]',
+    '[title*="profile" i]',
+    '.btn-profile',
+    '.sidebar-bottom span:has(.fa-user)'
+  ];
+  document.querySelectorAll(profileSelectors.join(',')).forEach((el) => {
     el.style.cursor = 'pointer';
     el.classList.remove('disabled-link');
-    el.onclick = (e) => { e.preventDefault(); showProfile(); };
+    el.removeAttribute('title');
+    el.setAttribute('title', 'Lihat Profil Akun');
+    el.onclick = (e) => {
+      e.preventDefault();
+      showProfile();
+    };
   });
 
-  settingsLinks.forEach((el) => {
+  // 3. Tombol Pengaturan / Settings di Sidebar
+  const settingsSelectors = [
+    '.side-bottom-link:has(.fa-gear)',
+    '.sidebar-options span:has(.fa-gear)',
+    '#btn-sidebar-settings',
+    '[title*="pengaturan" i]',
+    '[title*="setting" i]',
+    '.btn-settings',
+    '.sidebar-bottom span:has(.fa-gear)'
+  ];
+  document.querySelectorAll(settingsSelectors.join(',')).forEach((el) => {
     el.style.cursor = 'pointer';
     el.classList.remove('disabled-link');
-    el.onclick = (e) => { e.preventDefault(); showSettings(); };
+    el.removeAttribute('title');
+    el.setAttribute('title', 'Pengaturan Tampilan');
+    el.onclick = (e) => {
+      e.preventDefault();
+      showSettings();
+    };
   });
 
-  helpLinks.forEach((el) => {
+  // 4. Tombol Bantuan / Help di Sidebar
+  const helpSelectors = [
+    '.side-bottom-link:has(.fa-circle-question)',
+    '.help-link',
+    '.support',
+    '[title*="bantuan" i]',
+    '[title*="help" i]',
+    '.sidebar-bottom span:has(.fa-circle-question)'
+  ];
+  document.querySelectorAll(helpSelectors.join(',')).forEach((el) => {
     el.style.cursor = 'pointer';
     el.classList.remove('disabled-link');
-    el.onclick = (e) => { e.preventDefault(); showHelp(); };
+    el.onclick = (e) => {
+      e.preventDefault();
+      showHelp();
+    };
   });
 }
 
