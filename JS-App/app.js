@@ -2,7 +2,7 @@
 // Controller Aplikasi Utama RepoSIKa (Dashboard, Katalog, Detail Materi, Riwayat & Favorit)
 // Sesuai Spesifikasi PRD (FR-02, FR-03, FR-04, FR-05, FR-06)
 
-import { supabase, escapeHtml, CONFIG } from '../JS-Login/utils.js';
+import { supabase, escapeHtml, CONFIG, resolveAvatarUrl, applyAvatar } from '../JS-Login/utils.js';
 import {
   getCurrentUser,
   getCurrentUserProfile,
@@ -103,58 +103,8 @@ function initThemeManager() {
 }
 
 // 2. SESI PENGGUNA & SIDEBAR
-async function initUserSession() {
-  state.user = await getCurrentUser();
-
-  if (state.user) {
-    state.profile = await getCurrentUserProfile();
-
-    // Jika pengguna adalah Admin / Dosen dan sedang membuka dashboard mahasiswa tanpa flag ?as_student=1,
-    // langsung arahkan ke admin-dashboard.html agar admin tidak tersangkut di tampilan mahasiswa.
-    const urlParams = new URLSearchParams(window.location.search);
-    if ((state.profile?.role === 'admin' || state.profile?.role === 'dosen') && !urlParams.has('as_student')) {
-      const p = window.location.pathname.toLowerCase();
-      if (p.includes('dashboard') || p.endsWith('/') || p.endsWith('index.html')) {
-        window.location.replace(CONFIG.PAGES.ADMIN);
-        return;
-      }
-    }
-  }
-
-  // Update Nama Pengguna di Header
-  const userNameEl = document.querySelector('.page-heading h1');
-  if (userNameEl) {
-    const rawName = state.profile?.nama || state.user?.user_metadata?.nama || state.user?.email?.split('@')[0] || 'Civitas';
-    userNameEl.textContent = `Welcome Back, ${rawName.split(' ')[0]}!`;
-  }
-
-  const welcomeName = document.getElementById('welcome-name');
-  if (welcomeName) welcomeName.textContent = rawName.split(' ')[0];
-
-  // Update Avatar Pengguna
-  const avatarEl = document.querySelector('.avatar');
-  if (avatarEl && state.profile?.nama) {
-    const initial = state.profile.nama.trim().charAt(0).toUpperCase();
-    avatarEl.textContent = initial || '🎓';
-  }
-
-  // Mode Pratinjau Mahasiswa untuk Admin / Dosen (?as_student=1)
-  const urlParams = new URLSearchParams(window.location.search);
-  if ((state.profile?.role === 'admin' || state.profile?.role === 'dosen') && urlParams.has('as_student')) {
-    if (!document.getElementById('mode-mahasiswa-banner')) {
-      const banner = document.createElement('div');
-      banner.id = 'mode-mahasiswa-banner';
-      banner.style.cssText = 'background: #2563eb; color: white; padding: 10px 20px; font-size: 13px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 9999; box-shadow: 0 2px 10px rgba(0,0,0,0.15);';
-      banner.innerHTML = `
-        <span><i class="fa-solid fa-graduation-cap"></i> Anda sedang melihat <strong>Mode Pratinjau Mahasiswa</strong> sebagai <strong>${escapeHtml((state.profile.role || '').toUpperCase())}</strong></span>
-        <a href="admin-dashboard.html" style="color: white; font-weight: 700; text-decoration: underline; background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 6px; transition: background 0.2s;">Kembali ke Panel Admin &rarr;</a>
-      `;
-      document.body.prepend(banner);
-    }
-  }
-
-  // Handler Tombol Logout Pengguna — inline confirmation tanpa dialog browser
-  const handleUserLogout = async (e) => {
+// Handler Tombol Logout Pengguna — inline confirmation tanpa dialog browser
+const handleUserLogout = async (e) => {
     if (e) e.preventDefault();
 
     // Cek apakah sudah ada overlay konfirmasi aktif, hindari duplikasi
@@ -208,7 +158,53 @@ async function initUserSession() {
       await signOut();
       window.location.replace('login.html?logout=true');
     };
-  };
+
+async function initUserSession() {
+  state.user = await getCurrentUser();
+
+  if (state.user) {
+    state.profile = await getCurrentUserProfile();
+
+    // Jika pengguna adalah Admin / Dosen dan sedang membuka dashboard mahasiswa tanpa flag ?as_student=1,
+    // langsung arahkan ke admin-dashboard.html agar admin tidak tersangkut di tampilan mahasiswa.
+    const urlParams = new URLSearchParams(window.location.search);
+    if ((state.profile?.role === 'admin' || state.profile?.role === 'dosen') && !urlParams.has('as_student')) {
+      const p = window.location.pathname.toLowerCase();
+      if (p.includes('dashboard') || p.endsWith('/') || p.endsWith('index.html')) {
+        window.location.replace(CONFIG.PAGES.ADMIN);
+        return;
+      }
+    }
+  }
+
+  // Update Nama Pengguna di Header
+  const userNameEl = document.querySelector('.page-heading h1');
+  if (userNameEl) {
+    const rawName = state.profile?.nama || state.user?.user_metadata?.nama || state.user?.email?.split('@')[0] || 'Civitas';
+    userNameEl.textContent = `Welcome Back, ${rawName.split(' ')[0]}!`;
+  }
+
+  const welcomeName = document.getElementById('welcome-name');
+  if (welcomeName) welcomeName.textContent = rawName.split(' ')[0];
+
+  // Update Avatar Pengguna secara Dinamis
+  const avatarEls = document.querySelectorAll('.avatar');
+  avatarEls.forEach(el => applyAvatar(el, state.user, state.profile));
+
+  // Mode Pratinjau Mahasiswa untuk Admin / Dosen (?as_student=1)
+  const urlParams = new URLSearchParams(window.location.search);
+  if ((state.profile?.role === 'admin' || state.profile?.role === 'dosen') && urlParams.has('as_student')) {
+    if (!document.getElementById('mode-mahasiswa-banner')) {
+      const banner = document.createElement('div');
+      banner.id = 'mode-mahasiswa-banner';
+      banner.style.cssText = 'background: #2563eb; color: white; padding: 10px 20px; font-size: 13px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 9999; box-shadow: 0 2px 10px rgba(0,0,0,0.15);';
+      banner.innerHTML = `
+        <span><i class="fa-solid fa-graduation-cap"></i> Anda sedang melihat <strong>Mode Pratinjau Mahasiswa</strong> sebagai <strong>${escapeHtml((state.profile.role || '').toUpperCase())}</strong></span>
+        <a href="admin-dashboard.html" style="color: white; font-weight: 700; text-decoration: underline; background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 6px; transition: background 0.2s;">Kembali ke Panel Admin &rarr;</a>
+      `;
+      document.body.prepend(banner);
+    }
+  }
 
   const logoutLinks = document.querySelectorAll('a[href*="login"], .sidebar-options span:has(.fa-right-from-bracket), .side-bottom-link:has(.fa-right-from-bracket), .btn-logout');
   logoutLinks.forEach((link) => {
@@ -1254,13 +1250,14 @@ function initUserModals() {
     const role = state.profile?.role || 'mahasiswa';
     const initial = rawName.charAt(0).toUpperCase();
 
+    const avatarUrl = resolveAvatarUrl(state.user, state.profile);
     const m = getOrCreateModal('user-profile-modal');
     m.innerHTML = `
       <div style="background: var(--paper, white); color: var(--ink, #1e293b); border-radius: 16px; padding: 28px; width: 90%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); font-family: 'Poppins', sans-serif; position: relative;">
         <button type="button" class="close-modal" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 22px; cursor: pointer; color: var(--muted, #64748b);">&times;</button>
         <div style="text-align: center; margin-bottom: 20px;">
-          <div style="width: 72px; height: 72px; border-radius: 50%; background: var(--olive, #788744); color: white; font-size: 30px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; font-weight: bold; box-shadow: 0 4px 12px rgba(120,135,68,0.3);">
-            ${initial}
+          <div style="width: 76px; height: 76px; border-radius: 50%; background: var(--olive, #788744); color: white; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(120,135,68,0.3); overflow: hidden;">
+            <img src="${avatarUrl}" alt="${escapeHtml(rawName)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;" onerror="this.onerror=null; this.parentElement.textContent='${initial}';">
           </div>
           <h2 style="margin: 0; font-size: 18px;">${escapeHtml(rawName)}</h2>
           <span style="display: inline-block; padding: 3px 12px; background: rgba(120, 135, 68, 0.15); color: var(--olive, #788744); border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-top: 6px;">
@@ -1379,11 +1376,14 @@ function initUserModals() {
   };
 
   // Pasang event listener
-  if (avatar) {
-    avatar.style.cursor = 'pointer';
-    avatar.setAttribute('title', 'Buka Profil Akun');
-    avatar.onclick = showProfile;
-  }
+  document.querySelectorAll('.avatar').forEach((el) => {
+    el.style.cursor = 'pointer';
+    el.setAttribute('title', 'Buka Profil Akun');
+    el.onclick = (e) => {
+      e.preventDefault();
+      showProfile();
+    };
+  });
 
   profileLinks.forEach((el) => {
     el.style.cursor = 'pointer';

@@ -96,6 +96,17 @@ async function initLoginForm() {
     const email = emailInput?.value?.trim() ?? '';
     const password = passwordInput?.value ?? '';
 
+    if (!email) {
+      showAlert('Harap masukkan alamat email kampus Anda.', 'warning');
+      emailInput?.focus();
+      return;
+    }
+    if (!password) {
+      showAlert('Harap masukkan kata sandi akun Anda.', 'warning');
+      passwordInput?.focus();
+      return;
+    }
+
     const originalText = submitBtn ? submitBtn.textContent : 'Masuk';
     if (submitBtn) {
       submitBtn.disabled = true;
@@ -231,6 +242,28 @@ function initSignupForm() {
     const npm = npmInput?.value?.trim() ?? '';
     const password = passwordInput?.value ?? '';
 
+    if (!nama) {
+      showAlert('Harap masukkan nama lengkap Anda.', 'warning');
+      namaInput?.focus();
+      return;
+    }
+    if (!email) {
+      showAlert('Harap masukkan alamat email kampus Anda.', 'warning');
+      emailInput?.focus();
+      return;
+    }
+    const isStudent = email.toLowerCase().endsWith('@student.unsika.ac.id');
+    if (isStudent && !npm) {
+      showAlert('NPM wajib diisi untuk mahasiswa.', 'warning');
+      npmInput?.focus();
+      return;
+    }
+    if (!password) {
+      showAlert('Harap tentukan kata sandi akun Anda.', 'warning');
+      passwordInput?.focus();
+      return;
+    }
+
     const originalText = submitBtn ? submitBtn.textContent : 'Daftar';
     if (submitBtn) {
       submitBtn.disabled = true;
@@ -335,6 +368,11 @@ function initForgotPassword() {
       clearAlert();
 
       const email = emailResetInput?.value?.trim() ?? '';
+      if (!email) {
+        showAlert('Harap masukkan alamat surel Anda.', 'warning');
+        emailResetInput?.focus();
+        return;
+      }
       const originalText = btnMinta ? btnMinta.textContent : 'Kirim Tautan Pemulihan';
       if (btnMinta) {
         btnMinta.disabled = true;

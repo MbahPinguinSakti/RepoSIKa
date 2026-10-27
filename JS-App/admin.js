@@ -2,7 +2,7 @@
 // Controller Khusus Panel Administrator RepoSIKa
 // Memenuhi Kebutuhan PRD: FR-07 (CRUD Materi), FR-08 (Manajemen User), FR-09 (Prioritas Akun Nonaktif)
 
-import { supabase, escapeHtml, CONFIG } from '../JS-Login/utils.js';
+import { supabase, escapeHtml, CONFIG, resolveAvatarUrl, applyAvatar } from '../JS-Login/utils.js';
 import {
   requireAdmin,
   signOut,
@@ -23,31 +23,8 @@ const adminState = {
   allMatkul: [],
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
-  // 1. Inisialisasi Tema Gelap / Terang untuk Halaman Admin
-  initAdminTheme();
-
-  // 2. Proteksi Halaman Admin (FR-08: Mahasiswa Biasa Mental / 403)
-  const auth = await requireAdmin({ redirectTo: 'login.html' });
-  if (!auth) return;
-
-  adminState.adminUser = auth.user || auth.session?.user;
-  adminState.adminProfile = auth.profile;
-  if (!adminState.adminUser) {
-    const { getCurrentUser, getCurrentUserProfile } = await import('../JS-Login/auth.js');
-    adminState.adminUser = await getCurrentUser();
-    if (!adminState.adminProfile) adminState.adminProfile = await getCurrentUserProfile();
-  }
-
-  // Tampilkan Nama Admin / Dosen di Header
-  const headerGreeting = document.querySelector('.page-header h1');
-  if (headerGreeting && adminState.adminProfile?.nama) {
-    const roleLabel = adminState.adminProfile.role === 'dosen' ? ' (Dosen)' : '';
-    headerGreeting.textContent = `Welcome Back, ${adminState.adminProfile.nama.split(' ')[0]}${roleLabel}!`;
-  }
-
-  // Handler Tombol Logout Admin
-  const handleAdminLogout = async (e) => {
+// Handler Tombol Logout Admin
+const handleAdminLogout = async (e) => {
     if (e) e.preventDefault();
     // Remove existing overlay if any
     const existing = document.getElementById('rsk-admin-logout-confirm');
@@ -129,6 +106,34 @@ document.addEventListener('DOMContentLoaded', async () => {
       window.location.replace('login.html?logout=true');
     });
   };
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // 1. Inisialisasi Tema Gelap / Terang untuk Halaman Admin
+  initAdminTheme();
+
+  // 2. Proteksi Halaman Admin (FR-08: Mahasiswa Biasa Mental / 403)
+  const auth = await requireAdmin({ redirectTo: 'login.html' });
+  if (!auth) return;
+
+  adminState.adminUser = auth.user || auth.session?.user;
+  adminState.adminProfile = auth.profile;
+  if (!adminState.adminUser) {
+    const { getCurrentUser, getCurrentUserProfile } = await import('../JS-Login/auth.js');
+    adminState.adminUser = await getCurrentUser();
+    if (!adminState.adminProfile) adminState.adminProfile = await getCurrentUserProfile();
+  }
+
+  // Render Avatar Admin / Dosen secara Dinamis
+  const avatarEls = document.querySelectorAll('.avatar');
+  avatarEls.forEach(el => applyAvatar(el, adminState.adminUser, adminState.adminProfile));
+
+  // Tampilkan Nama Admin / Dosen di Header
+  const headerGreeting = document.querySelector('.page-header h1');
+  if (headerGreeting && adminState.adminProfile?.nama) {
+    const roleLabel = adminState.adminProfile.role === 'dosen' ? ' (Dosen)' : '';
+    headerGreeting.textContent = `Welcome Back, ${adminState.adminProfile.nama.split(' ')[0]}${roleLabel}!`;
+  }
+
 
   const logoutBtns = document.querySelectorAll('nav.side-footer a:has(.fa-right-from-bracket), nav.side-footer a[href*="login"], .btn-logout-admin');
   logoutBtns.forEach(btn => btn.addEventListener('click', handleAdminLogout));
@@ -867,6 +872,8 @@ function initAdminModals() {
     const email = adminState.adminUser?.email || '-';
     const npm = adminState.adminProfile?.npm || 'Staf Kampus';
     const role = adminState.adminProfile?.role || 'admin';
+    const initial = nama.trim().charAt(0).toUpperCase() || '🛡️';
+    const avatarUrl = resolveAvatarUrl(adminState.adminUser, adminState.adminProfile);
 
     let modal = document.getElementById('admin-profile-modal');
     if (!modal) {
@@ -880,8 +887,8 @@ function initAdminModals() {
       <div style="background: white; border-radius: 16px; padding: 28px; width: 90%; max-width: 420px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); font-family: 'Poppins', sans-serif; position: relative;">
         <button type="button" id="close-admin-profile" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 20px; cursor: pointer; color: #64748b;">&times;</button>
         <div style="text-align: center; margin-bottom: 20px;">
-          <div style="width: 70px; height: 70px; border-radius: 50%; background: #e0e7ff; color: #4338ca; font-size: 32px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; font-weight: bold;">
-            👩🏻
+          <div style="width: 76px; height: 76px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(67, 56, 202, 0.25);">
+            <img src="${avatarUrl}" alt="${escapeHtml(nama)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;" onerror="this.onerror=null; this.parentElement.textContent='${initial}';">
           </div>
           <h2 style="margin: 0; font-size: 18px; color: #1e293b;">${escapeHtml(nama)}</h2>
           <span style="display: inline-block; padding: 3px 10px; background: #fef3c7; color: #92400e; border-radius: 12px; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-top: 6px;">
@@ -916,11 +923,14 @@ function initAdminModals() {
     });
   };
 
-  if (avatar) {
-    avatar.style.cursor = 'pointer';
-    avatar.setAttribute('title', 'Lihat Akun Admin');
-    avatar.addEventListener('click', showProfileModal);
-  }
+  document.querySelectorAll('.avatar').forEach((el) => {
+    el.style.cursor = 'pointer';
+    el.setAttribute('title', 'Lihat Akun Admin');
+    el.onclick = (e) => {
+      e.preventDefault();
+      showProfileModal();
+    };
+  });
 
   if (profileLink) {
     profileLink.addEventListener('click', (e) => {

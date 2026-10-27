@@ -142,3 +142,33 @@ export function setupThemeToggle(buttonId = 'themeToggle') {
     try { localStorage.setItem(CONFIG.THEME_KEY, next); } catch (_) { /* abaikan */ }
   });
 }
+
+// Resolusi URL Foto Profil Dinamis (Google OAuth Avatar / Profile DB / UI-Avatars)
+export function resolveAvatarUrl(user, profile) {
+  // 1. Google OAuth avatar
+  const googleAvatar = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+  if (googleAvatar) return googleAvatar;
+
+  // 2. Profile / users table avatar jika ada
+  if (profile?.avatar_url) return profile.avatar_url;
+  if (profile?.foto_profil) return profile.foto_profil;
+
+  // 3. Dynamic UI-Avatars berdasarkan nama / prefix email
+  const name = profile?.nama || user?.user_metadata?.nama || user?.email?.split('@')[0] || 'Civitas';
+  const bg = (profile?.role === 'admin' || profile?.role === 'dosen') ? '2563eb' : '788744';
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${bg}&color=fff&size=128&bold=true`;
+}
+
+// Pasang Avatar pada elemen DOM (.avatar)
+export function applyAvatar(element, user, profile) {
+  if (!element) return;
+  const name = profile?.nama || user?.user_metadata?.nama || user?.email?.split('@')[0] || 'Civitas';
+  const initial = name.trim().charAt(0).toUpperCase() || '🎓';
+  const avatarUrl = resolveAvatarUrl(user, profile);
+
+  element.style.overflow = 'hidden';
+  element.style.display = 'inline-flex';
+  element.style.alignItems = 'center';
+  element.style.justifyContent = 'center';
+  element.innerHTML = `<img src="${avatarUrl}" alt="${escapeHtml(name)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" onerror="this.onerror=null; this.parentElement.textContent='${initial}';">`;
+}
