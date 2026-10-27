@@ -1,4 +1,4 @@
-# 🎓 RepoSIKa — Repositori Akademik Kampus UNSIKA
+# 🎓 RepoSIKa — Repositori Sistem Informasi UNSIKA
 
 > **Platform arsip dan repositori materi perkuliahan terpusat berbasis web untuk civitas akademika Universitas Singaperbangsa Karawang (UNSIKA).**
 
